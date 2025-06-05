@@ -10,7 +10,7 @@ const ProjectPreview = ({ projectId, version }) => {
         flexDirection: "column"
       }}
     >
-      <h1>Project Prevewi</h1>
+      <h1>Project Preview</h1>
       <div
         style={{
           width: "100%"
