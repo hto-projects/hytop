@@ -8,7 +8,7 @@ const Hero = () => {
           <h1 className="text-center mb-4">HYLAND TECH OUTREACH PORTAL</h1>
           <p className="text-center mb-4">
             Welcome to the Hyland Tech Outreach Portal. Here, you can build and
-            host your own websties.
+            host your own websites.
           </p>
           <div className="d-flex">
             <Button variant="secondary" href="/create-project">
