@@ -1,5 +1,19 @@
+import { useState } from "react";
+import { PiLinkSimpleBold } from "react-icons/pi";
+
 const ProjectPreview = ({ projectId, version }) => {
   const urlThing = `${import.meta.env.VITE_BACKEND_URL}/pf/${projectId}/`;
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(urlThing);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 100);
+    } catch (e) {
+      setCopied(false);
+    }
+  };
 
   return (
     <div
@@ -13,10 +27,27 @@ const ProjectPreview = ({ projectId, version }) => {
       <h1>Project Preview</h1>
       <div
         style={{
-          width: "100%"
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
         }}
       >
-        {urlThing}
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            transition: "transform 0.2s",
+            transform: copied ? "scale(1.5)" : "scale(1)"
+          }}
+        >
+          <PiLinkSimpleBold
+            style={{ cursor: "pointer" }}
+            title="Copy link"
+            onClick={copy}
+          />
+        </span>
+        <span>{urlThing}</span>
       </div>
       <iframe
         key={version}
