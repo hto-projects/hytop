@@ -80,6 +80,17 @@ const ProjectEditor = () => {
     }
   };
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        save();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [userIsOwner, projectFiles, projectName, projectVersion]);
+
   const copy = () => {
     window.location.href = `/c/${projectName}`;
   };
