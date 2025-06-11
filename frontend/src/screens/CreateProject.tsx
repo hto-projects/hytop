@@ -28,7 +28,7 @@ const CreateProjectScreen = () => {
 
   return (
     <>
-      <h1>Make a new prjoect</h1>
+      <h1>Make a new project</h1>
 
       <Form onSubmit={submitHandler}>
         <Form.Group className="my-2" controlId="projectName">
