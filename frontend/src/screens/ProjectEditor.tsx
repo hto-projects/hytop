@@ -139,7 +139,7 @@ const ProjectEditor = () => {
       </div>
       <div>
         {userIsOwner ? (
-          <button onClick={save}>SAEV</button>
+          <button onClick={save}>SAVE</button>
         ) : (
           <button onClick={copy}>COPY</button>
         )}
