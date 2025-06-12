@@ -96,15 +96,7 @@ const createProject = asyncHandler(async (req: any, res) => {
   const starterProjectFiles: IProjectFile[] = [
     {
       fileName: "index.html",
-      fileContent: `<h1>Hello World</h1>`
-    },
-    {
-      fileName: "style.css",
-      fileContent: `body { font-family: Arial, sans-serif; }`
-    },
-    {
-      fileName: "script.js",
-      fileContent: `console.log('Hello World');`
+      fileContent: " "
     }
   ];
 
