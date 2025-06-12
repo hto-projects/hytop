@@ -1,3 +1,5 @@
+import "@mantine/core/styles.css";
+import { createTheme, MantineProvider } from "@mantine/core";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -17,6 +19,24 @@ import CreateProjectScreen from "./screens/CreateProject";
 import ProjectEditor from "./screens/ProjectEditor";
 import CopyProjectScreen from "./screens/CopyProject";
 
+const theme = createTheme({
+  primaryColor: "blueButCooler",
+  colors: {
+    blueButCooler: [
+      "#eff0fb",
+      "#dbdcf0",
+      "#b2b6e3",
+      "#888dd6",
+      "#656bcc",
+      "#4f55c6",
+      "#434ac4",
+      "#353cad",
+      "#2e359b",
+      "#191f5e"
+    ]
+  }
+});
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -33,8 +53,10 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
+    <MantineProvider theme={theme}>
+      <React.StrictMode>
+        <RouterProvider router={router} />
+      </React.StrictMode>
+    </MantineProvider>
   </Provider>
 );
