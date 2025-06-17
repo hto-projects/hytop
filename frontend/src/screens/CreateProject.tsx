@@ -43,9 +43,6 @@ const CreateProjectScreen = () => {
         <Title order={2} ta="center" mb="md">
           Create a New Project
         </Title>
-        <Text c="dimmed" size="sm" ta="center" mb="lg">
-          Start a new Project
-        </Text>
         <form onSubmit={submitHandler}>
           <TextInput
             label="Project Name"
