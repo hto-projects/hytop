@@ -213,6 +213,8 @@ const copyProject = asyncHandler(async (req: any, res) => {
 // @route   POST /api/projects/check-ownership/:projectName
 // @access  NOT Public
 const checkOwnership = asyncHandler(async (req: any, res) => {
+  // temp fix until accounts are properly implemented
+  /*
   const user = req.user;
   const projectName: string = req.params.projectName;
 
@@ -225,8 +227,11 @@ const checkOwnership = asyncHandler(async (req: any, res) => {
   if (existingProject.projectOwnerId !== user._id) {
     res.json({ isOwner: false });
   } else {
-    res.json({ isOwner: true });
+   */
+  res.json({ isOwner: true });
+  /*
   }
+    */
 });
 
 // @desc    Update an existing project
@@ -243,10 +248,13 @@ const updateProject = asyncHandler(async (req: any, res) => {
     throw new Error(":( project not found :(");
   }
 
+  // temp fix until accounts are properly implemented
+  /*
   if (existingProject.projectOwnerId !== user._id) {
     res.status(401);
     throw new Error("Not authorized to update this project");
   }
+  */
 
   const updates: any = { projectFiles: projectFiles };
   const findProj: any = { projectName: projectName };

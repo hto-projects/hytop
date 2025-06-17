@@ -8,6 +8,9 @@
     "build": "tsc -b && vite build"
   },
   "dependencies": {
+    "@mantine/core": "^8.1.0",
+    "@mantine/hooks": "^8.1.0",
+    "@monaco-editor/react": "^4.7.0",
     "@reduxjs/toolkit": "^1.9.5",
     "bootstrap": "^5.2.3",
     "lodash": "^4.17.21",
@@ -22,7 +25,10 @@
     "react-router-dom": "^6.11.0",
     "react-simple-code-editor": "^0.14.1",
     "react-toastify": "^9.1.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.3",
+    "postcss": "^8.5.5",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.29",
