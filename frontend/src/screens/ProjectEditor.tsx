@@ -55,8 +55,20 @@ import { IProject } from "../../../shared/types";
 
 import { RootState } from "../store";
 import { set } from "mongoose";
+import ExplorerPane from "../components/editor/ExplorerPane";
+import EditorPane from "../components/editor/EditorPane";
+import PreviewPane from "../components/editor/PreviewPane";
+import SettingsPane from "../components/editor/SettingsPane";
+import Sidebar from "../components/editor/Sidebar";
+import TabBar from "../components/editor/TabBar";
 
-// TODO: this file is a mess and some stuff needs to be moved to their own individual components
+function getMonacoLang(filename: string) {
+  if (!filename) return "plaintext";
+  if (filename.endsWith(".js")) return "javascript";
+  if (filename.endsWith(".css")) return "css";
+  if (filename.endsWith(".html")) return "html";
+  return "plaintext";
+}
 
 const paneTypes = [
   { key: "explorer", icon: <PiFilesBold />, label: "Files" },
@@ -176,6 +188,7 @@ const ProjectEditor = () => {
 
   const handleFileSelect = (filename: string) => {
     dispatch(openTab(filename));
+    dispatch(setSelectedFile(filename));
   };
 
   const startRename = (filename: string) => {
@@ -430,658 +443,6 @@ const ProjectEditor = () => {
     resizingRef.current = null;
   };
 
-  const renderPane = (pane: string, width?: number) => {
-    if (!paneState.open[pane]) return null;
-    switch (pane) {
-      case "explorer":
-        return (
-          <Paper
-            shadow="xs"
-            p={0}
-            style={{
-              minWidth: MIN_PANE_WIDTH,
-              maxWidth: 3000,
-              width: width || DEFAULT_PANE_WIDTHS.explorer,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              transition: "width 0.1s"
-            }}
-            draggable
-            onDragStart={() => onDragStart("explorer")}
-            onDragOver={(e) => onDragOver(e, "explorer")}
-          >
-            <Group
-              align="apart"
-              px="sm"
-              py="xs"
-              style={{ borderBottom: "1px solid #eee" }}
-            >
-              <Group gap={4}>
-                <PiFilesBold />
-                <Text size="sm">Files</Text>
-              </Group>
-              <Menu shadow="md" width={200}>
-                <Menu.Target>
-                  <ActionIcon variant="subtle" size="sm">
-                    <PiFilePlusBold />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Label>Add New File</Menu.Label>
-                  <Menu.Item
-                    leftSection={<PiFileHtml size={14} />}
-                    onClick={() => addFile("html")}
-                  >
-                    HTML
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<PiFileCss size={14} />}
-                    onClick={() => addFile("css")}
-                  >
-                    CSS
-                  </Menu.Item>
-                  <Menu.Item
-                    leftSection={<PiFileJs size={14} />}
-                    onClick={() => addFile("js")}
-                  >
-                    JavaScript
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-              <ActionIcon
-                variant="subtle"
-                onClick={() => closePane("explorer")}
-                size="sm"
-              >
-                <PiXBold />
-              </ActionIcon>
-            </Group>
-            <Box style={{ flex: 1, overflowY: "auto" }}>
-              {projectFiles.map((file) => (
-                <Box
-                  key={file.fileName}
-                  px="sm"
-                  py={6}
-                  style={{
-                    cursor: "pointer",
-                    background:
-                      selectedFile === file.fileName ? "#f3f3f3" : undefined,
-                    fontWeight: selectedFile === file.fileName ? 600 : 400,
-                    display: "flex",
-                    alignItems: "center"
-                  }}
-                  onClick={() => handleFileSelect(file.fileName)}
-                  onDoubleClick={() => startRename(file.fileName)}
-                >
-                  {unsavedFiles[file.fileName] && (
-                    <PiDotOutlineFill
-                      color="#FFA94D"
-                      style={{ marginRight: 6, fontSize: 16 }}
-                    />
-                  )}
-                  {renamingFile === file.fileName ? (
-                    <TextInput
-                      value={renameValue}
-                      onChange={(e) =>
-                        dispatch(setRenameValue(e.currentTarget.value))
-                      }
-                      size="xs"
-                      autoFocus
-                      onBlur={confirmRename}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          confirmRename();
-                        } else if (e.key === "Escape") {
-                          cancelRename();
-                        }
-                      }}
-                      styles={{
-                        input: {
-                          padding: "2px 6px",
-                          fontSize: "14px",
-                          height: "24px",
-                          minWidth: "80px"
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  ) : (
-                    file.fileName
-                  )}
-                </Box>
-              ))}
-            </Box>
-          </Paper>
-        );
-      case "editor":
-        const file = projectFiles.find((f) => f.fileName === activeTab) || {
-          fileContent: "",
-          fileName: ""
-        };
-        return (
-          <Paper
-            shadow="xs"
-            p={0}
-            style={{
-              flex: 1,
-              minWidth: MIN_PANE_WIDTH,
-              maxWidth: 3000,
-              width: width || DEFAULT_PANE_WIDTHS.editor,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              transition: "width 0.1s"
-            }}
-            draggable
-            onDragStart={() => onDragStart("editor")}
-            onDragOver={(e) => onDragOver(e, "editor")}
-          >
-            {renderTabBar()}
-            <Group
-              align="apart"
-              px="sm"
-              py="xs"
-              style={{ borderBottom: "1px solid #eee" }}
-            >
-              <Group gap={4}>
-                <PiCodeBold />
-                {unsavedFiles[activeTab] && (
-                  <PiDotOutlineFill
-                    color="#FFA94D"
-                    style={{ marginRight: 4, fontSize: 16 }}
-                  />
-                )}
-                <Text size="sm">{activeTab || "No file selected"}</Text>
-              </Group>
-              <Tooltip label={"Undo"} position="top">
-                <ActionIcon
-                  variant="subtle"
-                  onClick={() => {
-                    if (editorRef.current)
-                      editorRef.current.trigger("keyboard", "undo", null);
-                  }}
-                  size="sm"
-                  title="Undo"
-                  disabled={!activeTab}
-                >
-                  <PiArrowCounterClockwiseBold />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label={"Redo"} position="top">
-                <ActionIcon
-                  variant="subtle"
-                  onClick={() => {
-                    if (editorRef.current)
-                      editorRef.current.trigger("keyboard", "redo", null);
-                  }}
-                  size="sm"
-                  title="Redo"
-                  disabled={!activeTab}
-                >
-                  <PiArrowClockwiseBold />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label={"Save"} position="top">
-                <ActionIcon
-                  variant="subtle"
-                  onClick={saveCurrentFile}
-                  size="sm"
-                  color="blueButCooler"
-                  title="Save this file"
-                >
-                  <PiFloppyDiskBold />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label={"Close"} position="top">
-                <ActionIcon
-                  variant="subtle"
-                  onClick={() => closePane("editor")}
-                  size="sm"
-                >
-                  <PiXBold />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
-            <Box style={{ flex: 1, minHeight: 0 }}>
-              <MonacoEditor
-                key="monaco-singleton"
-                theme="vs-light"
-                height="100%"
-                width="100%"
-                language={getMonacoLang(activeTab)}
-                options={{
-                  readOnly: !userIsOwner,
-                  minimap: { enabled: true },
-                  fontSize: 14,
-                  fontFamily: "Fira Mono, monospace"
-                }}
-                onMount={(editor) => {
-                  editorRef.current = editor;
-                  if (monaco && modelsRef.current[activeTab]) {
-                    editor.setModel(modelsRef.current[activeTab]);
-                  }
-                }}
-              />
-            </Box>
-          </Paper>
-        );
-      case "preview":
-        const previewUrl = `${
-          import.meta.env.VITE_BACKEND_URL
-        }/pf/${projectName}/`;
-        return (
-          <Paper
-            shadow="xs"
-            p={0}
-            style={{
-              minWidth: MIN_PANE_WIDTH,
-              maxWidth: 3000,
-              width: width || DEFAULT_PANE_WIDTHS.preview,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              transition: "width 0.1s"
-            }}
-            draggable
-            onDragStart={() => onDragStart("preview")}
-            onDragOver={(e) => onDragOver(e, "preview")}
-          >
-            <Group
-              align="apart"
-              px="sm"
-              py="xs"
-              style={{ borderBottom: "1px solid #eee" }}
-            >
-              <Group gap={4}>
-                <PiMonitorBold />
-                <Text size="sm">Preview</Text>
-              </Group>
-              <ActionIcon
-                variant="subtle"
-                onClick={() => closePane("preview")}
-                size="sm"
-              >
-                <PiXBold />
-              </ActionIcon>
-            </Group>
-            <Box style={{ padding: "8px", borderBottom: "1px solid #eee" }}>
-              <Group gap="xs" align="center">
-                <Text
-                  style={{
-                    flex: 1,
-                    fontSize: "14px",
-                    color: "#495057",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap"
-                  }}
-                >
-                  {previewUrl}
-                </Text>
-                <CopyButton value={previewUrl}>
-                  {({ copied, copy }) => (
-                    <Tooltip
-                      label={copied ? "Copied" : "Copy URL"}
-                      position="top"
-                    >
-                      <ActionIcon
-                        size="sm"
-                        color="blueButCooler"
-                        onClick={copy}
-                        variant="transparent"
-                      >
-                        <PiLinkBold />
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                </CopyButton>
-                <Tooltip label="Open in new tab" position="top">
-                  <ActionIcon
-                    size="sm"
-                    color="blueButCooler"
-                    onClick={() => window.open(previewUrl, "_blank")}
-                    variant="transparent"
-                  >
-                    <PiArrowSquareOutBold />
-                  </ActionIcon>
-                </Tooltip>
-              </Group>
-            </Box>
-            <Box style={{ flex: 1, minHeight: 0 }}>
-              <iframe
-                key={projectVersion}
-                src={previewUrl}
-                style={{ width: "100%", height: "100%", border: "none" }}
-                title="Project Preview"
-              />
-            </Box>
-          </Paper>
-        );
-      case "settings":
-        return (
-          <Paper
-            shadow="xs"
-            p={0}
-            style={{
-              minWidth: MIN_PANE_WIDTH,
-              maxWidth: 600,
-              width: width || DEFAULT_PANE_WIDTHS.settings,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              transition: "width 0.1s"
-            }}
-            draggable
-            onDragStart={() => onDragStart("settings")}
-            onDragOver={(e) => onDragOver(e, "settings")}
-          >
-            <Group
-              align="apart"
-              px="sm"
-              py="xs"
-              style={{ borderBottom: "1px solid #eee" }}
-            >
-              <Group gap={4}>
-                <PiGearBold />
-                <Text size="sm">Settings</Text>
-              </Group>
-            </Group>
-            <Box style={{ flex: 1, minHeight: 0, padding: 16 }}>
-              <Text fw={700} mb="sm">
-                Project Settings
-              </Text>
-              <Text c="dimmed" size="sm">
-                (settings)
-              </Text>
-            </Box>
-          </Paper>
-        );
-      default:
-        return null;
-    }
-  };
-
-  function getMonacoLang(filename: string) {
-    if (!filename) return "plaintext";
-    if (filename.endsWith(".js")) return "javascript";
-    if (filename.endsWith(".css")) return "css";
-    if (filename.endsWith(".html")) return "html";
-    return "plaintext";
-  }
-
-  if (projectData.isLoading) return <Loader />;
-  if (projectData.error) return <Text color="red">Error loading project</Text>;
-
-  const openSettingsPane = () => {
-    if (!paneState.open.settings) {
-      dispatch(
-        setPaneState({
-          ...paneState,
-          open: { ...paneState.open, settings: true }
-        })
-      );
-    }
-  };
-
-  const renderSidebar = () => (
-    <Box
-      style={{
-        width: 48,
-        minWidth: 48,
-        maxWidth: 48,
-        height: "100%",
-        background: "#f3f4f8",
-        borderRight: "1px solid #e0e0e0",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: 8,
-        gap: 4
-      }}
-    >
-      <Tooltip label="Files" position="right">
-        <ActionIcon
-          color={sidebarTab === "explorer" ? "blueButCooler" : "gray"}
-          variant={sidebarTab === "explorer" ? "filled" : "subtle"}
-          size="lg"
-          onClick={() => setSidebarTab("explorer")}
-          style={{ marginBottom: 4 }}
-        >
-          <PiFilesBold />
-        </ActionIcon>
-      </Tooltip>
-      <Tooltip label="Settings" position="right">
-        <ActionIcon
-          color={sidebarTab === "settings" ? "blueButCooler" : "gray"}
-          variant={sidebarTab === "settings" ? "filled" : "subtle"}
-          size="lg"
-          onClick={() => setSidebarTab("settings")}
-        >
-          <PiGearBold />
-        </ActionIcon>
-      </Tooltip>
-    </Box>
-  );
-
-  const renderSidebarPane = (width?: number) => {
-    if (sidebarTab === "explorer") {
-      return (
-        <Paper
-          shadow="xs"
-          p={0}
-          style={{
-            minWidth: MIN_PANE_WIDTH,
-            maxWidth: 3000,
-            width: width || DEFAULT_PANE_WIDTHS.explorer,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            transition: "width 0.1s"
-          }}
-          draggable
-          onDragStart={() => onDragStart("explorer")}
-          onDragOver={(e) => onDragOver(e, "explorer")}
-        >
-          <Group
-            align="apart"
-            px="sm"
-            py="xs"
-            style={{ borderBottom: "1px solid #eee" }}
-          >
-            <Group gap={4}>
-              <PiFilesBold />
-              <Text size="sm">Files</Text>
-            </Group>
-            <Menu shadow="md" width={200}>
-              <Menu.Target>
-                <ActionIcon variant="subtle" size="sm">
-                  <PiFilePlusBold />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Label>Add New File</Menu.Label>
-                <Menu.Item
-                  leftSection={<PiFileHtml size={14} />}
-                  onClick={() => addFile("html")}
-                >
-                  HTML
-                </Menu.Item>
-                <Menu.Item
-                  leftSection={<PiFileCss size={14} />}
-                  onClick={() => addFile("css")}
-                >
-                  CSS
-                </Menu.Item>
-                <Menu.Item
-                  leftSection={<PiFileJs size={14} />}
-                  onClick={() => addFile("js")}
-                >
-                  JavaScript
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-            <ActionIcon
-              variant="subtle"
-              onClick={() => closePane("explorer")}
-              size="sm"
-            >
-              <PiXBold />
-            </ActionIcon>
-          </Group>
-          <Box style={{ flex: 1, overflowY: "auto" }}>
-            {projectFiles.map((file) => (
-              <Box
-                key={file.fileName}
-                px="sm"
-                py={6}
-                style={{
-                  cursor: "pointer",
-                  background:
-                    selectedFile === file.fileName ? "#f3f3f3" : undefined,
-                  fontWeight: selectedFile === file.fileName ? 600 : 400,
-                  display: "flex",
-                  alignItems: "center"
-                }}
-                onClick={() => handleFileSelect(file.fileName)}
-                onDoubleClick={() => startRename(file.fileName)}
-              >
-                {unsavedFiles[file.fileName] && (
-                  <PiDotOutlineFill
-                    color="#FFA94D"
-                    style={{ marginRight: 6, fontSize: 16 }}
-                  />
-                )}
-                {renamingFile === file.fileName ? (
-                  <TextInput
-                    value={renameValue}
-                    onChange={(e) =>
-                      dispatch(setRenameValue(e.currentTarget.value))
-                    }
-                    size="xs"
-                    autoFocus
-                    onBlur={confirmRename}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        confirmRename();
-                      } else if (e.key === "Escape") {
-                        cancelRename();
-                      }
-                    }}
-                    styles={{
-                      input: {
-                        padding: "2px 6px",
-                        fontSize: "14px",
-                        height: "24px",
-                        minWidth: "80px"
-                      }
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                ) : (
-                  file.fileName
-                )}
-              </Box>
-            ))}
-          </Box>
-        </Paper>
-      );
-    } else if (sidebarTab === "settings") {
-      return (
-        <Paper
-          shadow="xs"
-          p={0}
-          style={{
-            minWidth: MIN_PANE_WIDTH,
-            maxWidth: 600,
-            width: DEFAULT_PANE_WIDTHS.settings,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            transition: "width 0.1s"
-          }}
-        >
-          <Group
-            align="apart"
-            px="sm"
-            py="xs"
-            style={{ borderBottom: "1px solid #eee" }}
-          >
-            <Group gap={4}>
-              <PiGearBold />
-              <Text size="sm">Settings</Text>
-            </Group>
-          </Group>
-          <Box style={{ flex: 1, minHeight: 0, padding: 16 }}>
-            <Text fw={700} mb="sm">
-              Project Settings
-            </Text>
-            <Text c="dimmed" size="sm">
-              put settings here
-            </Text>
-          </Box>
-        </Paper>
-      );
-    }
-    return null;
-  };
-
-  const renderTabBar = () => (
-    <Box
-      style={{
-        display: "flex",
-        alignItems: "center",
-        height: 36,
-        borderBottom: "1px solid #eee",
-        background: "#f8f8fa"
-      }}
-    >
-      {tabs.map((fileName) => (
-        <Box
-          key={fileName}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            padding: "0 12px",
-            height: "100%",
-            cursor: "pointer",
-            background: activeTab === fileName ? "#fff" : "transparent",
-            borderRight: "1px solid #eee",
-            borderTop:
-              activeTab === fileName
-                ? "2px solid #4f55c6"
-                : "2px solid transparent",
-            fontWeight: activeTab === fileName ? 600 : 400,
-            color: activeTab === fileName ? "#191f5e" : "#444"
-          }}
-          onClick={() => handleTabClick(fileName)}
-        >
-          <span style={{ marginRight: 6 }}>
-            {fileName.endsWith(".js") && <PiFileJs size={14} />}
-            {fileName.endsWith(".css") && <PiFileCss size={14} />}
-            {fileName.endsWith(".html") && <PiFileHtml size={14} />}
-          </span>
-          <span style={{ marginRight: 6 }}>{fileName}</span>
-          {unsavedFiles[fileName] && (
-            <PiDotOutlineFill
-              color="#FFA94D"
-              style={{ marginRight: 4, fontSize: 14 }}
-            />
-          )}
-          <ActionIcon
-            variant="subtle"
-            size="xs"
-            style={{ marginLeft: 2 }}
-            onClick={(e) => handleTabClose(fileName, e)}
-            title="Close tab"
-          >
-            <PiXBold size={12} />
-          </ActionIcon>
-        </Box>
-      ))}
-    </Box>
-  );
-
   return (
     <Box
       style={{
@@ -1154,9 +515,39 @@ const ProjectEditor = () => {
         }}
       >
         <Box style={{ display: "flex", height: "100%" }}>
-          {renderSidebar()}
+          <Sidebar sidebarTab={sidebarTab} setSidebarTab={setSidebarTab} />
           <Box style={{ display: "flex", height: "100%" }}>
-            {renderSidebarPane(paneWidths["explorer"])}
+            {sidebarTab === "explorer" && (
+              <ExplorerPane
+                MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                width={paneWidths["explorer"]}
+                onDragStart={onDragStart}
+                onDragOver={onDragOver}
+                closePane={closePane}
+                addFile={addFile}
+                projectFiles={projectFiles}
+                selectedFile={selectedFile}
+                handleFileSelect={handleFileSelect}
+                startRename={startRename}
+                unsavedFiles={unsavedFiles}
+                renamingFile={renamingFile}
+                renameValue={renameValue}
+                dispatch={dispatch}
+                setRenameValue={setRenameValue}
+                confirmRename={confirmRename}
+                cancelRename={cancelRename}
+              />
+            )}
+            {sidebarTab === "settings" && (
+              <SettingsPane
+                MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                width={paneWidths["settings"]}
+                onDragStart={onDragStart}
+                onDragOver={onDragOver}
+              />
+            )}
             {paneOrder.filter((p) => p !== "explorer" && p !== "settings")
               .length > 0 && (
               <div
@@ -1200,7 +591,56 @@ const ProjectEditor = () => {
           .filter((pane) => pane !== "explorer" && pane !== "settings")
           .map((pane, idx, arr) => (
             <React.Fragment key={pane}>
-              {renderPane(pane, paneWidths[pane])}
+              {pane === "editor" && (
+                <EditorPane
+                  MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                  DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                  width={paneWidths[pane]}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                  closePane={closePane}
+                  renderTabBar={() => (
+                    <TabBar
+                      tabs={tabs}
+                      activeTab={activeTab}
+                      unsavedFiles={unsavedFiles}
+                      handleTabClick={handleTabClick}
+                      handleTabClose={handleTabClose}
+                    />
+                  )}
+                  unsavedFiles={unsavedFiles}
+                  activeTab={activeTab}
+                  saveCurrentFile={saveCurrentFile}
+                  editorRef={editorRef}
+                  monaco={monaco}
+                  modelsRef={modelsRef}
+                  getMonacoLang={getMonacoLang}
+                  userIsOwner={userIsOwner}
+                />
+              )}
+              {pane === "preview" && (
+                <PreviewPane
+                  MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                  DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                  width={paneWidths[pane]}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                  closePane={closePane}
+                  previewUrl={`${
+                    import.meta.env.VITE_BACKEND_URL
+                  }/pf/${projectName}/`}
+                  projectVersion={projectVersion}
+                />
+              )}
+              {pane === "settings" && (
+                <SettingsPane
+                  MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                  DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                  width={paneWidths[pane]}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                />
+              )}
               {idx < arr.length - 1 && (
                 <div
                   style={{
