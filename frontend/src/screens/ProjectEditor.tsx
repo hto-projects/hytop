@@ -32,7 +32,9 @@ import {
   PiGearBold,
   PiDotOutlineFill,
   PiLinkBold,
-  PiArrowSquareOutBold
+  PiArrowSquareOutBold,
+  PiArrowCounterClockwiseBold,
+  PiArrowClockwiseBold
 } from "react-icons/pi";
 import MonacoEditor, { useMonaco } from "@monaco-editor/react";
 import {
@@ -610,46 +612,54 @@ const ProjectEditor = () => {
                 )}
                 <Text size="sm">{activeTab || "No file selected"}</Text>
               </Group>
-              <ActionIcon
-                variant="subtle"
-                onClick={() => {
-                  if (editorRef.current)
-                    editorRef.current.trigger("keyboard", "undo", null);
-                }}
-                size="sm"
-                title="Undo"
-                disabled={!activeTab}
-              >
-                ⎌
-              </ActionIcon>
-              <ActionIcon
-                variant="subtle"
-                onClick={() => {
-                  if (editorRef.current)
-                    editorRef.current.trigger("keyboard", "redo", null);
-                }}
-                size="sm"
-                title="Redo"
-                disabled={!activeTab}
-              >
-                ↻
-              </ActionIcon>
-              <ActionIcon
-                variant="subtle"
-                onClick={saveCurrentFile}
-                size="sm"
-                color="blueButCooler"
-                title="Save this file"
-              >
-                <PiFloppyDiskBold />
-              </ActionIcon>
-              <ActionIcon
-                variant="subtle"
-                onClick={() => closePane("editor")}
-                size="sm"
-              >
-                <PiXBold />
-              </ActionIcon>
+              <Tooltip label={"Undo"} position="top">
+                <ActionIcon
+                  variant="subtle"
+                  onClick={() => {
+                    if (editorRef.current)
+                      editorRef.current.trigger("keyboard", "undo", null);
+                  }}
+                  size="sm"
+                  title="Undo"
+                  disabled={!activeTab}
+                >
+                  <PiArrowCounterClockwiseBold />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label={"Redo"} position="top">
+                <ActionIcon
+                  variant="subtle"
+                  onClick={() => {
+                    if (editorRef.current)
+                      editorRef.current.trigger("keyboard", "redo", null);
+                  }}
+                  size="sm"
+                  title="Redo"
+                  disabled={!activeTab}
+                >
+                  <PiArrowClockwiseBold />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label={"Save"} position="top">
+                <ActionIcon
+                  variant="subtle"
+                  onClick={saveCurrentFile}
+                  size="sm"
+                  color="blueButCooler"
+                  title="Save this file"
+                >
+                  <PiFloppyDiskBold />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label={"Close"} position="top">
+                <ActionIcon
+                  variant="subtle"
+                  onClick={() => closePane("editor")}
+                  size="sm"
+                >
+                  <PiXBold />
+                </ActionIcon>
+              </Tooltip>
             </Group>
             <Box style={{ flex: 1, minHeight: 0 }}>
               <MonacoEditor
