@@ -31,7 +31,7 @@ const CreateProjectScreen = () => {
         projectDescription
       }).unwrap();
       toast.success(res.message);
-      redirect(`/e/${res.projectName}`);
+      window.open(`/e/${res.projectName}`, "_blank");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -70,18 +70,6 @@ const CreateProjectScreen = () => {
               Create Project
             </Button>
           </Center>
-          {createdProjectName && (
-            <Center mt="lg">
-              <Button
-                component="a"
-                href={`/e/${createdProjectName}`}
-                color="green"
-                variant="outline"
-              >
-                Edit Project
-              </Button>
-            </Center>
-          )}
         </form>
         {isLoading && (
           <Center mt="md">
