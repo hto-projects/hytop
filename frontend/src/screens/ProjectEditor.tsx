@@ -247,13 +247,12 @@ const ProjectEditor = () => {
   };
   */
 
-  const save = async () => {
+  const saveAllFiles = async () => {
     try {
       await updateProject({ projectFiles, projectName }).unwrap();
       dispatch(setProjectVersion(projectVersion + 1));
-    } catch (err) {
-      alert(err?.data?.message || err.error);
-    }
+      setUnsavedFiles({});
+    } catch (err) {}
   };
 
   const monaco = useMonaco();
@@ -1121,9 +1120,9 @@ const ProjectEditor = () => {
         <Text fw={700}>{projectName}</Text>
         <Group gap={0}>
           {userIsOwner ? (
-            <Tooltip label="Save">
+            <Tooltip label="Save All">
               <ActionIcon
-                onClick={save}
+                onClick={saveAllFiles}
                 color="blueButCooler"
                 variant="light"
                 size="md"
