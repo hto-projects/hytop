@@ -45,6 +45,7 @@ const ProjectPreview = ({ projectId, version }) => {
             style={{ cursor: "pointer" }}
             title="Copy link"
             onClick={copy}
+            target="_blanck"
           />
         </span>
         <span>{urlThing}</span>

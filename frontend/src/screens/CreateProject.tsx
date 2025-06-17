@@ -3,6 +3,7 @@ import { Form, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import { useCreateProjectMutation } from "../slices/projectsApiSlice";
+import { useNavigate } from "react-router-dom";
 
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
@@ -11,6 +12,7 @@ const CreateProjectScreen = () => {
   const [createdProjectName, setCreatedProjectName] = useState("");
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
+  const redirect = useNavigate();
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ const CreateProjectScreen = () => {
         projectDescription
       }).unwrap();
       toast.success(res.message);
-      setCreatedProjectName(res.projectName);
+      redirect(`/e/${res.projectName}`);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
