@@ -15,7 +15,8 @@ import {
   Text,
   Paper,
   TextInput,
-  Menu
+  Menu,
+  CopyButton
 } from "@mantine/core";
 import {
   PiFilesBold,
@@ -29,7 +30,9 @@ import {
   PiFileHtml,
   PiFileJs,
   PiGearBold,
-  PiDotOutlineFill
+  PiDotOutlineFill,
+  PiLinkBold,
+  PiArrowSquareOutBold
 } from "react-icons/pi";
 import MonacoEditor, { useMonaco } from "@monaco-editor/react";
 import {
@@ -672,6 +675,9 @@ const ProjectEditor = () => {
           </Paper>
         );
       case "preview":
+        const previewUrl = `${
+          import.meta.env.VITE_BACKEND_URL
+        }/pf/${projectName}/`;
         return (
           <Paper
             shadow="xs"
@@ -707,10 +713,53 @@ const ProjectEditor = () => {
                 <PiXBold />
               </ActionIcon>
             </Group>
+            <Box style={{ padding: "8px", borderBottom: "1px solid #eee" }}>
+              <Group gap="xs" align="center">
+                <Text
+                  style={{
+                    flex: 1,
+                    fontSize: "14px",
+                    color: "#495057",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap"
+                  }}
+                >
+                  {previewUrl}
+                </Text>
+                <CopyButton value={previewUrl}>
+                  {({ copied, copy }) => (
+                    <Tooltip
+                      label={copied ? "Copied" : "Copy URL"}
+                      position="top"
+                    >
+                      <ActionIcon
+                        size="sm"
+                        color="blueButCooler"
+                        onClick={copy}
+                        variant="transparent"
+                      >
+                        <PiLinkBold />
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </CopyButton>
+                <Tooltip label="Open in new tab" position="top">
+                  <ActionIcon
+                    size="sm"
+                    color="blueButCooler"
+                    onClick={() => window.open(previewUrl, "_blank")}
+                    variant="transparent"
+                  >
+                    <PiArrowSquareOutBold />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+            </Box>
             <Box style={{ flex: 1, minHeight: 0 }}>
               <iframe
                 key={projectVersion}
-                src={`${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/`}
+                src={previewUrl}
                 style={{ width: "100%", height: "100%", border: "none" }}
                 title="Project Preview"
               />
