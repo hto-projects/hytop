@@ -17,6 +17,10 @@ const ProjectPreview = ({ projectId, version }) => {
         }}
       >
         {urlThing}
+        <a href={urlThing} target="_blanck">
+          {" "}
+          Web Link{" "}
+        </a>
       </div>
       <iframe
         key={version}
