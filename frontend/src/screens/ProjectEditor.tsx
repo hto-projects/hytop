@@ -23,7 +23,7 @@ import {
   PiCodeBold,
   PiMonitorBold,
   PiFloppyDiskBold,
-  PiCopyBold,
+  PiGitForkBold,
   PiXBold,
   PiFilePlusBold,
   PiFileCss,
@@ -94,7 +94,7 @@ const ProjectEditor = () => {
     activeTab
   } = useSelector((state: RootState) => state.editor);
 
-  const userIsOwner = true;
+  const userIsOwner = ownership.data?.isOwner || false;
 
   const [unsavedFiles, setUnsavedFiles] = React.useState<{
     [filename: string]: boolean;
@@ -357,10 +357,9 @@ const ProjectEditor = () => {
     }
   };
 
-  /*
-  const copy = () => {
+  const forkProject = () => {
+    window.location.href = `/c/${projectName}`;
   };
-  */
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1115,14 +1114,14 @@ const ProjectEditor = () => {
               </ActionIcon>
             </Tooltip>
           ) : (
-            <Tooltip label="Copy">
+            <Tooltip label="Fork Project">
               <ActionIcon
-                // onClick={copy}
+                onClick={forkProject}
                 color="green"
                 variant="light"
                 size="md"
               >
-                <PiCopyBold />
+                <PiGitForkBold />
               </ActionIcon>
             </Tooltip>
           )}
