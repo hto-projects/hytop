@@ -231,22 +231,6 @@ const ProjectEditor = () => {
     );
   };
 
-  /*
-  const handleFileEdit = (newContent: string) => {
-    if (!selectedFile) return;
-    const updatedFiles = projectFiles.map((file) =>
-      file.fileName === selectedFile
-        ? { ...file, fileContent: newContent }
-        : file
-    );
-    dispatch(setProjectFiles(updatedFiles));
-    setUnsavedFiles((prev) => ({
-      ...prev,
-      [selectedFile]: true
-    }));
-  };
-  */
-
   const saveAllFiles = async () => {
     try {
       await updateProject({ projectFiles, projectName }).unwrap();
