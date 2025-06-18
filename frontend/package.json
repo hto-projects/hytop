@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build"
   },
   "dependencies": {
-    "@mantine/core": "^8.1.0",
+    "@mantine/core": "^8.1.1",
     "@mantine/hooks": "^8.1.0",
     "@monaco-editor/react": "^4.7.0",
     "@reduxjs/toolkit": "^1.9.5",

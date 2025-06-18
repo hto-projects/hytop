@@ -15,7 +15,18 @@ interface EditorState {
   renameValue: string;
   tabs: string[];
   activeTab: string | null;
+  monacoTheme: string;
+  monacoFont: string;
+  monacoFontSize: number;
 }
+
+const getInitialMonacoSettings = () => {
+  return {
+    monacoTheme: localStorage.getItem("monacoTheme") || "vs-light",
+    monacoFont: localStorage.getItem("monacoFont") || "Fira Mono, monospace",
+    monacoFontSize: Number(localStorage.getItem("monacoFontSize")) || 14
+  };
+};
 
 const initialState: EditorState = {
   paneState: {
@@ -28,7 +39,8 @@ const initialState: EditorState = {
   renamingFile: null,
   renameValue: "",
   tabs: [],
-  activeTab: null
+  activeTab: null,
+  ...getInitialMonacoSettings()
 };
 
 const editorSlice = createSlice({
@@ -109,6 +121,18 @@ const editorSlice = createSlice({
         state.activeTab = state.tabs.length > 0 ? state.tabs[0] : null;
         state.selectedFile = state.activeTab;
       }
+    },
+    setMonacoTheme(state, action: PayloadAction<string>) {
+      state.monacoTheme = action.payload;
+      localStorage.setItem("monacoTheme", action.payload);
+    },
+    setMonacoFont(state, action: PayloadAction<string>) {
+      state.monacoFont = action.payload;
+      localStorage.setItem("monacoFont", action.payload);
+    },
+    setMonacoFontSize(state, action: PayloadAction<number>) {
+      state.monacoFontSize = action.payload;
+      localStorage.setItem("monacoFontSize", String(action.payload));
     }
   }
 });
@@ -125,6 +149,9 @@ export const {
   setActiveTab,
   openTab,
   closeTab,
-  syncTabsWithFiles
+  syncTabsWithFiles,
+  setMonacoTheme,
+  setMonacoFont,
+  setMonacoFontSize
 } = editorSlice.actions;
 export default editorSlice.reducer;

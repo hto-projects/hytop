@@ -1,6 +1,8 @@
 import { Container, Paper, Title, Text, Button, Group } from "@mantine/core";
+import { useSelector } from "react-redux";
 
 const Hero = () => {
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   return (
     <Container size={600} my={80}>
       <Paper
@@ -25,7 +27,7 @@ const Hero = () => {
         <Group align="center" mt="md">
           <Button
             size="md"
-            color="blueButCooler"
+            color={primaryColor}
             radius="md"
             component="a"
             href="/create-project"

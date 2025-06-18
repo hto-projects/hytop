@@ -1,6 +1,17 @@
 import { Paper, Group, Text, Box } from "@mantine/core";
 import { PiGearBold } from "react-icons/pi";
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { ColorPicker } from "@mantine/core";
+import { setPrimaryColor } from "../../slices/themeSlice";
+import {
+  setMonacoTheme,
+  setMonacoFont,
+  setMonacoFontSize
+} from "../../slices/editorSlice";
+import { Select, TextInput, NumberInput } from "@mantine/core";
+import DarkModeToggle from "../DarkModeToggle";
+import { useComputedColorScheme } from "@mantine/core";
 
 const SettingsPane = ({
   MIN_PANE_WIDTH,
@@ -8,43 +19,169 @@ const SettingsPane = ({
   width,
   onDragStart,
   onDragOver
-}) => (
-  <Paper
-    shadow="xs"
-    p={0}
-    style={{
-      minWidth: MIN_PANE_WIDTH,
-      maxWidth: 600,
-      width: width || DEFAULT_PANE_WIDTHS.settings,
-      height: "100%",
-      display: "flex",
-      flexDirection: "column",
-      transition: "width 0.1s"
-    }}
-    draggable
-    onDragStart={() => onDragStart("settings")}
-    onDragOver={(e) => onDragOver(e, "settings")}
-  >
-    <Group
-      align="apart"
-      px="sm"
-      py="xs"
-      style={{ borderBottom: "1px solid #eee" }}
+}) => {
+  const theColorScheme = useComputedColorScheme("light");
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
+  const monacoTheme = useSelector((state: any) => state.editor.monacoTheme);
+  const monacoFont = useSelector((state: any) => state.editor.monacoFont);
+  const monacoFontSize = useSelector(
+    (state: any) => state.editor.monacoFontSize
+  );
+  const dispatch = useDispatch();
+
+  return (
+    <Paper
+      shadow="xs"
+      p={0}
+      style={{
+        minWidth: MIN_PANE_WIDTH,
+        maxWidth: 600,
+        width: width || DEFAULT_PANE_WIDTHS.settings,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        transition: "width 0.1s",
+        color: theColorScheme === "dark" ? "white" : undefined,
+        backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined
+      }}
+      draggable
+      onDragStart={() => onDragStart("settings")}
+      onDragOver={(e) => onDragOver(e, "settings")}
     >
-      <Group gap={4}>
-        <PiGearBold />
-        <Text size="sm">Settings</Text>
+      <Group
+        align="apart"
+        px="sm"
+        py="xs"
+        style={{
+          borderBottom:
+            theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
+          background: theColorScheme === "dark" ? "#181A1B" : undefined
+        }}
+      >
+        <Group gap={4}>
+          <PiGearBold />
+          <Text size="sm">Settings</Text>
+        </Group>
       </Group>
-    </Group>
-    <Box style={{ flex: 1, minHeight: 0, padding: 16 }}>
-      <Text fw={700} mb="sm">
-        Project Settings
-      </Text>
-      <Text c="dimmed" size="sm">
-        (settings)
-      </Text>
-    </Box>
-  </Paper>
-);
+      <Box
+        style={{
+          flex: 1,
+          minHeight: 0,
+          padding: 16,
+          background: theColorScheme === "dark" ? "#181A1B" : undefined
+        }}
+      >
+        <Text fw={700} mb="xs">
+          Theme
+        </Text>
+        <Box
+          style={{
+            marginBottom: 16,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 8
+          }}
+        >
+          <ColorPicker
+            format="hex"
+            value={primaryColor}
+            onChange={(color) => dispatch(setPrimaryColor(color))}
+            swatches={[
+              "#4f55c6",
+              "#656bcc",
+              "#a3ce98",
+              "#6cb15a",
+              "#e2f0df",
+              "#191f5e"
+            ]}
+            withPicker
+            fullWidth
+          />
+          <Box style={{ marginTop: 2 }}>
+            <DarkModeToggle />
+          </Box>
+        </Box>
+        <Text fw={700} mt="md" mb="xs">
+          Editor
+        </Text>
+        <Box mb="sm">
+          <Text size="sm" mb={4}>
+            Theme
+          </Text>
+          <Select
+            data={[
+              { value: "vs-light", label: "Light" },
+              { value: "vs-dark", label: "Dark" },
+              { value: "hc-black", label: "High Contrast" }
+            ]}
+            value={monacoTheme}
+            onChange={(value) => value && dispatch(setMonacoTheme(value))}
+            size="sm"
+            style={{
+              width: "100%",
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+            styles={{
+              input: { color: theColorScheme === "dark" ? "#fff" : undefined },
+              dropdown: {
+                background: theColorScheme === "dark" ? "#23272A" : undefined,
+                color: theColorScheme === "dark" ? "#fff" : undefined
+              },
+              option: { color: theColorScheme === "dark" ? "#fff" : undefined }
+            }}
+          />
+        </Box>
+        <Box mb="sm">
+          <Text size="sm" mb={4}>
+            Font
+          </Text>
+          <Select
+            searchable
+            data={[
+              { value: "Fira Mono, monospace", label: "Fira Mono" },
+              { value: "Monaco, monospace", label: "Monaco" },
+              { value: "Consolas, monospace", label: "Consolas" },
+              {
+                value: "Comic Sans MS, Comic Sans, cursive",
+                label: "Comic Sans"
+              },
+              { value: "Courier New, monospace", label: "Courier New" },
+              { value: "Roboto Mono, monospace", label: "Roboto Mono" },
+              { value: "monospace", label: "Monospace (default)" }
+            ]}
+            value={monacoFont}
+            onChange={(value) => value && dispatch(setMonacoFont(value))}
+            placeholder="Fira Mono, monospace"
+            size="sm"
+            style={{ width: "100%" }}
+            styles={{
+              input: { color: theColorScheme === "dark" ? "#fff" : undefined },
+              dropdown: {
+                background: theColorScheme === "dark" ? "#23272A" : undefined,
+                color: theColorScheme === "dark" ? "#fff" : undefined
+              },
+              option: { color: theColorScheme === "dark" ? "#fff" : undefined }
+            }}
+          />
+        </Box>
+        <Box mb="sm">
+          <Text size="sm" mb={4}>
+            Font Size
+          </Text>
+          <NumberInput
+            min={10}
+            max={32}
+            value={monacoFontSize}
+            onChange={(value) =>
+              typeof value === "number" && dispatch(setMonacoFontSize(value))
+            }
+            size="sm"
+            style={{ width: 100 }}
+          />
+        </Box>
+      </Box>
+    </Paper>
+  );
+};
 
 export default SettingsPane;

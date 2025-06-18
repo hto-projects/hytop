@@ -16,7 +16,8 @@ import {
   Paper,
   TextInput,
   Menu,
-  CopyButton
+  CopyButton,
+  useComputedColorScheme
 } from "@mantine/core";
 import {
   PiFilesBold,
@@ -86,6 +87,7 @@ const DEFAULT_PANE_WIDTHS = {
 
 const MIN_PANE_WIDTH = 60;
 const ProjectEditor = () => {
+  const theColorScheme = useComputedColorScheme("light");
   const [sidebarTab, setSidebarTab] = React.useState<"explorer" | "settings">(
     "explorer"
   );
@@ -443,6 +445,9 @@ const ProjectEditor = () => {
     resizingRef.current = null;
   };
 
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
+  const darkMode = useSelector((state: any) => state.theme.darkMode);
+
   return (
     <Box
       style={{
@@ -457,19 +462,25 @@ const ProjectEditor = () => {
         px="md"
         py="xs"
         style={{
-          borderBottom: "1px solid #eee",
-          background: "#fafafa"
+          borderBottom:
+            theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
+          background: theColorScheme === "dark" ? "#181A1B" : "#fafafa",
+          color: theColorScheme === "dark" ? "#fff" : undefined
         }}
       >
-        <Text fw={700}>{projectName}</Text>
+        <Text fw={700} c={theColorScheme === "dark" ? "#fff" : undefined}>
+          {projectName}
+        </Text>
         <Group gap={0}>
           {userIsOwner ? (
             <Tooltip label="Save All">
               <ActionIcon
                 onClick={saveAllFiles}
-                color="blueButCooler"
-                variant="light"
+                color={primaryColor}
                 size="md"
+                style={{
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }}
               >
                 <PiFloppyDiskBold />
               </ActionIcon>
@@ -481,6 +492,9 @@ const ProjectEditor = () => {
                 color="green"
                 variant="light"
                 size="md"
+                style={{
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }}
               >
                 <PiGitForkBold />
               </ActionIcon>
@@ -496,6 +510,9 @@ const ProjectEditor = () => {
                   onClick={() => openPane(p.key)}
                   variant="subtle"
                   size="md"
+                  style={{
+                    color: theColorScheme === "dark" ? "#fff" : undefined
+                  }}
                 >
                   {p.icon}
                 </ActionIcon>
@@ -537,6 +554,7 @@ const ProjectEditor = () => {
                 setRenameValue={setRenameValue}
                 confirmRename={confirmRename}
                 cancelRename={cancelRename}
+                style={undefined}
               />
             )}
             {sidebarTab === "settings" && (
@@ -554,7 +572,8 @@ const ProjectEditor = () => {
                 style={{
                   width: 6,
                   cursor: "col-resize",
-                  background: "transparent",
+                  background:
+                    theColorScheme === "dark" ? "#23272A" : "transparent",
                   zIndex: 10,
                   userSelect: "none",
                   position: "relative"
@@ -579,7 +598,7 @@ const ProjectEditor = () => {
                   style={{
                     width: 2,
                     height: "100%",
-                    background: "#ddd",
+                    background: theColorScheme === "dark" ? "#333" : "#ddd",
                     margin: "0 auto"
                   }}
                 />
@@ -606,6 +625,8 @@ const ProjectEditor = () => {
                       unsavedFiles={unsavedFiles}
                       handleTabClick={handleTabClick}
                       handleTabClose={handleTabClose}
+                      // I don't know why this is needed but it was screaming at me and this works for some reason lol
+                      primaryColor={undefined}
                     />
                   )}
                   unsavedFiles={unsavedFiles}
@@ -646,7 +667,8 @@ const ProjectEditor = () => {
                   style={{
                     width: 6,
                     cursor: "col-resize",
-                    background: "transparent",
+                    background:
+                      theColorScheme === "dark" ? "#23272A" : "transparent",
                     zIndex: 10,
                     userSelect: "none",
                     position: "relative"
@@ -669,7 +691,7 @@ const ProjectEditor = () => {
                     style={{
                       width: 2,
                       height: "100%",
-                      background: "#ddd",
+                      background: theColorScheme === "dark" ? "#333" : "#ddd",
                       margin: "0 auto"
                     }}
                   />
