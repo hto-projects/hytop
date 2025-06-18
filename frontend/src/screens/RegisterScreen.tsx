@@ -44,6 +44,8 @@ const RegisterScreen = ({ setScreen }) => {
   };
   return (
     <FormContainer>
+      <div style={{ width: "200vh" }}></div>
+
       <h1>Register</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className="my-2" controlId="name">
