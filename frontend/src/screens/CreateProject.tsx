@@ -1,9 +1,18 @@
 import { useState } from "react";
-import { Form, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import { useCreateProjectMutation } from "../slices/projectsApiSlice";
 import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Paper,
+  Title,
+  Text,
+  TextInput,
+  Textarea,
+  Button,
+  Center
+} from "@mantine/core";
 
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
@@ -22,53 +31,53 @@ const CreateProjectScreen = () => {
         projectDescription
       }).unwrap();
       toast.success(res.message);
-      redirect(`/e/${res.projectName}`);
+      window.open(`/e/${res.projectName}`, "_blank");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
   };
 
   return (
-    <>
-      <h1>Make a new project</h1>
-
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="my-2" controlId="projectName">
-          <Form.Label>Project Name</Form.Label>
-          <Form.Control
-            type="projectName"
-            placeholder="Enter projectName"
+    <Container fluid w={500} my={40}>
+      <Paper shadow="md" p={30} radius="md" withBorder>
+        <Title order={2} ta="center" mb="md">
+          Create a New Project
+        </Title>
+        <Text c="dimmed" size="sm" ta="center" mb="lg">
+          Start a new Project
+        </Text>
+        <form onSubmit={submitHandler}>
+          <TextInput
+            label="Project Name"
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group className="my-2" controlId="projectDescription">
-          <Form.Label>Project Description</Form.Label>
-          <Form.Control
-            type="projectDescription"
-            placeholder="Enter projectDescription"
+            required
+            mb="md"
+            size="md"
+            autoFocus
+          />
+          <Textarea
+            label="Project Description"
             value={projectDescription}
             onChange={(e) => setProjectDescription(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Button
-          disabled={isLoading}
-          type="submit"
-          variant="primary"
-          className="mt-3"
-        >
-          Create Project
-        </Button>
-        {createdProjectName ? (
-          <a href={`/e/${createdProjectName}`}>Edit Project</a>
-        ) : (
-          ""
+            autosize
+            minRows={2}
+            mb="md"
+            size="md"
+          />
+          <Center mt="md">
+            <Button type="submit" size="md" loading={isLoading}>
+              Create Project
+            </Button>
+          </Center>
+        </form>
+        {isLoading && (
+          <Center mt="md">
+            <Loader />
+          </Center>
         )}
-      </Form>
-
-      {isLoading && <Loader />}
-    </>
+      </Paper>
+    </Container>
   );
 };
 
