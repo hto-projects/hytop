@@ -1,5 +1,10 @@
-import { Paper, Group, Text, Box, Switch } from "@mantine/core";
-import { PiGearBold } from "react-icons/pi";
+import { Paper, Group, Text, Box, Switch, Button } from "@mantine/core";
+import {
+  PiGearBold,
+  PiFilesBold,
+  PiCodeBold,
+  PiMonitorBold
+} from "react-icons/pi";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ColorPicker } from "@mantine/core";
@@ -8,7 +13,8 @@ import {
   setMonacoTheme,
   setMonacoFont,
   setMonacoFontSize,
-  setMonacoWordWrap
+  setMonacoWordWrap,
+  setPaneState
 } from "../../slices/editorSlice";
 import { Select, TextInput, NumberInput } from "@mantine/core";
 import DarkModeToggle from "../DarkModeToggle";
@@ -31,7 +37,22 @@ const SettingsPane = ({
   const monacoWordWrap = useSelector(
     (state: any) => state.editor.monacoWordWrap
   );
+  const paneState = useSelector((state: any) => state.editor.paneState);
   const dispatch = useDispatch();
+
+  const paneTypes = [
+    { key: "editor", icon: <PiCodeBold />, label: "Editor" },
+    { key: "preview", icon: <PiMonitorBold />, label: "Preview" }
+  ];
+
+  const togglePane = (pane: string) => {
+    dispatch(
+      setPaneState({
+        ...paneState,
+        open: { ...paneState.open, [pane]: !paneState.open[pane] }
+      })
+    );
+  };
 
   return (
     <Paper
@@ -76,6 +97,29 @@ const SettingsPane = ({
         }}
       >
         <Text fw={700} mb="xs">
+          Panes
+        </Text>
+        <Box mb="md">
+          {paneTypes.map((p) => (
+            <Button
+              key={p.key}
+              leftSection={p.icon}
+              color={paneState.open[p.key] ? primaryColor : "gray"}
+              variant={paneState.open[p.key] ? "filled" : "light"}
+              size="xs"
+              onClick={() => togglePane(p.key)}
+              style={{
+                marginRight: 8,
+                marginBottom: 4,
+                opacity: paneState.open[p.key] ? 1 : 0.7,
+                fontWeight: paneState.open[p.key] ? 700 : 400
+              }}
+            >
+              {p.label}
+            </Button>
+          ))}
+        </Box>
+        <Text fw={700} mb="xs" mt="md">
           Theme
         </Text>
         <Box

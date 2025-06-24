@@ -89,6 +89,7 @@ const DEFAULT_PANE_WIDTHS = {
 
 const MIN_PANE_WIDTH = 60;
 const ProjectEditor = () => {
+  const monaco = useMonaco();
   const theColorScheme = useComputedColorScheme("light");
   const [sidebarTab, setSidebarTab] = React.useState<"explorer" | "settings">(
     "explorer"
@@ -126,27 +127,21 @@ const ProjectEditor = () => {
   }, [projectFiles.length, projectFiles.map((f) => f.fileName).join(",")]);
 
   useEffect(() => {
-    if (projectData?.data) {
-      dispatch(setProjectFiles(projectData.data.projectFiles));
-      if (tabs.length === 0 && projectData.data.projectFiles.length > 0) {
-        const firstFile = projectData.data.projectFiles[0].fileName;
-        dispatch(setTabs([firstFile]));
-        dispatch(setActiveTab(firstFile));
+    if (!monaco || !editorRef.current) return;
+    if (activeTab && modelsRef.current[activeTab]) {
+      const model = modelsRef.current[activeTab];
+      if (editorRef.current.getModel() !== model) {
+        editorRef.current.setModel(model);
+        if (viewStatesRef.current[activeTab]) {
+          editorRef.current.restoreViewState(viewStatesRef.current[activeTab]);
+        }
+        editorRef.current.focus();
+        editorRef.current.__lastFile = activeTab;
+        const language = getMonacoLang(activeTab);
+        monaco.editor.setModelLanguage(model, language);
       }
     }
-  }, [projectData?.data]);
-
-  useEffect(() => {
-    if (!paneState.order.includes("settings")) {
-      dispatch(
-        setPaneState({
-          ...paneState,
-          order: [...paneState.order, "settings"],
-          open: { ...paneState.open, settings: false }
-        })
-      );
-    }
-  }, []);
+  }, [activeTab, selectedFile, monaco]);
 
   const [dragged, setDragged] = React.useState<string | null>(null);
 
@@ -200,13 +195,37 @@ const ProjectEditor = () => {
     dispatch(setRenameValue(filename));
   };
 
-  const confirmRename = () => {
+  const confirmRename = async () => {
     if (
       renameValue &&
       renameValue !== renamingFile &&
-      !projectFiles.some((f) => f.fileName === renameValue)
+      !projectFiles.some((y) => y.fileName === renameValue)
     ) {
+      const updatedFiles = projectFiles.map((ts) =>
+        ts.fileName === renamingFile ? { ...ts, fileName: renameValue } : f
+      );
+      if (tabs.includes(renamingFile)) {
+        dispatch(
+          setTabs(tabs.map((tab) => (tab === renamingFile ? renameValue : tab)))
+        );
+      }
+      if (activeTab === renamingFile) {
+        dispatch(setActiveTab(renameValue));
+      }
+      if (monaco && modelsRef.current[renamingFile]) {
+        modelsRef.current[renamingFile].dispose();
+        delete modelsRef.current[renamingFile];
+      }
+      dispatch(setProjectFiles(updatedFiles));
       dispatch(setRenameFile({ oldName: renamingFile, newName: renameValue }));
+      try {
+        await updateProject({
+          projectFiles: updatedFiles,
+          projectName
+        }).unwrap();
+        dispatch(setProjectVersion(projectVersion + 1));
+        setUnsavedFiles({});
+      } catch (err) {}
     }
     dispatch(setRenamingFile(null));
     dispatch(setRenameValue(""));
@@ -237,15 +256,18 @@ const ProjectEditor = () => {
         ext = "txt";
         content = "";
     }
+    const newFileName = `new-file-${Date.now()}.${ext}`;
     dispatch(
       setProjectFiles([
         ...projectFiles,
         {
-          fileName: `new-file-${Date.now()}.${ext}`,
+          fileName: newFileName,
           fileContent: content
         }
       ])
     );
+    dispatch(setRenamingFile(newFileName));
+    dispatch(setRenameValue(newFileName));
   };
 
   const saveAllFiles = async () => {
@@ -256,7 +278,6 @@ const ProjectEditor = () => {
     } catch (err) {}
   };
 
-  const monaco = useMonaco();
   const editorRef = useRef<any>(null);
   const modelsRef = useRef<{ [filename: string]: any }>({});
   const viewStatesRef = useRef<{ [filename: string]: any }>({});
@@ -460,6 +481,73 @@ const ProjectEditor = () => {
   React.useEffect(() => {
     dispatch(setEditorIsLoading(isLoading));
   }, [isLoading, dispatch]);
+
+  const localStorageSelectedFile = `hytop_selectedFile_${projectName}`;
+  const localStorageTabs = `hytop_tabs_${projectName}`;
+
+  const [readyToSetTab, setReadyToSetTab] = React.useState(false);
+
+  useEffect(() => {
+    if (projectData?.data) {
+      dispatch(setProjectFiles(projectData.data.projectFiles));
+    }
+  }, [projectData?.data]);
+
+  useEffect(() => {
+    if (!monaco) return;
+    if (
+      projectFiles.length > 0 &&
+      projectFiles.every((f) => modelsRef.current[f.fileName])
+    ) {
+      setReadyToSetTab(true);
+    }
+  }, [
+    monaco,
+    projectFiles.map((f) => f.fileName).join(","),
+    Object.keys(modelsRef.current).join(",")
+  ]);
+
+  useEffect(() => {
+    if (!readyToSetTab) return;
+    const savedTabs = (() => {
+      try {
+        return JSON.parse(localStorage.getItem(localStorageTabs) || "[]");
+      } catch {
+        return [];
+      }
+    })();
+    const savedSelectedFile = localStorage.getItem(localStorageSelectedFile);
+    const fileNames = projectFiles.map((f) => f.fileName);
+    const validTabs = savedTabs.filter((tab) => fileNames.includes(tab));
+    const validSelectedFile =
+      savedSelectedFile && fileNames.includes(savedSelectedFile)
+        ? savedSelectedFile
+        : validTabs.length > 0
+        ? validTabs[0]
+        : fileNames[0];
+
+    if (validTabs.length > 0) {
+      dispatch(setTabs(validTabs));
+      dispatch(setActiveTab(validSelectedFile));
+      dispatch(setSelectedFile(validSelectedFile));
+    } else if (fileNames.length > 0) {
+      dispatch(setTabs([fileNames[0]]));
+      dispatch(setActiveTab(fileNames[0]));
+      dispatch(setSelectedFile(fileNames[0]));
+    }
+    setReadyToSetTab(false);
+  }, [readyToSetTab]);
+
+  useEffect(() => {
+    if (activeTab) {
+      localStorage.setItem(localStorageSelectedFile, activeTab);
+    }
+  }, [activeTab, localStorageSelectedFile]);
+  useEffect(() => {
+    if (tabs && tabs.length) {
+      localStorage.setItem(localStorageTabs, JSON.stringify(tabs));
+    }
+  }, [tabs, localStorageTabs]);
 
   return (
     <Box

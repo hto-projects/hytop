@@ -19,6 +19,62 @@ import MonacoEditor from "@monaco-editor/react";
 import React from "react";
 import { useSelector } from "react-redux";
 
+function setupMonacoModels({
+  monaco,
+  editorRef,
+  modelsRef,
+  projectFiles,
+  activeTab,
+  getMonacoLang
+}) {
+  if (!monaco || !editorRef.current || !activeTab) return;
+  projectFiles.forEach((file) => {
+    const uri = monaco.Uri.parse(`file:///${file.fileName}`);
+    let model = modelsRef.current[file.fileName];
+    if (
+      !model ||
+      (typeof model.isDisposed === "function" && model.isDisposed())
+    ) {
+      model = monaco.editor.createModel(
+        file.fileContent || "",
+        getMonacoLang(file.fileName),
+        uri
+      );
+      modelsRef.current[file.fileName] = model;
+    } else if (
+      model.getValue() !== file.fileContent &&
+      file.fileContent !== ""
+    ) {
+      model.setValue(file.fileContent);
+    }
+  });
+
+  const filey = projectFiles.find((f) => f.fileName === activeTab);
+  const fileContent = filey ? filey.fileContent || "" : "";
+  const uri = monaco.Uri.parse(`file:///${activeTab}`);
+  let model = modelsRef.current[activeTab];
+
+  if (
+    !model ||
+    (typeof model.isDisposed === "function" && model.isDisposed())
+  ) {
+    model = monaco.editor.createModel(
+      fileContent,
+      getMonacoLang(activeTab),
+      uri
+    );
+    modelsRef.current[activeTab] = model;
+  } else if (model.getValue() !== fileContent && fileContent !== "") {
+    model.setValue(fileContent);
+  }
+
+  if (typeof model.isDisposed !== "function" || !model.isDisposed()) {
+    if (editorRef.current.getModel() !== model) {
+      editorRef.current.setModel(model);
+    }
+  }
+}
+
 const EditorPane = ({
   MIN_PANE_WIDTH,
   DEFAULT_PANE_WIDTHS,
@@ -34,7 +90,8 @@ const EditorPane = ({
   monaco,
   modelsRef,
   getMonacoLang,
-  userIsOwner
+  userIsOwner,
+  projectFiles = []
 }) => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const monacoTheme = useSelector((state: any) => state.editor.monacoTheme);
@@ -46,6 +103,54 @@ const EditorPane = ({
     (state: any) => state.editor.monacoWordWrap
   );
   const theColorScheme = useComputedColorScheme("light");
+
+  const handleEditorMount = (editor) => {
+    if (editorRef.current && typeof editorRef.current.dispose === "function") {
+      try {
+        editorRef.current.dispose();
+      } catch {}
+    }
+    editorRef.current = editor;
+    setupMonacoModels({
+      monaco,
+      editorRef,
+      modelsRef,
+      projectFiles,
+      activeTab,
+      getMonacoLang
+    });
+  };
+
+  React.useEffect(() => {
+    setupMonacoModels({
+      monaco,
+      editorRef,
+      modelsRef,
+      projectFiles,
+      activeTab,
+      getMonacoLang
+    });
+  }, [
+    monaco,
+    activeTab,
+    projectFiles.map((meow) => meow.fileName).join(","),
+    projectFiles.map((meow) => meow.fileContent).join("||")
+  ]);
+
+  React.useEffect(() => {
+    return () => {
+      if (
+        editorRef.current &&
+        typeof editorRef.current.dispose === "function"
+      ) {
+        try {
+          editorRef.current.dispose();
+        } catch {}
+        editorRef.current = null;
+      }
+    };
+  }, [monaco]);
+
   return (
     <Paper
       shadow="xs"
@@ -150,12 +255,7 @@ const EditorPane = ({
             fontFamily: monacoFont,
             wordWrap: monacoWordWrap || "off"
           }}
-          onMount={(editor) => {
-            editorRef.current = editor;
-            if (monaco && modelsRef.current[activeTab]) {
-              editor.setModel(modelsRef.current[activeTab]);
-            }
-          }}
+          onMount={handleEditorMount}
         />
       </Box>
     </Paper>

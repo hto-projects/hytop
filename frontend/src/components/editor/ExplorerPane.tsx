@@ -40,6 +40,15 @@ const ExplorerPane = ({
   style
 }) => {
   const theColorScheme = useComputedColorScheme("light");
+  const [justCreatedFile, setJustCreatedFile] = React.useState<string | null>(
+    null
+  );
+
+  React.useEffect(() => {
+    if (renamingFile && projectFiles.some((r) => r.fileName === renamingFile)) {
+      setJustCreatedFile(renamingFile);
+    }
+  }, [renamingFile, projectFiles.map((rs) => rs.fileName).join(",")]);
 
   return (
     <Box
@@ -132,8 +141,10 @@ const ExplorerPane = ({
               display: "flex",
               alignItems: "center"
             }}
-            onClick={() => handleFileSelect(file.fileName)}
-            onDoubleClick={() => startRename(file.fileName)}
+            onClick={() => {
+              handleFileSelect(file.fileName);
+              startRename(file.fileName);
+            }}
           >
             {unsavedFiles[file.fileName] && (
               <PiDotOutlineFill
@@ -149,10 +160,41 @@ const ExplorerPane = ({
                 }
                 size="xs"
                 autoFocus
-                onBlur={confirmRename}
+                ref={(input) => {
+                  if (input) {
+                    const match = file.fileName.match(/^(.*?)(\.[^.]*)?$/);
+                    const matchymatcher =
+                      match && match[2]
+                        ? match[1].length
+                        : file.fileName.length;
+                    if (
+                      justCreatedFile === file.fileName &&
+                      !(input as any).__autoSelected
+                    ) {
+                      setTimeout(() => {
+                        input.setSelectionRange(0, matchymatcher);
+                        (input as any).__autoSelected = true;
+                      }, 0);
+                    } else if (!(input as any).__cursorSet) {
+                      setTimeout(() => {
+                        input.setSelectionRange(matchymatcher, matchymatcher);
+                        (input as any).__cursorSet = true;
+                      }, 0);
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  confirmRename(e);
+                  setJustCreatedFile(null);
+                }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") confirmRename();
-                  else if (e.key === "Escape") cancelRename();
+                  if (e.key === "Enter") {
+                    confirmRename(e);
+                    setJustCreatedFile(null);
+                  } else if (e.key === "Escape") {
+                    cancelRename();
+                    setJustCreatedFile(null);
+                  }
                 }}
                 styles={{
                   input: {

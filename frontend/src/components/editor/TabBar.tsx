@@ -66,9 +66,15 @@ const TabBar = ({
           onClick={() => handleTabClick(fileName)}
         >
           <span style={{ marginRight: 6 }}>
-            {fileName.endsWith(".js") && <PiFileJs size={14} />}
-            {fileName.endsWith(".css") && <PiFileCss size={14} />}
-            {fileName.endsWith(".html") && <PiFileHtml size={14} />}
+            {typeof fileName === "string" && fileName.endsWith(".js") && (
+              <PiFileJs size={14} />
+            )}
+            {typeof fileName === "string" && fileName.endsWith(".css") && (
+              <PiFileCss size={14} />
+            )}
+            {typeof fileName === "string" && fileName.endsWith(".html") && (
+              <PiFileHtml size={14} />
+            )}
           </span>
           <span style={{ marginRight: 6 }}>{fileName}</span>
           {unsavedFiles[fileName] && (
