@@ -8,7 +8,7 @@
       import { ColorSchemeScript } from "@mantine/core";
       document.head.insertAdjacentHTML(
         "beforeend",
-        ColorSchemeScript?.() ?? ""
+        ColorSchemeScript?.({ defaultColorScheme: "light" }) ?? ""
       );
     </script>
     <style>
