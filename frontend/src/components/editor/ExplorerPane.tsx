@@ -141,9 +141,15 @@ const ExplorerPane = ({
               display: "flex",
               alignItems: "center"
             }}
-            onClick={() => {
-              handleFileSelect(file.fileName);
-              startRename(file.fileName);
+            onClick={(e) => {
+              if (
+                selectedFile === file.fileName &&
+                renamingFile !== file.fileName
+              ) {
+                startRename(file.fileName);
+              } else {
+                handleFileSelect(file.fileName);
+              }
             }}
           >
             {unsavedFiles[file.fileName] && (

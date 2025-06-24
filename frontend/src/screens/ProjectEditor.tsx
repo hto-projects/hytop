@@ -195,14 +195,14 @@ const ProjectEditor = () => {
     dispatch(setRenameValue(filename));
   };
 
-  const confirmRename = async () => {
+  const confirmRename = async (e?: any) => {
     if (
       renameValue &&
       renameValue !== renamingFile &&
       !projectFiles.some((y) => y.fileName === renameValue)
     ) {
       const updatedFiles = projectFiles.map((ts) =>
-        ts.fileName === renamingFile ? { ...ts, fileName: renameValue } : f
+        ts.fileName === renamingFile ? { ...ts, fileName: renameValue } : ts
       );
       if (tabs.includes(renamingFile)) {
         dispatch(
