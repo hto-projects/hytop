@@ -19,11 +19,20 @@ interface EditorState {
   monacoFont: string;
   monacoFontSize: number;
   monacoWordWrap: "on" | "off";
+  userIsOwner?: boolean;
+  isLoading?: boolean;
 }
 
 const getInitialMonacoSettings = () => {
+  let monacoTheme = localStorage.getItem("monacoTheme");
+  if (!monacoTheme) {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    monacoTheme = prefersDark ? "vs-dark" : "vs-light";
+  }
   return {
-    monacoTheme: localStorage.getItem("monacoTheme") || "vs-light",
+    monacoTheme,
     monacoFont: localStorage.getItem("monacoFont") || "Fira Mono, monospace",
     monacoFontSize: Number(localStorage.getItem("monacoFontSize")) || 14,
     monacoWordWrap:
@@ -43,7 +52,9 @@ const initialState: EditorState = {
   renameValue: "",
   tabs: [],
   activeTab: null,
-  ...getInitialMonacoSettings()
+  ...getInitialMonacoSettings(),
+  userIsOwner: false,
+  isLoading: false
 };
 
 const editorSlice = createSlice({
@@ -140,6 +151,12 @@ const editorSlice = createSlice({
     setMonacoWordWrap(state, action: PayloadAction<"on" | "off">) {
       state.monacoWordWrap = action.payload;
       localStorage.setItem("monacoWordWrap", action.payload);
+    },
+    setUserIsOwner(state, action: PayloadAction<boolean>) {
+      state.userIsOwner = action.payload;
+    },
+    setEditorIsLoading(state, action: PayloadAction<boolean>) {
+      state.isLoading = action.payload;
     }
   }
 });
@@ -160,6 +177,8 @@ export const {
   setMonacoTheme,
   setMonacoFont,
   setMonacoFontSize,
-  setMonacoWordWrap
+  setMonacoWordWrap,
+  setUserIsOwner,
+  setEditorIsLoading
 } = editorSlice.actions;
 export default editorSlice.reducer;

@@ -90,14 +90,7 @@ const SettingsPane = ({
             format="hex"
             value={primaryColor}
             onChange={(color) => dispatch(setPrimaryColor(color))}
-            swatches={[
-              "#4f55c6",
-              "#656bcc",
-              "#a3ce98",
-              "#6cb15a",
-              "#e2f0df",
-              "#191f5e"
-            ]}
+            swatches={["#656bcc", "#6cb15a", "#c9a0dc"]}
             withPicker
             fullWidth
           />

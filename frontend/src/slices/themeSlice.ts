@@ -5,7 +5,13 @@ const COLOR_SCHEME_KEY = "color scheme";
 
 const getInitialTheme = () => {
   const color = localStorage.getItem(COLOR_KEY);
-  const colorScheme = localStorage.getItem(COLOR_SCHEME_KEY) || "auto";
+  let colorScheme = localStorage.getItem(COLOR_SCHEME_KEY);
+  if (!colorScheme) {
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    colorScheme = prefersDark ? "dark" : "light";
+  }
   return {
     primaryColor: color || "#4f55c6",
     colorScheme

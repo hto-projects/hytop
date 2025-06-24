@@ -50,7 +50,9 @@ import {
   setActiveTab,
   openTab,
   closeTab,
-  syncTabsWithFiles
+  syncTabsWithFiles,
+  setEditorIsLoading,
+  setUserIsOwner
 } from "../slices/editorSlice";
 import { IProject } from "../../../shared/types";
 
@@ -62,6 +64,7 @@ import PreviewPane from "../components/editor/PreviewPane";
 import SettingsPane from "../components/editor/SettingsPane";
 import Sidebar from "../components/editor/Sidebar";
 import TabBar from "../components/editor/TabBar";
+import Header from "../components/Header";
 
 function getMonacoLang(filename: string) {
   if (!filename) return "plaintext";
@@ -372,10 +375,6 @@ const ProjectEditor = () => {
     }
   };
 
-  const forkProject = () => {
-    window.location.href = `/c/${projectName}`;
-  };
-
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key.toLowerCase() === "s") {
@@ -448,6 +447,21 @@ const ProjectEditor = () => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const darkMode = useSelector((state: any) => state.theme.darkMode);
 
+  React.useEffect(() => {
+    const handler = () => {
+      if (userIsOwner) saveAllFiles();
+    };
+    window.addEventListener("saveAllFiles", handler);
+    return () => window.removeEventListener("saveAllFiles", handler);
+  }, [userIsOwner, projectFiles, projectName, projectVersion]);
+
+  React.useEffect(() => {
+    dispatch(setUserIsOwner(userIsOwner));
+  }, [userIsOwner, dispatch]);
+  React.useEffect(() => {
+    dispatch(setEditorIsLoading(isLoading));
+  }, [isLoading, dispatch]);
+
   return (
     <Box
       style={{
@@ -457,70 +471,6 @@ const ProjectEditor = () => {
         flexDirection: "column"
       }}
     >
-      <Group
-        gap="xs"
-        px="md"
-        py="xs"
-        style={{
-          borderBottom:
-            theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
-          background: theColorScheme === "dark" ? "#181A1B" : "#fafafa",
-          color: theColorScheme === "dark" ? "#fff" : undefined
-        }}
-      >
-        <Text fw={700} c={theColorScheme === "dark" ? "#fff" : undefined}>
-          {projectName}
-        </Text>
-        <Group gap={0}>
-          {userIsOwner ? (
-            <Tooltip label="Save All">
-              <ActionIcon
-                onClick={saveAllFiles}
-                color={primaryColor}
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiFloppyDiskBold />
-              </ActionIcon>
-            </Tooltip>
-          ) : (
-            <Tooltip label="Fork Project">
-              <ActionIcon
-                onClick={forkProject}
-                color="green"
-                variant="light"
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiGitForkBold />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
-        <Group gap={0} ml="auto">
-          {closedPanes
-            .filter((p) => p.key !== "explorer" && p.key !== "settings")
-            .map((p) => (
-              <Tooltip key={p.key} label={`Show ${p.label}`}>
-                <ActionIcon
-                  onClick={() => openPane(p.key)}
-                  variant="subtle"
-                  size="md"
-                  style={{
-                    color: theColorScheme === "dark" ? "#fff" : undefined
-                  }}
-                >
-                  {p.icon}
-                </ActionIcon>
-              </Tooltip>
-            ))}
-        </Group>
-        {isLoading && <Loader size="sm" />}
-      </Group>
       <Box
         style={{
           flex: 1,
