@@ -54,7 +54,6 @@ import {
 import { IProject } from "../../../shared/types";
 
 import { RootState } from "../store";
-import { set } from "mongoose";
 import ExplorerPane from "../components/editor/ExplorerPane";
 import EditorPane from "../components/editor/EditorPane";
 import PreviewPane from "../components/editor/PreviewPane";
