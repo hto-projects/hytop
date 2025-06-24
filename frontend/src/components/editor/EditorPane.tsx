@@ -42,6 +42,9 @@ const EditorPane = ({
   const monacoFontSize = useSelector(
     (state: any) => state.editor.monacoFontSize
   );
+  const monacoWordWrap = useSelector(
+    (state: any) => state.editor.monacoWordWrap
+  );
   const theColorScheme = useComputedColorScheme("light");
   return (
     <Paper
@@ -144,7 +147,8 @@ const EditorPane = ({
             readOnly: !userIsOwner,
             minimap: { enabled: true },
             fontSize: monacoFontSize,
-            fontFamily: monacoFont
+            fontFamily: monacoFont,
+            wordWrap: monacoWordWrap || "off"
           }}
           onMount={(editor) => {
             editorRef.current = editor;

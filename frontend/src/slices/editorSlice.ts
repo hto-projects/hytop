@@ -18,13 +18,16 @@ interface EditorState {
   monacoTheme: string;
   monacoFont: string;
   monacoFontSize: number;
+  monacoWordWrap: "on" | "off";
 }
 
 const getInitialMonacoSettings = () => {
   return {
     monacoTheme: localStorage.getItem("monacoTheme") || "vs-light",
     monacoFont: localStorage.getItem("monacoFont") || "Fira Mono, monospace",
-    monacoFontSize: Number(localStorage.getItem("monacoFontSize")) || 14
+    monacoFontSize: Number(localStorage.getItem("monacoFontSize")) || 14,
+    monacoWordWrap:
+      (localStorage.getItem("monacoWordWrap") as "on" | "off") || "off"
   };
 };
 
@@ -133,6 +136,10 @@ const editorSlice = createSlice({
     setMonacoFontSize(state, action: PayloadAction<number>) {
       state.monacoFontSize = action.payload;
       localStorage.setItem("monacoFontSize", String(action.payload));
+    },
+    setMonacoWordWrap(state, action: PayloadAction<"on" | "off">) {
+      state.monacoWordWrap = action.payload;
+      localStorage.setItem("monacoWordWrap", action.payload);
     }
   }
 });
@@ -152,6 +159,7 @@ export const {
   syncTabsWithFiles,
   setMonacoTheme,
   setMonacoFont,
-  setMonacoFontSize
+  setMonacoFontSize,
+  setMonacoWordWrap
 } = editorSlice.actions;
 export default editorSlice.reducer;

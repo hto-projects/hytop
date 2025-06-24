@@ -1,4 +1,4 @@
-import { Paper, Group, Text, Box } from "@mantine/core";
+import { Paper, Group, Text, Box, Switch } from "@mantine/core";
 import { PiGearBold } from "react-icons/pi";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,7 +7,8 @@ import { setPrimaryColor } from "../../slices/themeSlice";
 import {
   setMonacoTheme,
   setMonacoFont,
-  setMonacoFontSize
+  setMonacoFontSize,
+  setMonacoWordWrap
 } from "../../slices/editorSlice";
 import { Select, TextInput, NumberInput } from "@mantine/core";
 import DarkModeToggle from "../DarkModeToggle";
@@ -26,6 +27,9 @@ const SettingsPane = ({
   const monacoFont = useSelector((state: any) => state.editor.monacoFont);
   const monacoFontSize = useSelector(
     (state: any) => state.editor.monacoFontSize
+  );
+  const monacoWordWrap = useSelector(
+    (state: any) => state.editor.monacoWordWrap
   );
   const dispatch = useDispatch();
 
@@ -177,6 +181,21 @@ const SettingsPane = ({
             }
             size="sm"
             style={{ width: 100 }}
+          />
+        </Box>
+        <Box mb="sm">
+          <Text size="sm" mb={4}>
+            Word Wrap
+          </Text>
+          <Switch
+            checked={monacoWordWrap === "on"}
+            onChange={(meow) =>
+              dispatch(
+                setMonacoWordWrap(meow.currentTarget.checked ? "on" : "off")
+              )
+            }
+            label={monacoWordWrap === "on" ? "Enabled" : "Disabled"}
+            size="sm"
           />
         </Box>
       </Box>
