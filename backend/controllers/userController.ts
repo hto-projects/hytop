@@ -1,14 +1,15 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
 import generateToken from "../utils/generateToken";
+import { v4 as uuidv4 } from "uuid";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/auth
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  const user: any = await User.findOne({ email });
+  const user: any = await User.findOne({ username });
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
@@ -28,18 +29,29 @@ const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, username, password } = req.body;
 
-  const userExists = await User.findOne({ email });
+  const userEmailExists = await User.findOne({ email });
 
-  if (userExists) {
+  const userNameExists = await User.findOne({ username });
+
+  if (userEmailExists) {
     res.status(400);
-    throw new Error("User already exists");
+    throw new Error("User with Email already exists");
   }
+
+  if (userNameExists) {
+    res.status(400);
+    throw new Error("UserName already exists");
+  }
+
+  const userId: string = uuidv4();
 
   const user = await User.create({
     name,
     email,
+    username,
+    userId,
     password
   });
 
@@ -49,6 +61,7 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(201).json({
       _id: user._id,
       name: user.name,
+      username: user.username,
       email: user.email
     });
   } else {

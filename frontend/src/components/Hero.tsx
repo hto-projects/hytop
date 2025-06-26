@@ -38,6 +38,21 @@ const Hero = () => {
           >
             Create Project
           </Button>
+          <Button
+            size="md"
+            color="blueButCooler"
+            radius="md"
+            component="a"
+            href="/register-screen"
+            style={{
+              fontWeight: 600,
+              fontSize: 18,
+              paddingLeft: 32,
+              paddingRight: 32
+            }}
+          >
+            Sign up Here
+          </Button>
         </Group>
       </Paper>
     </Container>

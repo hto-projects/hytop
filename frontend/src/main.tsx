@@ -18,6 +18,8 @@ import PrivateRoute from "./components/PrivateRoute.jsx";
 import CreateProjectScreen from "./screens/CreateProject";
 import ProjectEditor from "./screens/ProjectEditor";
 import CopyProjectScreen from "./screens/CopyProject";
+import RegisterScreen from "./screens/RegisterScreen";
+import AuthContainer from "./components/AuthContainer";
 
 const theme = createTheme({
   primaryColor: "blueButCooler",
@@ -43,6 +45,7 @@ const router = createBrowserRouter(
       <Route path="/create-project" element={<CreateProjectScreen />} />
       <Route path="/e/:projectName" element={<ProjectEditor />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
+      <Route path="/register-screen" element={<AuthContainer />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />
