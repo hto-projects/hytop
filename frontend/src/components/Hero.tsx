@@ -79,11 +79,26 @@ const Hero = () => {
               style={{
                 fontWeight: 600,
                 fontSize: 18,
+                paddingLeft: 16,
+                paddingRight: 16
+              }}
+            >
+              Create Project
+            </Button>
+            <Button
+              size="md"
+              color={primaryColor}
+              radius="md"
+              component="a"
+              href="/register-screen"
+              style={{
+                fontWeight: 600,
+                fontSize: 18,
                 paddingLeft: 32,
                 paddingRight: 32
               }}
             >
-              Create Project
+              Sign up
             </Button>
           </Group>
         </Paper>

@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 
 const LoginScreen = ({ setScreen }) => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ const LoginScreen = ({ setScreen }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await login({ email, password }).unwrap();
+      const res = await login({ username, password }).unwrap();
       dispatch(setCredentials({ ...res }));
       setScreen("main");
     } catch (err) {
@@ -38,16 +38,17 @@ const LoginScreen = ({ setScreen }) => {
 
   return (
     <FormContainer>
+      <div style={{ width: "200vh" }}></div>
       <h1>Sign In</h1>
 
       <Form onSubmit={submitHandler}>
-        <Form.Group className="my-2" controlId="email">
-          <Form.Label>Email Address</Form.Label>
+        <Form.Group className="my-2" controlId="username">
+          <Form.Label>Username</Form.Label>
           <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="username"
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           ></Form.Control>
         </Form.Group>
 

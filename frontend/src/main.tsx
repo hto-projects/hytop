@@ -24,6 +24,8 @@ import { useEffect } from "react";
 import { setMonacoTheme } from "./slices/editorSlice";
 import { setColorScheme } from "./slices/themeSlice";
 import { ContextMenuProvider } from "mantine-contextmenu";
+import RegisterScreen from "./screens/RegisterScreen";
+import AuthContainer from "./components/AuthContainer";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +33,7 @@ const router = createBrowserRouter(
       <Route path="/create-project" element={<CreateProjectScreen />} />
       <Route path="/e/:projectName" element={<ProjectEditor />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
+      <Route path="/register-screen" element={<AuthContainer />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />
