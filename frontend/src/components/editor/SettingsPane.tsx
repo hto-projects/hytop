@@ -40,6 +40,22 @@ const SettingsPane = ({
   const paneState = useSelector((state: any) => state.editor.paneState);
   const dispatch = useDispatch();
 
+  const [hexInput, setHexInput] = React.useState(primaryColor);
+
+  React.useEffect(() => {
+    setHexInput(primaryColor);
+  }, [primaryColor]);
+
+  const isGoodHex = (hex: string) => /^#([0-9a-f]{6}|[0-9a-f]{3})$/i.test(hex);
+
+  const handleHexChange = (e) => {
+    const val = e.target.value;
+    setHexInput(val);
+    if (isGoodHex(val)) {
+      dispatch(setPrimaryColor(val));
+    }
+  };
+
   const paneTypes = [
     { key: "editor", icon: <PiCodeBold />, label: "Editor" },
     { key: "preview", icon: <PiMonitorBold />, label: "Preview" }
@@ -138,6 +154,44 @@ const SettingsPane = ({
             withPicker
             fullWidth
           />
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+              minWidth: 100
+            }}
+          >
+            <TextInput
+              label="Hex"
+              value={hexInput}
+              onChange={handleHexChange}
+              size="xs"
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  fontFamily: "monospace",
+                  width: 90
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  fontSize: 12
+                }
+              }}
+              maxLength={7}
+              spellCheck={false}
+            />
+            <Box
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 6,
+                border: "1px solid #ccc",
+                background: hexInput,
+                marginTop: 2
+              }}
+            />
+          </Box>
           <Box style={{ marginTop: 2 }}>
             <DarkModeToggle />
           </Box>
