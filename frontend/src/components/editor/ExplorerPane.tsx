@@ -14,9 +14,15 @@ import {
   PiFileCss,
   PiFileJs,
   PiXBold,
-  PiDotOutlineFill
+  PiDotOutlineFill,
+  PiPencilBold,
+  PiTrashBold
 } from "react-icons/pi";
 import React from "react";
+import { useContextMenu } from "mantine-contextmenu";
+import { useSelector } from "react-redux";
+import { useUpdateProjectMutation } from "../../slices/projectsApiSlice";
+import { useParams } from "react-router-dom";
 
 const ExplorerPane = ({
   MIN_PANE_WIDTH,
@@ -26,7 +32,7 @@ const ExplorerPane = ({
   onDragOver,
   closePane,
   addFile,
-  projectFiles,
+  projectFiles: initialProjectFiles,
   selectedFile,
   handleFileSelect,
   startRename,
@@ -43,12 +49,28 @@ const ExplorerPane = ({
   const [justCreatedFile, setJustCreatedFile] = React.useState<string | null>(
     null
   );
+  const { showContextMenu } = useContextMenu();
+  const { projectName } = useParams();
+  const [updateProject] = useUpdateProjectMutation();
+  const projectFiles = useSelector((state: any) => state.editor.projectFiles);
 
   React.useEffect(() => {
     if (renamingFile && projectFiles.some((r) => r.fileName === renamingFile)) {
       setJustCreatedFile(renamingFile);
     }
   }, [renamingFile, projectFiles.map((rs) => rs.fileName).join(",")]);
+
+  const handleDeleteFile = async (fileName) => {
+    dispatch({
+      type: "editor/deleteFile",
+      payload: fileName
+    });
+    const updatedFiles = projectFiles.filter((f) => f.fileName !== fileName);
+    await updateProject({
+      projectFiles: updatedFiles,
+      projectName
+    }).unwrap();
+  };
 
   return (
     <Box
@@ -151,6 +173,21 @@ const ExplorerPane = ({
                 handleFileSelect(file.fileName);
               }
             }}
+            onContextMenu={showContextMenu([
+              {
+                key: "rename",
+                icon: <PiPencilBold size={14} />,
+                title: "Rename",
+                onClick: () => startRename(file.fileName)
+              },
+              {
+                key: "delete",
+                icon: <PiTrashBold size={14} />,
+                title: "Delete",
+                color: "red",
+                onClick: () => handleDeleteFile(file.fileName)
+              }
+            ])}
           >
             {unsavedFiles[file.fileName] && (
               <PiDotOutlineFill

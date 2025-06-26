@@ -1,4 +1,5 @@
 import "@mantine/core/styles.css";
+import "mantine-contextmenu/styles.css";
 import { createTheme, MantineProvider, ColorSchemeScript } from "@mantine/core";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -22,6 +23,7 @@ import { getCustomTheme, defaultTheme } from "./theme";
 import { useEffect } from "react";
 import { setMonacoTheme } from "./slices/editorSlice";
 import { setColorScheme } from "./slices/themeSlice";
+import { ContextMenuProvider } from "mantine-contextmenu";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -56,9 +58,11 @@ const Root = () => {
     <>
       <ColorSchemeScript defaultColorScheme="auto" />
       <MantineProvider theme={theme} defaultColorScheme="auto">
-        <React.StrictMode>
-          <RouterProvider router={router} />
-        </React.StrictMode>
+        <ContextMenuProvider>
+          <React.StrictMode>
+            <RouterProvider router={router} />
+          </React.StrictMode>
+        </ContextMenuProvider>
       </MantineProvider>
     </>
   );

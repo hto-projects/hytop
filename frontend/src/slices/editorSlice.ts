@@ -157,6 +157,20 @@ const editorSlice = createSlice({
     },
     setEditorIsLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload;
+    },
+    deleteFile(state, action: PayloadAction<string>) {
+      const fileName = action.payload;
+      state.projectFiles = state.projectFiles.filter(
+        (f) => f.fileName !== fileName
+      );
+      state.tabs = state.tabs.filter((tab) => tab !== fileName);
+      if (state.activeTab === fileName) {
+        state.activeTab = state.tabs.length > 0 ? state.tabs[0] : null;
+        state.selectedFile = state.activeTab;
+      }
+      if (state.selectedFile === fileName) {
+        state.selectedFile = state.tabs.length > 0 ? state.tabs[0] : null;
+      }
     }
   }
 });
@@ -179,6 +193,7 @@ export const {
   setMonacoFontSize,
   setMonacoWordWrap,
   setUserIsOwner,
-  setEditorIsLoading
+  setEditorIsLoading,
+  deleteFile
 } = editorSlice.actions;
 export default editorSlice.reducer;
