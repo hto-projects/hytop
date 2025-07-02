@@ -1,5 +1,5 @@
-import { Paper, Group, Text, Box } from "@mantine/core";
-import { PiGearBold } from "react-icons/pi";
+import { Paper, Group, Text, Box, ActionIcon } from "@mantine/core";
+import { PiGearBold, PiXBold } from "react-icons/pi";
 import React from "react";
 
 const SettingsPane = ({
@@ -7,7 +7,8 @@ const SettingsPane = ({
   DEFAULT_PANE_WIDTHS,
   width,
   onDragStart,
-  onDragOver
+  onDragOver,
+  closePane
 }) => (
   <Paper
     shadow="xs"
@@ -35,11 +36,19 @@ const SettingsPane = ({
         <PiGearBold />
         <Text size="sm">Settings</Text>
       </Group>
+      <ActionIcon
+        variant="subtle"
+        onClick={() => closePane("settings")}
+        size="sm"
+      >
+        <PiXBold />
+      </ActionIcon>
     </Group>
     <Box style={{ flex: 1, minHeight: 0, padding: 16 }}>
       <Text fw={700} mb="sm">
         Project Settings
       </Text>
+
       <Text c="dimmed" size="sm">
         (settings)
       </Text>

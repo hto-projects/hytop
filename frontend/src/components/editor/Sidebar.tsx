@@ -2,7 +2,7 @@ import { Box, Tooltip, ActionIcon } from "@mantine/core";
 import { PiFilesBold, PiGearBold } from "react-icons/pi";
 import React from "react";
 
-const Sidebar = ({ sidebarTab, setSidebarTab }) => (
+const Sidebar = ({ sidebarTab, setSidebarTab, openPane }) => (
   <Box
     style={{
       width: 48,
@@ -23,7 +23,10 @@ const Sidebar = ({ sidebarTab, setSidebarTab }) => (
         color={sidebarTab === "explorer" ? "blueButCooler" : "gray"}
         variant={sidebarTab === "explorer" ? "filled" : "subtle"}
         size="lg"
-        onClick={() => setSidebarTab("explorer")}
+        onClick={() => {
+          setSidebarTab("explorer");
+          openPane("explorer");
+        }}
         style={{ marginBottom: 4 }}
       >
         <PiFilesBold />
@@ -34,7 +37,10 @@ const Sidebar = ({ sidebarTab, setSidebarTab }) => (
         color={sidebarTab === "settings" ? "blueButCooler" : "gray"}
         variant={sidebarTab === "settings" ? "filled" : "subtle"}
         size="lg"
-        onClick={() => setSidebarTab("settings")}
+        onClick={() => {
+          setSidebarTab("settings");
+          openPane("settings");
+        }}
       >
         <PiGearBold />
       </ActionIcon>

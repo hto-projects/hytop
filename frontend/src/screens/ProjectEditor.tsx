@@ -391,7 +391,6 @@ const ProjectEditor = () => {
   const paneOrder = paneState.order.filter((p) => paneState.open[p]);
 
   const closedPanes = paneTypes.filter((p) => !paneState.open[p.key]);
-  // const openPanes = paneState.order.filter((p) => paneState.open[p]);
 
   const resizingRef = React.useRef<{
     idx: number;
@@ -486,6 +485,7 @@ const ProjectEditor = () => {
             </Tooltip>
           )}
         </Group>
+
         <Group gap={0} ml="auto">
           {closedPanes
             .filter((p) => p.key !== "explorer" && p.key !== "settings")
@@ -514,9 +514,13 @@ const ProjectEditor = () => {
         }}
       >
         <Box style={{ display: "flex", height: "100%" }}>
-          <Sidebar sidebarTab={sidebarTab} setSidebarTab={setSidebarTab} />
+          <Sidebar
+            sidebarTab={sidebarTab}
+            setSidebarTab={setSidebarTab}
+            openPane={openPane}
+          />
           <Box style={{ display: "flex", height: "100%" }}>
-            {sidebarTab === "explorer" && (
+            {sidebarTab === "explorer" && paneState.open.explorer && (
               <ExplorerPane
                 MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                 DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
@@ -538,13 +542,14 @@ const ProjectEditor = () => {
                 cancelRename={cancelRename}
               />
             )}
-            {sidebarTab === "settings" && (
+            {sidebarTab === "settings" && paneState.open.settings && (
               <SettingsPane
                 MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                 DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                 width={paneWidths["settings"]}
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
+                closePane={closePane}
               />
             )}
             {paneOrder.filter((p) => p !== "explorer" && p !== "settings")
@@ -638,6 +643,7 @@ const ProjectEditor = () => {
                   width={paneWidths[pane]}
                   onDragStart={onDragStart}
                   onDragOver={onDragOver}
+                  closePane={closePane}
                 />
               )}
               {idx < arr.length - 1 && (
