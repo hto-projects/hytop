@@ -21,6 +21,7 @@ interface EditorState {
   monacoWordWrap: "on" | "off";
   userIsOwner?: boolean;
   isLoading?: boolean;
+  vimMode: boolean;
 }
 
 const getInitialMonacoSettings = () => {
@@ -36,7 +37,8 @@ const getInitialMonacoSettings = () => {
     monacoFont: localStorage.getItem("monacoFont") || "Fira Mono, monospace",
     monacoFontSize: Number(localStorage.getItem("monacoFontSize")) || 14,
     monacoWordWrap:
-      (localStorage.getItem("monacoWordWrap") as "on" | "off") || "off"
+      (localStorage.getItem("monacoWordWrap") as "on" | "off") || "off",
+    vimMode: localStorage.getItem("vimMode") === "true"
   };
 };
 
@@ -152,6 +154,10 @@ const editorSlice = createSlice({
       state.monacoWordWrap = action.payload;
       localStorage.setItem("monacoWordWrap", action.payload);
     },
+    setVimMode(state, action: PayloadAction<boolean>) {
+      state.vimMode = action.payload;
+      localStorage.setItem("vimMode", String(action.payload));
+    },
     setUserIsOwner(state, action: PayloadAction<boolean>) {
       state.userIsOwner = action.payload;
     },
@@ -192,6 +198,7 @@ export const {
   setMonacoFont,
   setMonacoFontSize,
   setMonacoWordWrap,
+  setVimMode,
   setUserIsOwner,
   setEditorIsLoading,
   deleteFile

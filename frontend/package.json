@@ -16,6 +16,7 @@
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
     "mantine-contextmenu": "^8.1.2",
+    "monaco-vim": "^0.4.2",
     "phaser": "^3.80.1",
     "postcss": "^8.5.5",
     "postcss-preset-mantine": "^1.17.0",
