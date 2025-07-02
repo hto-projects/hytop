@@ -434,10 +434,7 @@ const ProjectEditor = () => {
     startWidths: number[];
   } | null>(null);
 
-  const canResize = paneOrder.length > 1;
-
   const onResizerMouseDown = (idx: number, e: React.MouseEvent) => {
-    if (!canResize) return;
     resizingRef.current = {
       idx,
       startX: e.clientX,
@@ -565,110 +562,13 @@ const ProjectEditor = () => {
     }
   }, [tabs, localStorageTabs]);
 
-  useEffect(() => {
-    if (!monaco) return;
-    const editor = editorRef.current;
-    if (!editor) return;
-    if ((editor as any).hipleasework) return;
-    (editor as any).hipleasework = true;
-
-    editor.onKeyDown((event) => {
-      if (event.browserEvent.key !== ">") return;
-      const model = editor.getModel();
-      if (!model) return;
-      const enabledLanguages = ["html"];
-      if (!enabledLanguages.includes(model.getLanguageId())) return;
-      const isSelfClosing = (tag: string) =>
-        [
-          "area",
-          "base",
-          "br",
-          "col",
-          "command",
-          "embed",
-          "hr",
-          "img",
-          "input",
-          "keygen",
-          "link",
-          "meta",
-          "param",
-          "source",
-          "track",
-          "wbr",
-          "circle",
-          "ellipse",
-          "line",
-          "path",
-          "polygon",
-          "polyline",
-          "rect",
-          "stop",
-          "use"
-        ].includes(tag);
-
-      const selections = editor.getSelections();
-      if (!selections) return;
-      const edits: any[] = [];
-      const newSelections: any[] = [];
-      for (const selection of selections) {
-        newSelections.push(
-          new monaco.Selection(
-            selection.selectionStartLineNumber,
-            selection.selectionStartColumn + 1,
-            selection.endLineNumber,
-            selection.endColumn + 1
-          )
-        );
-        const contentBefore = model.getValueInRange({
-          startLineNumber: 1,
-          startColumn: 1,
-          endLineNumber: selection.endLineNumber,
-          endColumn: selection.endColumn
-        });
-        const matchytwo = contentBefore.match(/<([\w-]+)(?![^>]*\/>)[^>]*$/);
-        if (!matchytwo) continue;
-        const [fullMatch, tag] = matchytwo;
-        if (isSelfClosing(tag) || fullMatch.trim().endsWith("/")) continue;
-
-        const positionMeow = selection.getEndPosition();
-        const totalLines = model.getLineCount();
-        const afterRange = {
-          startLineNumber: positionMeow.lineNumber,
-          startColumn: positionMeow.column + 1,
-          endLineNumber: totalLines,
-          endColumn: model.getLineMaxColumn(totalLines)
-        };
-        const afterText = model.getValueInRange(afterRange);
-        const letsClose = `</${tag}>`;
-        if (afterText.includes(letsClose)) continue;
-
-        edits.push({
-          range: {
-            startLineNumber: selection.endLineNumber,
-            startColumn: selection.endColumn + 1,
-            endLineNumber: selection.endLineNumber,
-            endColumn: selection.endColumn + 1
-          },
-          text: letsClose
-        });
-      }
-      if (edits.length > 0) {
-        setTimeout(() => {
-          editor.executeEdits(model.getValue(), edits, newSelections);
-        }, 0);
-      }
-    });
-  }, [monaco, editorRef.current]);
-
   return (
     <Box
       style={{
         width: "100%",
         height: "100%",
         display: "flex",
-        flexDirection: "column",
-        overflow: "hidden"
+        flexDirection: "column"
       }}
     >
       <Box
@@ -678,8 +578,7 @@ const ProjectEditor = () => {
           width: "100%",
           minHeight: 0,
           background: "#f6f8fa",
-          position: "relative",
-          overflow: "hidden"
+          position: "relative"
         }}
       >
         <Box style={{ display: "flex", height: "100%" }}>
@@ -722,45 +621,44 @@ const ProjectEditor = () => {
                 closePane={closePane}
               />
             )}
-            {canResize &&
-              paneOrder.filter((p) => p !== "explorer" && p !== "settings")
-                .length > 0 && (
+            {paneOrder.filter((p) => p !== "explorer" && p !== "settings")
+              .length > 0 && (
+              <div
+                style={{
+                  width: 6,
+                  cursor: "col-resize",
+                  background:
+                    theColorScheme === "dark" ? "#23272A" : "transparent",
+                  zIndex: 10,
+                  userSelect: "none",
+                  position: "relative"
+                }}
+                onMouseDown={(e) => onResizerMouseDown(0, e)}
+                onDoubleClick={() => {
+                  setPaneWidths((prev) => ({
+                    ...prev,
+                    explorer: DEFAULT_PANE_WIDTHS.explorer,
+                    [paneOrder.find(
+                      (p) => p !== "explorer" && p !== "settings"
+                    )!]:
+                      DEFAULT_PANE_WIDTHS[
+                        paneOrder.find(
+                          (p) => p !== "explorer" && p !== "settings"
+                        )!
+                      ]
+                  }));
+                }}
+              >
                 <div
                   style={{
-                    width: 6,
-                    cursor: "col-resize",
-                    background:
-                      theColorScheme === "dark" ? "#23272A" : "transparent",
-                    zIndex: 10,
-                    userSelect: "none",
-                    position: "relative"
+                    width: 2,
+                    height: "100%",
+                    background: theColorScheme === "dark" ? "#333" : "#ddd",
+                    margin: "0 auto"
                   }}
-                  onMouseDown={(e) => onResizerMouseDown(0, e)}
-                  onDoubleClick={() => {
-                    setPaneWidths((prev) => ({
-                      ...prev,
-                      explorer: DEFAULT_PANE_WIDTHS.explorer,
-                      [paneOrder.find(
-                        (p) => p !== "explorer" && p !== "settings"
-                      )!]:
-                        DEFAULT_PANE_WIDTHS[
-                          paneOrder.find(
-                            (p) => p !== "explorer" && p !== "settings"
-                          )!
-                        ]
-                    }));
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 2,
-                      height: "100%",
-                      background: theColorScheme === "dark" ? "#333" : "#ddd",
-                      margin: "0 auto"
-                    }}
-                  />
-                </div>
-              )}
+                />
+              </div>
+            )}
           </Box>
         </Box>
         {paneOrder
@@ -820,7 +718,7 @@ const ProjectEditor = () => {
                   closePane={closePane}
                 />
               )}
-              {idx < arr.length - 1 && canResize && (
+              {idx < arr.length - 1 && (
                 <div
                   style={{
                     width: 6,

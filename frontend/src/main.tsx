@@ -26,7 +26,6 @@ import { setColorScheme } from "./slices/themeSlice";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import RegisterScreen from "./screens/RegisterScreen";
 import AuthContainer from "./components/AuthContainer";
-import "./fonts/comic-mono.css";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

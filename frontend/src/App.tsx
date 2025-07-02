@@ -8,14 +8,7 @@ const App = () => {
     <>
       <ToastContainer />
       <Header />
-      <div
-        id="main-container"
-        style={{
-          height: "calc(100vh - 48px)", // ?
-          overflow: "hidden",
-          flex: 1
-        }}
-      >
+      <div id="main-container">
         <Outlet />
       </div>
     </>
