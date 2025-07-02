@@ -91,9 +91,9 @@ const MIN_PANE_WIDTH = 60;
 const ProjectEditor = () => {
   const monaco = useMonaco();
   const theColorScheme = useComputedColorScheme("light");
-  const [sidebarTab, setSidebarTab] = React.useState<"explorer" | "settings">(
-    "explorer"
-  );
+  const [sidebarTab, setSidebarTab] = React.useState<
+    "explorer" | "settings" | null
+  >("explorer");
   const { projectName } = useParams();
   const dispatch = useDispatch();
   const ownership: any = useCheckOwnershipQuery(projectName);
@@ -165,15 +165,29 @@ const ProjectEditor = () => {
         open: { ...paneState.open, [pane]: false }
       })
     );
+    if (sidebarTab === pane && (pane === "explorer" || pane === "settings")) {
+      setSidebarTab(null);
+    }
   };
 
-  const openPane = (pane: string) => {
-    dispatch(
-      setPaneState({
-        ...paneState,
-        open: { ...paneState.open, [pane]: true }
-      })
-    );
+  const openPane = (pane: string, closeNOW?: boolean) => {
+    if (closeNOW) {
+      dispatch(
+        setPaneState({
+          ...paneState,
+          open: { ...paneState.open, [pane]: false }
+        })
+      );
+      if (sidebarTab === pane) setSidebarTab(null);
+    } else {
+      dispatch(
+        setPaneState({
+          ...paneState,
+          open: { ...paneState.open, [pane]: true }
+        })
+      );
+      setSidebarTab(pane as "explorer" | "settings");
+    }
   };
 
   const handleTabClick = (fileName: string) => {
