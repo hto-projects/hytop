@@ -11,7 +11,9 @@ import {
   TextInput,
   Textarea,
   Button,
-  Center
+  Center,
+  useComputedColorScheme,
+  Box
 } from "@mantine/core";
 
 const CreateProjectScreen = () => {
@@ -22,6 +24,8 @@ const CreateProjectScreen = () => {
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
   const redirect = useNavigate();
+
+  const theColorSchemeish = useComputedColorScheme("light");
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -38,46 +42,93 @@ const CreateProjectScreen = () => {
   };
 
   return (
-    <Container fluid w={500} my={40}>
-      <Paper shadow="md" p={30} radius="md" withBorder>
-        <Title order={2} ta="center" mb="md">
-          Create a New Project
-        </Title>
-        <Text c="dimmed" size="sm" ta="center" mb="lg">
-          Start a new Project
-        </Text>
-        <form onSubmit={submitHandler}>
-          <TextInput
-            label="Project Name"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            required
+    <Box
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        background: theColorSchemeish === "dark" ? "#181A1B" : undefined,
+        color: theColorSchemeish === "dark" ? "#fff" : undefined,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <Container
+        fluid
+        w={500}
+        my={40}
+        style={{
+          background: "transparent",
+          color: theColorSchemeish === "dark" ? "#fff" : undefined
+        }}
+      >
+        <Paper
+          shadow="md"
+          p={30}
+          radius="md"
+          withBorder
+          style={{
+            background: theColorSchemeish === "dark" ? "#23272A" : undefined,
+            color: theColorSchemeish === "dark" ? "#fff" : undefined
+          }}
+        >
+          <Title
+            order={2}
+            ta="center"
             mb="md"
-            size="md"
-            autoFocus
-          />
-          <Textarea
-            label="Project Description"
-            value={projectDescription}
-            onChange={(e) => setProjectDescription(e.target.value)}
-            autosize
-            minRows={2}
-            mb="md"
-            size="md"
-          />
-          <Center mt="md">
-            <Button type="submit" size="md" loading={isLoading}>
-              Create Project
-            </Button>
-          </Center>
-        </form>
-        {isLoading && (
-          <Center mt="md">
-            <Loader />
-          </Center>
-        )}
-      </Paper>
-    </Container>
+            style={{ color: theColorSchemeish === "dark" ? "#fff" : undefined }}
+          >
+            Create a New Project
+          </Title>
+          <form onSubmit={submitHandler}>
+            <TextInput
+              label="Project Name"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              autoFocus
+              styles={{
+                input: {
+                  color: theColorSchemeish === "dark" ? "#fff" : undefined
+                },
+                label: {
+                  color: theColorSchemeish === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <Textarea
+              label="Project Description"
+              value={projectDescription}
+              onChange={(e) => setProjectDescription(e.target.value)}
+              autosize
+              minRows={2}
+              mb="md"
+              size="md"
+              styles={{
+                input: {
+                  color: theColorSchemeish === "dark" ? "#fff" : undefined
+                },
+                label: {
+                  color: theColorSchemeish === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <Center mt="md">
+              <Button type="submit" size="md" loading={isLoading}>
+                Create Project
+              </Button>
+            </Center>
+          </form>
+          {isLoading && (
+            <Center mt="md">
+              <Loader />
+            </Center>
+          )}
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 
