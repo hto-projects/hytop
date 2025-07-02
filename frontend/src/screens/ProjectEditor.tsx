@@ -16,7 +16,8 @@ import {
   Paper,
   TextInput,
   Menu,
-  CopyButton
+  CopyButton,
+  useComputedColorScheme
 } from "@mantine/core";
 import {
   PiFilesBold,
@@ -49,7 +50,9 @@ import {
   setActiveTab,
   openTab,
   closeTab,
-  syncTabsWithFiles
+  syncTabsWithFiles,
+  setEditorIsLoading,
+  setUserIsOwner
 } from "../slices/editorSlice";
 import { IProject } from "../../../shared/types";
 
@@ -60,6 +63,7 @@ import PreviewPane from "../components/editor/PreviewPane";
 import SettingsPane from "../components/editor/SettingsPane";
 import Sidebar from "../components/editor/Sidebar";
 import TabBar from "../components/editor/TabBar";
+import Header from "../components/Header";
 
 function getMonacoLang(filename: string) {
   if (!filename) return "plaintext";
@@ -85,6 +89,8 @@ const DEFAULT_PANE_WIDTHS = {
 
 const MIN_PANE_WIDTH = 60;
 const ProjectEditor = () => {
+  const monaco = useMonaco();
+  const theColorScheme = useComputedColorScheme("light");
   const [sidebarTab, setSidebarTab] = React.useState<"explorer" | "settings">(
     "explorer"
   );
@@ -121,27 +127,21 @@ const ProjectEditor = () => {
   }, [projectFiles.length, projectFiles.map((f) => f.fileName).join(",")]);
 
   useEffect(() => {
-    if (projectData?.data) {
-      dispatch(setProjectFiles(projectData.data.projectFiles));
-      if (tabs.length === 0 && projectData.data.projectFiles.length > 0) {
-        const firstFile = projectData.data.projectFiles[0].fileName;
-        dispatch(setTabs([firstFile]));
-        dispatch(setActiveTab(firstFile));
+    if (!monaco || !editorRef.current) return;
+    if (activeTab && modelsRef.current[activeTab]) {
+      const model = modelsRef.current[activeTab];
+      if (editorRef.current.getModel() !== model) {
+        editorRef.current.setModel(model);
+        if (viewStatesRef.current[activeTab]) {
+          editorRef.current.restoreViewState(viewStatesRef.current[activeTab]);
+        }
+        editorRef.current.focus();
+        editorRef.current.__lastFile = activeTab;
+        const language = getMonacoLang(activeTab);
+        monaco.editor.setModelLanguage(model, language);
       }
     }
-  }, [projectData?.data]);
-
-  useEffect(() => {
-    if (!paneState.order.includes("settings")) {
-      dispatch(
-        setPaneState({
-          ...paneState,
-          order: [...paneState.order, "settings"],
-          open: { ...paneState.open, settings: false }
-        })
-      );
-    }
-  }, []);
+  }, [activeTab, selectedFile, monaco]);
 
   const [dragged, setDragged] = React.useState<string | null>(null);
 
@@ -195,13 +195,37 @@ const ProjectEditor = () => {
     dispatch(setRenameValue(filename));
   };
 
-  const confirmRename = () => {
+  const confirmRename = async (e?: any) => {
     if (
       renameValue &&
       renameValue !== renamingFile &&
-      !projectFiles.some((f) => f.fileName === renameValue)
+      !projectFiles.some((y) => y.fileName === renameValue)
     ) {
+      const updatedFiles = projectFiles.map((ts) =>
+        ts.fileName === renamingFile ? { ...ts, fileName: renameValue } : ts
+      );
+      if (tabs.includes(renamingFile)) {
+        dispatch(
+          setTabs(tabs.map((tab) => (tab === renamingFile ? renameValue : tab)))
+        );
+      }
+      if (activeTab === renamingFile) {
+        dispatch(setActiveTab(renameValue));
+      }
+      if (monaco && modelsRef.current[renamingFile]) {
+        modelsRef.current[renamingFile].dispose();
+        delete modelsRef.current[renamingFile];
+      }
+      dispatch(setProjectFiles(updatedFiles));
       dispatch(setRenameFile({ oldName: renamingFile, newName: renameValue }));
+      try {
+        await updateProject({
+          projectFiles: updatedFiles,
+          projectName
+        }).unwrap();
+        dispatch(setProjectVersion(projectVersion + 1));
+        setUnsavedFiles({});
+      } catch (err) {}
     }
     dispatch(setRenamingFile(null));
     dispatch(setRenameValue(""));
@@ -232,15 +256,18 @@ const ProjectEditor = () => {
         ext = "txt";
         content = "";
     }
+    const newFileName = `new-file-${Date.now()}.${ext}`;
     dispatch(
       setProjectFiles([
         ...projectFiles,
         {
-          fileName: `new-file-${Date.now()}.${ext}`,
+          fileName: newFileName,
           fileContent: content
         }
       ])
     );
+    dispatch(setRenamingFile(newFileName));
+    dispatch(setRenameValue(newFileName));
   };
 
   const saveAllFiles = async () => {
@@ -251,7 +278,6 @@ const ProjectEditor = () => {
     } catch (err) {}
   };
 
-  const monaco = useMonaco();
   const editorRef = useRef<any>(null);
   const modelsRef = useRef<{ [filename: string]: any }>({});
   const viewStatesRef = useRef<{ [filename: string]: any }>({});
@@ -369,10 +395,6 @@ const ProjectEditor = () => {
     }
   };
 
-  const forkProject = () => {
-    window.location.href = `/c/${projectName}`;
-  };
-
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key.toLowerCase() === "s") {
@@ -441,6 +463,91 @@ const ProjectEditor = () => {
     resizingRef.current = null;
   };
 
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
+  const darkMode = useSelector((state: any) => state.theme.darkMode);
+
+  React.useEffect(() => {
+    const handler = () => {
+      if (userIsOwner) saveAllFiles();
+    };
+    window.addEventListener("saveAllFiles", handler);
+    return () => window.removeEventListener("saveAllFiles", handler);
+  }, [userIsOwner, projectFiles, projectName, projectVersion]);
+
+  React.useEffect(() => {
+    dispatch(setUserIsOwner(userIsOwner));
+  }, [userIsOwner, dispatch]);
+  React.useEffect(() => {
+    dispatch(setEditorIsLoading(isLoading));
+  }, [isLoading, dispatch]);
+
+  const localStorageSelectedFile = `hytop_selectedFile_${projectName}`;
+  const localStorageTabs = `hytop_tabs_${projectName}`;
+
+  const [readyToSetTab, setReadyToSetTab] = React.useState(false);
+
+  useEffect(() => {
+    if (projectData?.data) {
+      dispatch(setProjectFiles(projectData.data.projectFiles));
+    }
+  }, [projectData?.data]);
+
+  useEffect(() => {
+    if (!monaco) return;
+    if (
+      projectFiles.length > 0 &&
+      projectFiles.every((f) => modelsRef.current[f.fileName])
+    ) {
+      setReadyToSetTab(true);
+    }
+  }, [
+    monaco,
+    projectFiles.map((f) => f.fileName).join(","),
+    Object.keys(modelsRef.current).join(",")
+  ]);
+
+  useEffect(() => {
+    if (!readyToSetTab) return;
+    const savedTabs = (() => {
+      try {
+        return JSON.parse(localStorage.getItem(localStorageTabs) || "[]");
+      } catch {
+        return [];
+      }
+    })();
+    const savedSelectedFile = localStorage.getItem(localStorageSelectedFile);
+    const fileNames = projectFiles.map((f) => f.fileName);
+    const validTabs = savedTabs.filter((tab) => fileNames.includes(tab));
+    const validSelectedFile =
+      savedSelectedFile && fileNames.includes(savedSelectedFile)
+        ? savedSelectedFile
+        : validTabs.length > 0
+        ? validTabs[0]
+        : fileNames[0];
+
+    if (validTabs.length > 0) {
+      dispatch(setTabs(validTabs));
+      dispatch(setActiveTab(validSelectedFile));
+      dispatch(setSelectedFile(validSelectedFile));
+    } else if (fileNames.length > 0) {
+      dispatch(setTabs([fileNames[0]]));
+      dispatch(setActiveTab(fileNames[0]));
+      dispatch(setSelectedFile(fileNames[0]));
+    }
+    setReadyToSetTab(false);
+  }, [readyToSetTab]);
+
+  useEffect(() => {
+    if (activeTab) {
+      localStorage.setItem(localStorageSelectedFile, activeTab);
+    }
+  }, [activeTab, localStorageSelectedFile]);
+  useEffect(() => {
+    if (tabs && tabs.length) {
+      localStorage.setItem(localStorageTabs, JSON.stringify(tabs));
+    }
+  }, [tabs, localStorageTabs]);
+
   return (
     <Box
       style={{
@@ -450,59 +557,6 @@ const ProjectEditor = () => {
         flexDirection: "column"
       }}
     >
-      <Group
-        gap="xs"
-        px="md"
-        py="xs"
-        style={{
-          borderBottom: "1px solid #eee",
-          background: "#fafafa"
-        }}
-      >
-        <Text fw={700}>{projectName}</Text>
-        <Group gap={0}>
-          {userIsOwner ? (
-            <Tooltip label="Save All">
-              <ActionIcon
-                onClick={saveAllFiles}
-                color="blueButCooler"
-                variant="light"
-                size="md"
-              >
-                <PiFloppyDiskBold />
-              </ActionIcon>
-            </Tooltip>
-          ) : (
-            <Tooltip label="Fork Project">
-              <ActionIcon
-                onClick={forkProject}
-                color="green"
-                variant="light"
-                size="md"
-              >
-                <PiGitForkBold />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
-
-        <Group gap={0} ml="auto">
-          {closedPanes
-            .filter((p) => p.key !== "explorer" && p.key !== "settings")
-            .map((p) => (
-              <Tooltip key={p.key} label={`Show ${p.label}`}>
-                <ActionIcon
-                  onClick={() => openPane(p.key)}
-                  variant="subtle"
-                  size="md"
-                >
-                  {p.icon}
-                </ActionIcon>
-              </Tooltip>
-            ))}
-        </Group>
-        {isLoading && <Loader size="sm" />}
-      </Group>
       <Box
         style={{
           flex: 1,
@@ -540,6 +594,7 @@ const ProjectEditor = () => {
                 setRenameValue={setRenameValue}
                 confirmRename={confirmRename}
                 cancelRename={cancelRename}
+                style={undefined}
               />
             )}
             {sidebarTab === "settings" && paneState.open.settings && (
@@ -558,7 +613,8 @@ const ProjectEditor = () => {
                 style={{
                   width: 6,
                   cursor: "col-resize",
-                  background: "transparent",
+                  background:
+                    theColorScheme === "dark" ? "#23272A" : "transparent",
                   zIndex: 10,
                   userSelect: "none",
                   position: "relative"
@@ -583,7 +639,7 @@ const ProjectEditor = () => {
                   style={{
                     width: 2,
                     height: "100%",
-                    background: "#ddd",
+                    background: theColorScheme === "dark" ? "#333" : "#ddd",
                     margin: "0 auto"
                   }}
                 />
@@ -610,6 +666,8 @@ const ProjectEditor = () => {
                       unsavedFiles={unsavedFiles}
                       handleTabClick={handleTabClick}
                       handleTabClose={handleTabClose}
+                      // I don't know why this is needed but it was screaming at me and this works for some reason lol
+                      primaryColor={undefined}
                     />
                   )}
                   unsavedFiles={unsavedFiles}
@@ -651,7 +709,8 @@ const ProjectEditor = () => {
                   style={{
                     width: 6,
                     cursor: "col-resize",
-                    background: "transparent",
+                    background:
+                      theColorScheme === "dark" ? "#23272A" : "transparent",
                     zIndex: 10,
                     userSelect: "none",
                     position: "relative"
@@ -674,7 +733,7 @@ const ProjectEditor = () => {
                     style={{
                       width: 2,
                       height: "100%",
-                      background: "#ddd",
+                      background: theColorScheme === "dark" ? "#333" : "#ddd",
                       margin: "0 auto"
                     }}
                   />

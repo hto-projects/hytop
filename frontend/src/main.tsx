@@ -1,5 +1,6 @@
 import "@mantine/core/styles.css";
-import { createTheme, MantineProvider } from "@mantine/core";
+import "mantine-contextmenu/styles.css";
+import { createTheme, MantineProvider, ColorSchemeScript } from "@mantine/core";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -11,33 +12,20 @@ import {
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import store from "./store.js";
-import { Provider } from "react-redux";
+import { Provider, useSelector, useDispatch } from "react-redux";
 import HomeScreen from "./screens/HomeScreen.jsx";
 import ProfileScreen from "./screens/ProfileScreen.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import CreateProjectScreen from "./screens/CreateProject";
 import ProjectEditor from "./screens/ProjectEditor";
 import CopyProjectScreen from "./screens/CopyProject";
+import { getCustomTheme, defaultTheme } from "./theme";
+import { useEffect } from "react";
+import { setMonacoTheme } from "./slices/editorSlice";
+import { setColorScheme } from "./slices/themeSlice";
+import { ContextMenuProvider } from "mantine-contextmenu";
 import RegisterScreen from "./screens/RegisterScreen";
 import AuthContainer from "./components/AuthContainer";
-
-const theme = createTheme({
-  primaryColor: "blueButCooler",
-  colors: {
-    blueButCooler: [
-      "#eff0fb",
-      "#dbdcf0",
-      "#b2b6e3",
-      "#888dd6",
-      "#656bcc",
-      "#4f55c6",
-      "#434ac4",
-      "#353cad",
-      "#2e359b",
-      "#191f5e"
-    ]
-  }
-});
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -54,12 +42,37 @@ const router = createBrowserRouter(
   )
 );
 
+const Root = () => {
+  const dispatch = useDispatch();
+  React.useEffect(() => {
+    const systemPrefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (!localStorage.getItem("color scheme")) {
+      dispatch(setColorScheme(systemPrefersDark ? "dark" : "light"));
+    }
+    if (!localStorage.getItem("monacoTheme")) {
+      dispatch(setMonacoTheme(systemPrefersDark ? "vs-dark" : "vs-light"));
+    }
+  }, [dispatch]);
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
+  const theme = primaryColor ? getCustomTheme(primaryColor) : defaultTheme;
+  return (
+    <>
+      <ColorSchemeScript defaultColorScheme="auto" />
+      <MantineProvider theme={theme} defaultColorScheme="auto">
+        <ContextMenuProvider>
+          <React.StrictMode>
+            <RouterProvider router={router} />
+          </React.StrictMode>
+        </ContextMenuProvider>
+      </MantineProvider>
+    </>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <MantineProvider theme={theme}>
-      <React.StrictMode>
-        <RouterProvider router={router} />
-      </React.StrictMode>
-    </MantineProvider>
+    <Root />
   </Provider>
 );

@@ -1,70 +1,122 @@
-// import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap';
-import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
-import { LinkContainer } from "react-router-bootstrap";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useLogoutMutation } from "../slices/usersApiSlice";
-import { logout } from "../slices/authSlice";
+import {
+  ActionIcon,
+  Group,
+  Tooltip,
+  Text,
+  Loader,
+  useComputedColorScheme,
+  Button
+} from "@mantine/core";
+import { PiFloppyDiskBold, PiGitForkBold } from "react-icons/pi";
+import React from "react";
+import { useSelector } from "react-redux";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 const Header = () => {
+  const location = useLocation();
+  const params = useParams();
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
+  const theColorScheme = useComputedColorScheme("light");
   const { userInfo } = useSelector((state: any) => state.auth);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
+  const isEditor = !!match;
+  const projectName = match ? match[2] : "";
 
-  const [logoutApiCall] = useLogoutMutation();
+  const userIsOwner = useSelector((state: any) =>
+    isEditor ? state.editor.userIsOwner : false
+  );
+  const isLoading = useSelector((state: any) =>
+    isEditor ? state.editor.isLoading : false
+  );
 
-  const logoutHandler = async () => {
-    try {
-      await logoutApiCall(null).unwrap();
-      dispatch(logout(null));
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
-    }
+  const saveAllFiles = () => {
+    window.dispatchEvent(new CustomEvent("saveAllFiles"));
+  };
+  const forkProject = () => {
+    window.location.href = `/c/${projectName}`;
   };
 
   return (
-    <header>
-      <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
-        <Container>
-          <LinkContainer to="/">
-            <Navbar.Brand>HYLAND TECH OUTREACH PORTAL</Navbar.Brand>
-          </LinkContainer>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              {userInfo ? (
-                <>
-                  <NavDropdown title={userInfo.name} id="username">
-                    <LinkContainer to="/profile">
-                      <NavDropdown.Item>Profile</NavDropdown.Item>
-                    </LinkContainer>
-                    <NavDropdown.Item onClick={logoutHandler}>
-                      Logout
-                    </NavDropdown.Item>
-                  </NavDropdown>
-                </>
-              ) : (
-                <>
-                  <LinkContainer to="/login">
-                    <Nav.Link>
-                      <FaSignInAlt /> Sign In
-                    </Nav.Link>
-                  </LinkContainer>
-                  <LinkContainer to="/register">
-                    <Nav.Link>
-                      <FaSignOutAlt /> Sign Up
-                    </Nav.Link>
-                  </LinkContainer>
-                </>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </header>
+    <Group
+      gap="xs"
+      px="md"
+      py="xs"
+      style={{
+        borderBottom:
+          theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
+        background: theColorScheme === "dark" ? "#181A1B" : "#fafafa",
+        color: theColorScheme === "dark" ? "#fff" : undefined,
+        minHeight: 48,
+        zIndex: 100,
+        position: "relative"
+      }}
+    >
+      <Text fw={700} c={theColorScheme === "dark" ? "#fff" : undefined}>
+        {isEditor && projectName ? projectName : "HyTOP"}
+      </Text>
+      {isEditor && (
+        <Group gap={0}>
+          {userIsOwner ? (
+            <Tooltip label="Save All">
+              <ActionIcon
+                onClick={saveAllFiles}
+                color={primaryColor}
+                size="md"
+                style={{
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }}
+              >
+                <PiFloppyDiskBold />
+              </ActionIcon>
+            </Tooltip>
+          ) : (
+            <Tooltip label="Fork Project">
+              <ActionIcon
+                onClick={forkProject}
+                color="green"
+                variant="light"
+                size="md"
+                style={{
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }}
+              >
+                <PiGitForkBold />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </Group>
+      )}
+      <Group gap={0} ml="auto">
+        {userInfo ? (
+          // placeholder until account system is implemented
+          <Button
+            component={Link}
+            to="/profile"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            {userInfo.name}
+          </Button>
+        ) : (
+          <Button
+            component={Link}
+            to="/login"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            Sign In
+          </Button>
+        )}
+      </Group>
+      {isEditor && isLoading && <Loader size="sm" />}
+    </Group>
   );
 };
 
