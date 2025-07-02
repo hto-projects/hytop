@@ -14,7 +14,8 @@ import {
   setMonacoFont,
   setMonacoFontSize,
   setMonacoWordWrap,
-  setPaneState
+  setPaneState,
+  setVimMode
 } from "../../slices/editorSlice";
 import { Select, TextInput, NumberInput } from "@mantine/core";
 import DarkModeToggle from "../DarkModeToggle";
@@ -37,6 +38,7 @@ const SettingsPane = ({
   const monacoWordWrap = useSelector(
     (state: any) => state.editor.monacoWordWrap
   );
+  const vimMode = useSelector((state: any) => state.editor.vimMode);
   const paneState = useSelector((state: any) => state.editor.paneState);
   const dispatch = useDispatch();
 
@@ -83,7 +85,8 @@ const SettingsPane = ({
         flexDirection: "column",
         transition: "width 0.1s",
         color: theColorScheme === "dark" ? "white" : undefined,
-        backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined
+        backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined,
+        overflow: "hidden"
       }}
       draggable
       onDragStart={() => onDragStart("settings")}
@@ -109,7 +112,9 @@ const SettingsPane = ({
           flex: 1,
           minHeight: 0,
           padding: 16,
-          background: theColorScheme === "dark" ? "#181A1B" : undefined
+          background: theColorScheme === "dark" ? "#181A1B" : undefined,
+          overflowY: "auto",
+          height: "100%"
         }}
       >
         <Text fw={700} mb="xs">
@@ -201,6 +206,17 @@ const SettingsPane = ({
         </Text>
         <Box mb="sm">
           <Text size="sm" mb={4}>
+            Vim Mode
+          </Text>
+          <Switch
+            checked={vimMode}
+            onChange={(e) => dispatch(setVimMode(e.currentTarget.checked))}
+            label={vimMode ? "Enabled" : "Disabled"}
+            size="sm"
+          />
+        </Box>
+        <Box mb="sm">
+          <Text size="sm" mb={4}>
             Theme
           </Text>
           <Select
@@ -239,6 +255,10 @@ const SettingsPane = ({
               {
                 value: "Comic Sans MS, Comic Sans, cursive",
                 label: "Comic Sans"
+              },
+              {
+                value: "'Comic Mono', monospace",
+                label: "Comic Mono"
               },
               { value: "Courier New, monospace", label: "Courier New" },
               { value: "Roboto Mono, monospace", label: "Roboto Mono" },

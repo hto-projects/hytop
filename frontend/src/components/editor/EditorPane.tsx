@@ -18,6 +18,7 @@ import {
 import MonacoEditor from "@monaco-editor/react";
 import React from "react";
 import { useSelector } from "react-redux";
+import { initVimMode } from "monaco-vim";
 
 function setupMonacoModels({
   monaco,
@@ -102,7 +103,11 @@ const EditorPane = ({
   const monacoWordWrap = useSelector(
     (state: any) => state.editor.monacoWordWrap
   );
+  const vimModeEnabled = useSelector((state: any) => state.editor.vimMode);
   const theColorScheme = useComputedColorScheme("light");
+
+  const vimStatusRef = React.useRef<HTMLDivElement>(null);
+  const vimModeRef = React.useRef<any>(null);
 
   const handleEditorMount = (editor) => {
     if (editorRef.current && typeof editorRef.current.dispose === "function") {
@@ -119,7 +124,32 @@ const EditorPane = ({
       activeTab,
       getMonacoLang
     });
+
+    if (vimModeRef.current) {
+      vimModeRef.current.dispose();
+      vimModeRef.current = null;
+    }
+    if (vimModeEnabled && editor && vimStatusRef.current) {
+      vimModeRef.current = initVimMode(editor, vimStatusRef.current);
+    }
   };
+
+  React.useEffect(() => {
+    if (!editorRef.current) return;
+    if (vimModeRef.current) {
+      vimModeRef.current.dispose();
+      vimModeRef.current = null;
+    }
+    if (vimModeEnabled && vimStatusRef.current) {
+      vimModeRef.current = initVimMode(editorRef.current, vimStatusRef.current);
+    }
+    return () => {
+      if (vimModeRef.current) {
+        vimModeRef.current.dispose();
+        vimModeRef.current = null;
+      }
+    };
+  }, [vimModeEnabled, editorRef.current]);
 
   React.useEffect(() => {
     setupMonacoModels({
@@ -150,6 +180,25 @@ const EditorPane = ({
       }
     };
   }, [monaco]);
+
+  // incredible fix
+  React.useEffect(() => {
+    if (!monaco || !editorRef.current) return;
+    const isComicMono =
+      monacoFont &&
+      (monacoFont.includes("Comic Mono") ||
+        monacoFont.includes("'Comic Mono'"));
+    if (isComicMono && document.fonts) {
+      document.fonts.load('16px "Comic Mono"').then(() => {
+        if (monaco && monaco.editor && monaco.editor.remeasureFonts) {
+          monaco.editor.remeasureFonts();
+        }
+        if (editorRef.current && editorRef.current.layout) {
+          editorRef.current.layout();
+        }
+      });
+    }
+  }, [monaco, monacoFont, editorRef.current]);
 
   return (
     <Paper
@@ -241,22 +290,57 @@ const EditorPane = ({
           </ActionIcon>
         </Tooltip>
       </Group>
-      <Box style={{ flex: 1, minHeight: 0 }}>
-        <MonacoEditor
-          key="monaco-singleton"
-          theme={monacoTheme}
-          height="100%"
-          width="100%"
-          language={getMonacoLang(activeTab)}
-          options={{
-            readOnly: !userIsOwner,
-            minimap: { enabled: true },
-            fontSize: monacoFontSize,
-            fontFamily: monacoFont,
-            wordWrap: monacoWordWrap || "off"
+      <Box
+        style={{
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden"
+        }}
+      >
+        <Box
+          style={{
+            flex: vimModeEnabled ? "1 1 calc(100% - 24px)" : "1 1 100%",
+            minHeight: 0
           }}
-          onMount={handleEditorMount}
-        />
+        >
+          <MonacoEditor
+            key="monaco-singleton"
+            theme={monacoTheme}
+            height="100%"
+            width="100%"
+            language={getMonacoLang(activeTab)}
+            options={{
+              readOnly: !userIsOwner,
+              minimap: { enabled: true },
+              fontSize: monacoFontSize,
+              fontFamily: monacoFont,
+              wordWrap: monacoWordWrap || "off",
+              fontLigatures: false,
+              letterSpacing: 0
+            }}
+            onMount={handleEditorMount}
+          />
+        </Box>
+        {vimModeEnabled && (
+          <div
+            ref={vimStatusRef}
+            style={{
+              height: 24,
+              minHeight: 24,
+              maxHeight: 24,
+              boxSizing: "border-box",
+              background: theColorScheme === "dark" ? "#23272A" : "#f3f4f8",
+              color: theColorScheme === "dark" ? "#fff" : "#222",
+              fontFamily: "monospace",
+              fontSize: 13,
+              padding: "2px 8px",
+              overflow: "hidden",
+              flex: "0 0 24px"
+            }}
+          />
+        )}
       </Box>
     </Paper>
   );

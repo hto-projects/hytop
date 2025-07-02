@@ -16,6 +16,7 @@
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
     "mantine-contextmenu": "^8.1.2",
+    "monaco-vim": "^0.4.2",
     "phaser": "^3.80.1",
     "postcss": "^8.5.5",
     "postcss-preset-mantine": "^1.17.0",
@@ -31,9 +32,6 @@
     "react-simple-code-editor": "^0.14.1",
     "react-toastify": "^9.1.2",
     "typescript": "^5.4.3"
-  },
-  "optionalDependencies": {
-    "@esbuild/linux-x64": "0.24.0"
   },
   "optionalDependencies": {
     "@esbuild/linux-x64": "0.24.0"
