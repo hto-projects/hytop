@@ -1,6 +1,15 @@
-import { Paper, Group, Text, Box, Switch, Button } from "@mantine/core";
+import {
+  Paper,
+  Group,
+  Text,
+  Box,
+  Switch,
+  Button,
+  ActionIcon
+} from "@mantine/core";
 import {
   PiGearBold,
+  PiXBold,
   PiFilesBold,
   PiCodeBold,
   PiMonitorBold
@@ -25,7 +34,8 @@ const SettingsPane = ({
   DEFAULT_PANE_WIDTHS,
   width,
   onDragStart,
-  onDragOver
+  onDragOver,
+  closePane
 }) => {
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
@@ -103,6 +113,13 @@ const SettingsPane = ({
           <PiGearBold />
           <Text size="sm">Settings</Text>
         </Group>
+        <ActionIcon
+          variant="subtle"
+          onClick={() => closePane("settings")}
+          size="sm"
+        >
+          <PiXBold />
+        </ActionIcon>
       </Group>
       <Box
         style={{

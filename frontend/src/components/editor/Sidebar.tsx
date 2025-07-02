@@ -8,9 +8,18 @@ import { PiFilesBold, PiGearBold } from "react-icons/pi";
 import React from "react";
 import { useSelector } from "react-redux";
 
-const Sidebar = ({ sidebarTab, setSidebarTab }) => {
+const Sidebar = ({ sidebarTab, setSidebarTab, openPane }) => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
+  const handleSidebarButton = (tabbyCat: "explorer" | "settings") => {
+    if (sidebarTab === tabbyCat) {
+      setSidebarTab(null);
+      openPane && openPane(tabbyCat, true);
+    } else {
+      setSidebarTab(tabbyCat);
+      openPane && openPane(tabbyCat, false);
+    }
+  };
   return (
     <Box
       style={{
@@ -35,7 +44,7 @@ const Sidebar = ({ sidebarTab, setSidebarTab }) => {
           color={sidebarTab === "explorer" ? primaryColor : "gray"}
           variant={sidebarTab === "explorer" ? "filled" : "subtle"}
           size="lg"
-          onClick={() => setSidebarTab("explorer")}
+          onClick={() => handleSidebarButton("explorer")}
           style={{ marginBottom: 4 }}
         >
           <PiFilesBold />
@@ -46,7 +55,7 @@ const Sidebar = ({ sidebarTab, setSidebarTab }) => {
           color={sidebarTab === "settings" ? primaryColor : "gray"}
           variant={sidebarTab === "settings" ? "filled" : "subtle"}
           size="lg"
-          onClick={() => setSidebarTab("settings")}
+          onClick={() => handleSidebarButton("settings")}
         >
           <PiGearBold />
         </ActionIcon>

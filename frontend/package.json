@@ -35,9 +35,6 @@
   "optionalDependencies": {
     "@esbuild/linux-x64": "0.24.0"
   },
-  "optionalDependencies": {
-    "@esbuild/linux-x64": "0.24.0"
-  },
   "devDependencies": {
     "@types/node": "^22.15.29",
     "@types/react": "^18.2.73",
