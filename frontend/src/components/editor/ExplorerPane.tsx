@@ -72,6 +72,22 @@ const ExplorerPane = ({
     }).unwrap();
   };
 
+  const isDuplicateRename =
+    !!renameValue &&
+    projectFiles.some(
+      (the) =>
+        the.fileName.toLowerCase() === renameValue.trim().toLowerCase() &&
+        the.fileName !== renamingFile
+    );
+
+  const handleConfirmRename = (cherrycola) => {
+    if (isDuplicateRename) {
+      return;
+    }
+    confirmRename(cherrycola);
+    setJustCreatedFile(null);
+  };
+
   return (
     <Box
       p={0}
@@ -203,6 +219,7 @@ const ExplorerPane = ({
                 }
                 size="xs"
                 autoFocus
+                error={isDuplicateRename ? "Filename already exists" : false}
                 ref={(input) => {
                   if (input) {
                     const match = file.fileName.match(/^(.*?)(\.[^.]*)?$/);
@@ -226,14 +243,10 @@ const ExplorerPane = ({
                     }
                   }
                 }}
-                onBlur={(e) => {
-                  confirmRename(e);
-                  setJustCreatedFile(null);
-                }}
+                onBlur={handleConfirmRename}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    confirmRename(e);
-                    setJustCreatedFile(null);
+                    handleConfirmRename(e);
                   } else if (e.key === "Escape") {
                     cancelRename();
                     setJustCreatedFile(null);
@@ -244,7 +257,8 @@ const ExplorerPane = ({
                     padding: "2px 6px",
                     fontSize: "14px",
                     height: "24px",
-                    minWidth: "80px"
+                    minWidth: "80px",
+                    borderColor: isDuplicateRename ? "#ff4d4f" : undefined
                   }
                 }}
                 onClick={(e) => e.stopPropagation()}
