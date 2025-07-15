@@ -1,12 +1,21 @@
-import { useState, useEffect } from "react";
-// import { Link, useNavigate } from 'react-router-dom';
-import { Form, Button } from "react-bootstrap";
+import { useState } from "react";
+import {
+  Container,
+  Paper,
+  Title,
+  TextInput,
+  Button,
+  Group,
+  PasswordInput,
+  Box,
+  useComputedColorScheme
+} from "@mantine/core";
 import { useDispatch, useSelector } from "react-redux";
-import FormContainer from "../components/FormContainer";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import { useUpdateUserMutation } from "../slices/usersApiSlice";
-import { setCredentials } from "../slices/authSlice";
+import { setCredentials, logout } from "../slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const ProfileScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
@@ -17,8 +26,9 @@ const ProfileScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
+  const theColorScheme = useComputedColorScheme("light");
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -32,7 +42,6 @@ const ProfileScreen = () => {
           email,
           password
         }).unwrap();
-        console.log(res);
         dispatch(setCredentials(res));
         toast.success("Profile updated successfully");
       } catch (err) {
@@ -40,56 +49,136 @@ const ProfileScreen = () => {
       }
     }
   };
+
+  const handleLogout = () => {
+    dispatch(logout(null));
+    navigate("/");
+  };
+
   return (
-    <FormContainer>
-      <h1>Update Profile</h1>
-
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="my-2" controlId="name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="name"
-            placeholder="Enter name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group className="my-2" controlId="email">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group className="my-2" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="confirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Button type="submit" variant="primary" className="mt-3">
-          Update
-        </Button>
-
-        {isLoading && <Loader />}
-      </Form>
-    </FormContainer>
+    <Box
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        background: theColorScheme === "dark" ? "#181A1B" : undefined,
+        color: theColorScheme === "dark" ? "#fff" : undefined,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <Container size={600} my={40}>
+        <Paper
+          shadow="md"
+          p={48}
+          radius="md"
+          withBorder
+          style={{
+            maxWidth: 520,
+            margin: "0 auto",
+            background: theColorScheme === "dark" ? "#23272A" : undefined,
+            color: theColorScheme === "dark" ? "#fff" : undefined
+          }}
+        >
+          <Title order={2} ta="center" mb="md">
+            Account
+          </Title>
+          <form
+            onSubmit={submitHandler}
+            style={{ maxWidth: 440, width: "100%", margin: "0 auto" }}
+          >
+            <TextInput
+              label="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <TextInput
+              label="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <PasswordInput
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <PasswordInput
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <Group mt="md" justify="space-between">
+              <Button type="submit" size="md" loading={isLoading}>
+                Update
+              </Button>
+              <Button
+                variant="outline"
+                color="red"
+                size="md"
+                onClick={handleLogout}
+              >
+                Sign Out
+              </Button>
+            </Group>
+            {isLoading && (
+              <Box mt="md">
+                <Loader />
+              </Box>
+            )}
+          </form>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 
