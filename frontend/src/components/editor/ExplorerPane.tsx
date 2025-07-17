@@ -43,7 +43,8 @@ const ExplorerPane = ({
   setRenameValue,
   confirmRename,
   cancelRename,
-  style
+  style,
+  userIsOwner
 }) => {
   const theColorScheme = useComputedColorScheme("light");
   const [justCreatedFile, setJustCreatedFile] = React.useState<string | null>(
@@ -53,6 +54,14 @@ const ExplorerPane = ({
   const { projectName } = useParams();
   const [updateProject] = useUpdateProjectMutation();
   const projectFiles = useSelector((state: any) => state.editor.projectFiles);
+
+  let userOwnsProject;
+
+  if (userIsOwner) {
+    userOwnsProject = true;
+  } else {
+    userOwnsProject = false;
+  }
 
   React.useEffect(() => {
     if (renamingFile && projectFiles.some((r) => r.fileName === renamingFile)) {
@@ -105,34 +114,36 @@ const ExplorerPane = ({
           <PiFilesBold />
           <Text size="sm">Files</Text>
         </Group>
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <ActionIcon variant="subtle" size="sm">
-              <PiFilePlusBold />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Label>Add New File</Menu.Label>
-            <Menu.Item
-              leftSection={<PiFileHtml size={14} />}
-              onClick={() => addFile("html")}
-            >
-              HTML
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<PiFileCss size={14} />}
-              onClick={() => addFile("css")}
-            >
-              CSS
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<PiFileJs size={14} />}
-              onClick={() => addFile("js")}
-            >
-              JavaScript
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+        {userOwnsProject && (
+          <Menu shadow="md" width={200}>
+            <Menu.Target>
+              <ActionIcon variant="subtle" size="sm">
+                <PiFilePlusBold />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Label>Add New File</Menu.Label>
+              <Menu.Item
+                leftSection={<PiFileHtml size={14} />}
+                onClick={() => addFile("html")}
+              >
+                HTML
+              </Menu.Item>
+              <Menu.Item
+                leftSection={<PiFileCss size={14} />}
+                onClick={() => addFile("css")}
+              >
+                CSS
+              </Menu.Item>
+              <Menu.Item
+                leftSection={<PiFileJs size={14} />}
+                onClick={() => addFile("js")}
+              >
+                JavaScript
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        )}
         <ActionIcon
           variant="subtle"
           onClick={() => closePane("explorer")}
