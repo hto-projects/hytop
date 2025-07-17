@@ -1,0 +1,57 @@
+.btn {
+  margin-bottom: 10px;
+}
+
+img {
+  width: 100%;
+}
+
+.jumbotron {
+  background-color: skyblue;
+}
+
+#subscribe {
+  background-color: mediumspringgreen;
+  cursor: pointer;
+  transition: 1s;
+}
+
+#animal1 {
+  background-color: pink;
+}
+
+#animal2 {
+  background-color: mediumspringgreen;
+}
+
+#animal3 {
+  background-color: skyblue;
+}
+
+#animal4 {
+  background-color: papayawhip;
+}
+
+.col-md-6 {
+  padding: 25px;
+  box-sizing: border-box;
+  border: 5px solid white;
+  transition: 0.5s;
+}
+
+#subscribe:hover {
+  box-shadow: 0px 5px 5px black;
+}
+
+#subscribe:active {
+  background-color: oldlace;
+  transition: 0.5s;
+}
+
+#animal2 img {
+  transform: rotate(180deg);
+}
+
+.col-md-6:hover {
+  transform: translateY(-20px);
+}
