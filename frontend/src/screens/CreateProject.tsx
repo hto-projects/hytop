@@ -10,11 +10,11 @@ import {
   Text,
   TextInput,
   Textarea,
-  Button,
   Center,
   useComputedColorScheme,
   Box
 } from "@mantine/core";
+import Button from "../components/Button";
 
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
@@ -116,8 +116,8 @@ const CreateProjectScreen = () => {
               }}
             />
             <Center mt="md">
-              <Button type="submit" size="md" loading={isLoading}>
-                Create Project
+              <Button type="submit" size="md" disabled={isLoading}>
+                {isLoading ? "Creating..." : "Create Project"}
               </Button>
             </Center>
           </form>

@@ -65,15 +65,27 @@ const findProject = async (projectName: string): Promise<IProject> => {
 };
 
 const getUserId = (req, res) => {
-  const user = req.user;
-  let userId;
-  if (!user) {
-    userId = uuidv4();
-    generateToken(res, userId);
-  } else {
-    userId = user._id;
+  if (req.user) {
+    return req.user._id;
   }
 
+  let token = req.cookies.jwt;
+  let userId;
+  if (token) {
+    try {
+      const decoded = require("jsonwebtoken").verify(
+        token,
+        process.env.JWT_SECRET
+      );
+      userId = decoded.userId;
+    } catch {
+      userId = require("uuid").v4();
+      generateToken(res, userId, true);
+    }
+  } else {
+    userId = require("uuid").v4();
+    generateToken(res, userId, true);
+  }
   return userId;
 };
 

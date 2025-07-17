@@ -1,4 +1,4 @@
-import { Button } from "react-bootstrap";
+import Button from "./Button";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../slices/usersApiSlice";

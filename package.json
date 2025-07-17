@@ -1,7 +1,7 @@
 {
-  "name": "MERN TS AUTH",
+  "name": "HYTOP",
   "version": "1.0.0",
-  "description": "Boiler-plate code for a MERN stack application that uses TypeScript and includes user authentication.",
+  "description": "Hyland Tech Outreach Portal",
   "main": "server.js",
   "scripts": {
     "server": "ts-node-dev --respawn --pretty --transpile-only ./backend/server.ts",
