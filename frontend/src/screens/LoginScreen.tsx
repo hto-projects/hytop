@@ -18,7 +18,11 @@ import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 
-const LoginScreen = () => {
+const LoginScreen = ({
+  setScreen
+}: {
+  setScreen?: (screen: string) => void;
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -136,7 +140,9 @@ const LoginScreen = () => {
           <Text ta="center" mt="md">
             Don't have an account?{" "}
             <Button
-              onClick={() => navigate("/register")}
+              onClick={() =>
+                setScreen ? setScreen("register") : navigate("/register")
+              }
               variant="hi"
               size="sm"
               style={{ padding: 1, marginLeft: 4 }}

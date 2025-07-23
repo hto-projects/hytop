@@ -18,7 +18,11 @@ import { useRegisterMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 
-const RegisterScreen = () => {
+const RegisterScreen = ({
+  setScreen
+}: {
+  setScreen?: (screen: string) => void;
+}) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUserName] = useState("");
@@ -202,7 +206,9 @@ const RegisterScreen = () => {
           <Text ta="center" mt="md">
             Already have an account?{" "}
             <Button
-              onClick={() => navigate("/login")}
+              onClick={() =>
+                setScreen ? setScreen("sign in") : navigate("/login")
+              }
               variant="hi"
               size="sm"
               style={{ padding: 1, marginLeft: 4 }}
