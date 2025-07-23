@@ -108,7 +108,7 @@ const createProject = asyncHandler(async (req: any, res) => {
   const starterProjectFiles: IProjectFile[] = [
     {
       fileName: "index.html",
-      fileContent: " "
+      fileContent: ""
     }
   ];
 
