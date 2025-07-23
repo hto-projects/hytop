@@ -43,6 +43,21 @@ const RegisterScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
+    if (password.length < 8) {
+      toast.error("Password needs to be 8 characters");
+      return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      toast.error("Password needs to have a capital letter");
+      return;
+    } //capital letteSr
+
+    if (!/[0-9]/.test(password)) {
+      toast.error("Password needs to conatin atleast 1 number");
+      return;
+    } //must contain number
+
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
     } else {
@@ -60,6 +75,7 @@ const RegisterScreen = () => {
       }
     }
   };
+
   return (
     <Box
       style={{
