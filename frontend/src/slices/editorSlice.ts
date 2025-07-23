@@ -22,6 +22,7 @@ interface EditorState {
   userIsOwner?: boolean;
   isLoading?: boolean;
   vimMode: boolean;
+  lastClosedTab?: string | null;
 }
 
 const getInitialMonacoSettings = () => {
@@ -56,7 +57,8 @@ const initialState: EditorState = {
   activeTab: null,
   ...getInitialMonacoSettings(),
   userIsOwner: false,
-  isLoading: false
+  isLoading: false,
+  lastClosedTab: null
 };
 
 const editorSlice = createSlice({
@@ -113,6 +115,14 @@ const editorSlice = createSlice({
       }
       state.activeTab = fileName;
       state.selectedFile = fileName;
+      if (!state.paneState.open.editor) {
+        state.paneState.open.editor = true;
+        if (state.lastClosedTab && state.tabs.includes(state.lastClosedTab)) {
+          state.activeTab = state.lastClosedTab;
+          state.selectedFile = state.lastClosedTab;
+          state.lastClosedTab = null;
+        }
+      }
     },
     closeTab(state, action: PayloadAction<string>) {
       const fileName = action.payload;
@@ -126,7 +136,16 @@ const editorSlice = createSlice({
           } else {
             state.activeTab = null;
             state.selectedFile = null;
+            state.lastClosedTab = fileName;
+            state.paneState.open.editor = false;
           }
+        }
+      }
+      if (state.selectedFile === fileName) {
+        if (state.tabs.length > 0) {
+          state.selectedFile = state.tabs[0];
+        } else {
+          state.selectedFile = null;
         }
       }
     },

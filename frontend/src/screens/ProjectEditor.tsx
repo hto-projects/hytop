@@ -108,7 +108,8 @@ const ProjectEditor = () => {
     renamingFile,
     renameValue,
     tabs,
-    activeTab
+    activeTab,
+    lastClosedTab
   } = useSelector((state: RootState) => state.editor);
 
   const userIsOwner = ownership.data?.isOwner || false;
@@ -661,6 +662,24 @@ const ProjectEditor = () => {
     });
   }, [monaco, editorRef.current]);
 
+  useEffect(() => {
+    if (
+      paneState.open.editor &&
+      (!activeTab || !tabs.length) &&
+      lastClosedTab &&
+      projectFiles.some((f) => f.fileName === lastClosedTab)
+    ) {
+      dispatch(openTab(lastClosedTab));
+    }
+  }, [
+    paneState.open.editor,
+    lastClosedTab,
+    projectFiles,
+    activeTab,
+    tabs.length,
+    dispatch
+  ]);
+
   return (
     <Box
       style={{
@@ -764,99 +783,111 @@ const ProjectEditor = () => {
           </Box>
         </Box>
         {paneOrder
-          .filter((pane) => pane !== "explorer" && pane !== "settings")
-          .map((pane, idx, arr) => (
-            <React.Fragment key={pane}>
-              {pane === "editor" && (
-                <EditorPane
-                  MIN_PANE_WIDTH={MIN_PANE_WIDTH}
-                  DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
-                  width={paneWidths[pane]}
-                  onDragStart={onDragStart}
-                  onDragOver={onDragOver}
-                  closePane={closePane}
-                  renderTabBar={() => (
-                    <TabBar
-                      tabs={tabs}
-                      activeTab={activeTab}
-                      unsavedFiles={unsavedFiles}
-                      handleTabClick={handleTabClick}
-                      handleTabClose={handleTabClose}
-                      // I don't know why this is needed but it was screaming at me and this works for some reason lol
-                      primaryColor={undefined}
-                    />
-                  )}
-                  unsavedFiles={unsavedFiles}
-                  activeTab={activeTab}
-                  saveCurrentFile={saveCurrentFile}
-                  editorRef={editorRef}
-                  monaco={monaco}
-                  modelsRef={modelsRef}
-                  getMonacoLang={getMonacoLang}
-                  userIsOwner={userIsOwner}
-                />
-              )}
-              {pane === "preview" && (
-                <PreviewPane
-                  MIN_PANE_WIDTH={MIN_PANE_WIDTH}
-                  DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
-                  width={paneWidths[pane]}
-                  onDragStart={onDragStart}
-                  onDragOver={onDragOver}
-                  closePane={closePane}
-                  previewUrl={`${
-                    import.meta.env.VITE_BACKEND_URL
-                  }/pf/${projectName}/`}
-                  projectVersion={projectVersion}
-                />
-              )}
-              {pane === "settings" && (
-                <SettingsPane
-                  MIN_PANE_WIDTH={MIN_PANE_WIDTH}
-                  DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
-                  width={paneWidths[pane]}
-                  onDragStart={onDragStart}
-                  onDragOver={onDragOver}
-                  closePane={closePane}
-                />
-              )}
-              {idx < arr.length - 1 && canResize && (
-                <div
-                  style={{
-                    width: 6,
-                    cursor: "col-resize",
-                    background:
-                      theColorScheme === "dark" ? "#23272A" : "transparent",
-                    zIndex: 10,
-                    userSelect: "none",
-                    position: "relative"
-                  }}
-                  onMouseDown={(e) =>
-                    onResizerMouseDown(paneOrder.indexOf(pane), e)
-                  }
-                  onDoubleClick={() => {
-                    setPaneWidths((prev) => ({
-                      ...prev,
-                      [pane]: DEFAULT_PANE_WIDTHS[pane],
-                      [paneOrder[paneOrder.indexOf(pane) + 1]]:
-                        DEFAULT_PANE_WIDTHS[
-                          paneOrder[paneOrder.indexOf(pane) + 1]
-                        ]
-                    }));
-                  }}
-                >
+          .filter(
+            (pane) =>
+              pane !== "explorer" &&
+              pane !== "settings" &&
+              (pane !== "editor" ||
+                (paneState.open.editor && tabs.length > 0 && activeTab))
+          )
+          .map((pane, idx, arr) => {
+            const isPreviewMaximized =
+              pane === "preview" &&
+              (!paneState.open.editor || tabs.length === 0);
+
+            return (
+              <React.Fragment key={pane}>
+                {pane === "editor" && (
+                  <EditorPane
+                    MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                    DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                    width={paneWidths[pane]}
+                    onDragStart={onDragStart}
+                    onDragOver={onDragOver}
+                    closePane={closePane}
+                    renderTabBar={() => (
+                      <TabBar
+                        tabs={tabs}
+                        activeTab={activeTab}
+                        unsavedFiles={unsavedFiles}
+                        handleTabClick={handleTabClick}
+                        handleTabClose={handleTabClose}
+                        // I don't know why this is needed but it was screaming at me and this works for some reason lol
+                        primaryColor={undefined}
+                      />
+                    )}
+                    unsavedFiles={unsavedFiles}
+                    activeTab={activeTab}
+                    saveCurrentFile={saveCurrentFile}
+                    editorRef={editorRef}
+                    monaco={monaco}
+                    modelsRef={modelsRef}
+                    getMonacoLang={getMonacoLang}
+                    userIsOwner={userIsOwner}
+                  />
+                )}
+                {pane === "preview" && (
+                  <PreviewPane
+                    MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                    DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                    width={isPreviewMaximized ? "100vw" : paneWidths[pane]}
+                    onDragStart={onDragStart}
+                    onDragOver={onDragOver}
+                    closePane={closePane}
+                    previewUrl={`${
+                      import.meta.env.VITE_BACKEND_URL
+                    }/pf/${projectName}/`}
+                    projectVersion={projectVersion}
+                  />
+                )}
+                {pane === "settings" && (
+                  <SettingsPane
+                    MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                    DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                    width={paneWidths[pane]}
+                    onDragStart={onDragStart}
+                    onDragOver={onDragOver}
+                    closePane={closePane}
+                  />
+                )}
+                {idx < arr.length - 1 && canResize && (
                   <div
                     style={{
-                      width: 2,
-                      height: "100%",
-                      background: theColorScheme === "dark" ? "#333" : "#ddd",
-                      margin: "0 auto"
+                      width: 6,
+                      cursor: "col-resize",
+                      background:
+                        theColorScheme === "dark" ? "#23272A" : "transparent",
+                      zIndex: 10,
+                      userSelect: "none",
+                      position: "relative"
                     }}
-                  />
-                </div>
-              )}
-            </React.Fragment>
-          ))}
+                    onMouseDown={(e) =>
+                      onResizerMouseDown(paneOrder.indexOf(pane), e)
+                    }
+                    onDoubleClick={() => {
+                      setPaneWidths((prev) => ({
+                        ...prev,
+                        [pane]: DEFAULT_PANE_WIDTHS[pane],
+                        [paneOrder[paneOrder.indexOf(pane) + 1]]:
+                          DEFAULT_PANE_WIDTHS[
+                            paneOrder[paneOrder.indexOf(pane) + 1]
+                          ]
+                      }));
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 2,
+                        height: "100%",
+                        background: theColorScheme === "dark" ? "#333" : "#ddd",
+                        margin: "0 auto"
+                      }}
+                    />
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
       </Box>
     </Box>
   );
