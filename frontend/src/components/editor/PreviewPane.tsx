@@ -70,7 +70,13 @@ const PreviewPane = ({
           <PiXBold />
         </ActionIcon>
       </Group>
-      <Box style={{ padding: "8px", borderBottom: "1px solid #eee" }}>
+      <Box
+        style={{
+          padding: "8px",
+          borderBottom:
+            theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee"
+        }}
+      >
         <Group gap="xs" align="center">
           <Text
             style={{

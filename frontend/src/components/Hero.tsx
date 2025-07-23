@@ -90,7 +90,7 @@ const Hero = () => {
               color={primaryColor}
               radius="md"
               component="a"
-              href="/register-screen"
+              href="/register"
               style={{
                 fontWeight: 600,
                 fontSize: 18,
