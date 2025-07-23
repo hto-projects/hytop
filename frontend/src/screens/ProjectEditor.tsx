@@ -390,6 +390,10 @@ const ProjectEditor = () => {
     };
   }, [monaco, activeTab, projectFiles.map((f) => f.fileName).join(",")]);
 
+  const previewUrl = `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/`;
+  const Openinnewtabe = async () => {
+    window.open(previewUrl, "_blank");
+  };
   const saveCurrentFile = async () => {
     if (!activeTab) return;
     const model = modelsRef.current[activeTab];
@@ -415,6 +419,10 @@ const ProjectEditor = () => {
       if (e.ctrlKey && e.key.toLowerCase() === "s") {
         e.preventDefault();
         saveCurrentFile();
+      }
+      if (e.ctrlKey && e.key.toLowerCase() === "r") {
+        e.preventDefault();
+        Openinnewtabe();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
