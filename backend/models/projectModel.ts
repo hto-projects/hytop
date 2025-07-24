@@ -34,7 +34,7 @@ const projectSchema = new mongoose.Schema(
         },
         fileContent: {
           type: String,
-          required: true
+          required: false
         }
       }
     ]
