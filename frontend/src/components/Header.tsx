@@ -21,7 +21,8 @@ const Header = () => {
 
   const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
   const isEditor = !!match;
-  const projectName = match ? match[2] : "";
+  let projectName = match ? match[2] : "";
+  projectName = decodeURIComponent(projectName);
 
   const userIsOwner = useSelector((state: any) =>
     isEditor ? state.editor.userIsOwner : false
