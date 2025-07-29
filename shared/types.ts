@@ -10,4 +10,5 @@ export interface IProject {
   projectId: string;
   projectStatus: string;
   projectFiles: IProjectFile[];
+  updatedAt?: number;
 }
