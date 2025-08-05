@@ -3,8 +3,13 @@ import { useParams } from "react-router-dom";
 import {
   useCheckOwnershipQuery,
   useGetProjectQuery,
-  useUpdateProjectMutation
+  useUpdateProjectMutation,
+  useChangeProjectDescriptionMutation,
+  useChangeProjectNameMutation,
+  useGetProjectIdQuery,
+  useGetProjectDescriptionQuery
 } from "../slices/projectsApiSlice";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   ActionIcon,
@@ -31,6 +36,7 @@ import {
   PiFileHtml,
   PiFileJs,
   PiGearBold,
+  PiPencilBold,
   PiDotOutlineFill,
   PiLinkBold,
   PiArrowSquareOutBold,
@@ -52,9 +58,11 @@ import {
   closeTab,
   syncTabsWithFiles,
   setEditorIsLoading,
-  setUserIsOwner
+  setUserIsOwner,
+  setCurrentProjectName
 } from "../slices/editorSlice";
 import { IProject } from "../../../shared/types";
+import { useState } from "react";
 
 import { RootState } from "../store";
 import ExplorerPane from "../components/editor/ExplorerPane";
@@ -64,6 +72,11 @@ import SettingsPane from "../components/editor/SettingsPane";
 import Sidebar from "../components/editor/Sidebar";
 import TabBar from "../components/editor/TabBar";
 import Header from "../components/Header";
+import { toast } from "react-toastify";
+import PreferencesPane from "../components/editor/PreferencesPane";
+import { setProjectName, setProjectDescription } from "../slices/editorSlice";
+import { useNavigate } from "react-router-dom";
+import { ref } from "process";
 
 function getMonacoLang(filename: string) {
   if (!filename) return "plaintext";
@@ -77,6 +90,7 @@ const paneTypes = [
   { key: "explorer", icon: <PiFilesBold />, label: "Files" },
   { key: "editor", icon: <PiCodeBold />, label: "Editor" },
   { key: "preview", icon: <PiMonitorBold />, label: "Preview" },
+  { key: "preferences", icon: <PiPencilBold />, label: "Preferences" },
   { key: "settings", icon: <PiGearBold />, label: "Settings" }
 ];
 
@@ -84,6 +98,7 @@ const DEFAULT_PANE_WIDTHS = {
   explorer: 200,
   editor: 600,
   preview: 400,
+  preferences: 320,
   settings: 320
 };
 
@@ -92,13 +107,35 @@ const ProjectEditor = () => {
   const monaco = useMonaco();
   const theColorScheme = useComputedColorScheme("light");
   const [sidebarTab, setSidebarTab] = React.useState<
-    "explorer" | "settings" | null
+    "explorer" | "preferences" | "settings" | null
   >("explorer");
   const { projectName } = useParams();
+  const { projectName: routeProjectName } = useParams();
   const dispatch = useDispatch();
   const ownership: any = useCheckOwnershipQuery(projectName);
   const projectData: any = useGetProjectQuery(projectName);
   const [updateProject, { isLoading }] = useUpdateProjectMutation();
+  const [changeProjectName] = useChangeProjectNameMutation();
+  const [changeProjectDescription] = useChangeProjectDescriptionMutation();
+  const navigate = useNavigate();
+  const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
+  const isEditor = !!match;
+
+  const projectID = useGetProjectIdQuery(projectName, {
+    skip: !isEditor || !projectName
+  });
+  const projectId = projectID.data?.projectId;
+  const projectDescriptionData = useGetProjectDescriptionQuery(projectId, {
+    skip: !projectId
+  });
+
+  const projectDescription = projectDescriptionData?.data?.projectDescription;
+  const [currentProjectName, setCurrentProjectNamem] = useState(
+    projectName || ""
+  );
+  const [currentProjectDescription, setCurrentProjectDescription] = useState(
+    projectDescription || ""
+  );
 
   const {
     paneState,
@@ -166,7 +203,10 @@ const ProjectEditor = () => {
         open: { ...paneState.open, [pane]: false }
       })
     );
-    if (sidebarTab === pane && (pane === "explorer" || pane === "settings")) {
+    if (
+      sidebarTab === pane &&
+      (pane === "explorer" || pane === "preferences" || pane === "settings")
+    ) {
       setSidebarTab(null);
     }
   };
@@ -187,7 +227,7 @@ const ProjectEditor = () => {
           open: { ...paneState.open, [pane]: true }
         })
       );
-      setSidebarTab(pane as "explorer" | "settings");
+      setSidebarTab(pane as "explorer" | "preferences" | "settings");
     }
   };
 
@@ -516,6 +556,7 @@ const ProjectEditor = () => {
   useEffect(() => {
     if (projectData?.data) {
       dispatch(setProjectFiles(projectData.data.projectFiles));
+      dispatch(setCurrentProjectName(projectData.data.projectName));
     }
   }, [projectData?.data]);
 
@@ -689,6 +730,58 @@ const ProjectEditor = () => {
     dispatch
   ]);
 
+  const handleChangeProjectName = async (newName: string) => {
+    if (!projectId || !newName || newName === currentProjectName) return;
+
+    try {
+      const res = await changeProjectName({
+        projectId,
+        newProjectName: newName
+      }).unwrap();
+      setCurrentProjectNamem(res.projectName);
+      dispatch(setProjectName(res.projectName));
+
+      if (res.projectName !== projectName) {
+        navigate(`/e/${encodeURIComponent(res.projectName)}`, {
+          replace: true
+        });
+      }
+
+      toast.success("Successfully updated project name");
+      return true;
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to update project name");
+      return false;
+    }
+  };
+
+  const handleChangeProjectDescription = async (newDesc: string) => {
+    if (!projectId || !newDesc) return;
+    try {
+      const res = await changeProjectDescription({
+        projectId,
+        newProjectDescription: newDesc
+      }).unwrap();
+      setCurrentProjectDescription(res.projectDescription);
+      dispatch(setProjectDescription(res.projectDescription));
+      toast.success("Successfully updated project description");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to update project description");
+    }
+  };
+
+  useEffect(() => {
+    if (projectName !== undefined) {
+      setCurrentProjectNamem(projectName);
+    }
+  }, [projectName]);
+
+  useEffect(() => {
+    if (projectDescription !== undefined) {
+      setCurrentProjectDescription(projectDescription);
+    }
+  }, [projectDescription]);
+
   return (
     <Box
       style={{
@@ -741,6 +834,16 @@ const ProjectEditor = () => {
                 style={undefined}
               />
             )}
+            {sidebarTab === "preferences" && paneState.open.preferences && (
+              <PreferencesPane
+                MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                width={paneWidths["preferences"]}
+                onDragStart={onDragStart}
+                onDragOver={onDragOver}
+                closePane={closePane}
+              />
+            )}
             {sidebarTab === "settings" && paneState.open.settings && (
               <SettingsPane
                 MIN_PANE_WIDTH={MIN_PANE_WIDTH}
@@ -749,11 +852,18 @@ const ProjectEditor = () => {
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
                 closePane={closePane}
+                projectId={projectId}
+                projectName={projectName}
+                projectDescription={projectDescription}
+                changeProjectName={handleChangeProjectName}
+                changeProjectDescription={handleChangeProjectDescription}
               />
             )}
             {canResize &&
-              paneOrder.filter((p) => p !== "explorer" && p !== "settings")
-                .length > 0 && (
+              paneOrder.filter(
+                (p) =>
+                  p !== "explorer" && p !== "preferences" && p !== "settings"
+              ).length > 0 && (
                 <div
                   style={{
                     width: 6,
@@ -770,11 +880,17 @@ const ProjectEditor = () => {
                       ...prev,
                       explorer: DEFAULT_PANE_WIDTHS.explorer,
                       [paneOrder.find(
-                        (p) => p !== "explorer" && p !== "settings"
+                        (p) =>
+                          p !== "explorer" &&
+                          p !== "preferences" &&
+                          p !== "settings"
                       )!]:
                         DEFAULT_PANE_WIDTHS[
                           paneOrder.find(
-                            (p) => p !== "explorer" && p !== "settings"
+                            (p) =>
+                              p !== "explorer" &&
+                              p !== "preferences" &&
+                              p !== "settings"
                           )!
                         ]
                     }));
@@ -796,6 +912,7 @@ const ProjectEditor = () => {
           .filter(
             (pane) =>
               pane !== "explorer" &&
+              pane !== "preferences" &&
               pane !== "settings" &&
               (pane !== "editor" ||
                 (paneState.open.editor && tabs.length > 0 && activeTab))
@@ -850,6 +967,16 @@ const ProjectEditor = () => {
                     projectVersion={projectVersion}
                   />
                 )}
+                {pane === "preferences" && (
+                  <PreferencesPane
+                    MIN_PANE_WIDTH={MIN_PANE_WIDTH}
+                    DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
+                    width={paneWidths[pane]}
+                    onDragStart={onDragStart}
+                    onDragOver={onDragOver}
+                    closePane={closePane}
+                  />
+                )}
                 {pane === "settings" && (
                   <SettingsPane
                     MIN_PANE_WIDTH={MIN_PANE_WIDTH}
@@ -858,6 +985,11 @@ const ProjectEditor = () => {
                     onDragStart={onDragStart}
                     onDragOver={onDragOver}
                     closePane={closePane}
+                    projectId={projectId}
+                    projectName={projectName}
+                    projectDescription={projectDescription}
+                    changeProjectName={changeProjectName}
+                    changeProjectDescription={changeProjectDescription}
                   />
                 )}
                 {idx < arr.length - 1 && canResize && (

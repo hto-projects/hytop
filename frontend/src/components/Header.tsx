@@ -5,24 +5,28 @@ import {
   Text,
   Loader,
   useComputedColorScheme,
-  Button
+  Button,
+  Menu,
+  TextInput,
+  Box
 } from "@mantine/core";
 import { PiFloppyDiskBold, PiGitForkBold, PiHouseBold } from "react-icons/pi";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { IProject } from "../../../shared/types";
+import { current } from "@reduxjs/toolkit";
 
-const Header = () => {
+const Header = (projectName, getProject) => {
   const location = useLocation();
-  const params = useParams();
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
   const { userInfo } = useSelector((state: any) => state.auth);
 
   const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
   const isEditor = !!match;
-  let projectName = match ? match[2] : "";
-  projectName = decodeURIComponent(projectName);
+  let routeProjectName = match ? match[2] : "";
+  routeProjectName = decodeURIComponent(routeProjectName);
 
   const userIsOwner = useSelector((state: any) =>
     isEditor ? state.editor.userIsOwner : false
@@ -31,11 +35,15 @@ const Header = () => {
     isEditor ? state.editor.isLoading : false
   );
 
+  const currentProjectName = useSelector((state: any) =>
+    isEditor ? state.editor.currentProjectName : ""
+  );
+
   const saveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("saveAllFiles"));
   };
   const forkProject = () => {
-    window.location.href = `/c/${projectName}`;
+    window.location.href = `/c/${routeProjectName}`;
   };
 
   return (
@@ -53,25 +61,45 @@ const Header = () => {
         position: "relative"
       }}
     >
-      <Group gap="xs">
-        <ActionIcon
-          component={Link}
-          to="/"
-          size="lg"
-          variant="subtle"
-          style={{
-            color: theColorScheme === "dark" ? "#fff" : undefined,
-            width: 32,
-            height: 32,
-            margin: "0 4px 0 0"
-          }}
-        >
-          <PiHouseBold />
-        </ActionIcon>
+      <ActionIcon
+        component={Link}
+        to="/"
+        size="xs"
+        variant="subtle"
+        style={{
+          color: theColorScheme === "dark" ? "#fff" : undefined,
+          width: 25,
+          height: 25,
+          margin: "0 0 0 0"
+        }}
+      >
+        <PiHouseBold />
+      </ActionIcon>
+      {isEditor && (
+        <Menu withinPortal position="bottom-start" shadow="md">
+          <Menu.Target>
+            <Text
+              fw={700}
+              c={theColorScheme === "dark" ? "#fff" : undefined}
+              style={{
+                cursor: userIsOwner ? "pointer" : "default",
+                paddingRight: 4,
+                paddingLeft: 4,
+                display: "inline-flex",
+                alignItems: "center"
+              }}
+            >
+              {currentProjectName || "HyTOP"}
+              {userIsOwner}
+            </Text>
+          </Menu.Target>
+        </Menu>
+      )}
+      {!isEditor && (
         <Text fw={700} c={theColorScheme === "dark" ? "#fff" : undefined}>
-          {isEditor && projectName ? projectName : "HyTOP"}
+          HyTOP
         </Text>
-      </Group>
+      )}
       {isEditor && (
         <Group gap={0}>
           {userIsOwner ? (
@@ -106,7 +134,6 @@ const Header = () => {
       )}
       <Group gap={0} ml="auto">
         {userInfo ? (
-          // placeholder until account system is implemented
           <Button
             component={Link}
             to="/profile"
