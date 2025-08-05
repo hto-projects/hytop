@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import generateToken from "../utils/generateToken";
 import fs from "fs";
 import { IProject, IProjectFile } from "../../shared/types";
+import { userInfo } from "os";
 
 const findProject = async (projectName: string): Promise<IProject> => {
   let starterExists: boolean = false;
@@ -387,6 +388,7 @@ const changeProjectDescription = asyncHandler(async (req: any, res) => {
 // @route   POST /api/projects/update
 // @access  NOT Public
 const updateProject = asyncHandler(async (req: any, res) => {
+  console.log("here");
   const user = req.user;
   const projectName: string = req.body.projectName;
   const projectFiles: IProjectFile[] = req.body.projectFiles;

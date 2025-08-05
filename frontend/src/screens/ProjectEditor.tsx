@@ -292,6 +292,7 @@ const ProjectEditor = () => {
   };
 
   const addFile = (type: "html" | "css" | "js") => {
+    console.log("layla");
     let ext = "";
     let content = "";
     switch (type) {
@@ -818,6 +819,7 @@ const ProjectEditor = () => {
                 onDragOver={onDragOver}
                 closePane={closePane}
                 addFile={addFile}
+                userIsOwner={userIsOwner}
                 projectFiles={projectFiles}
                 selectedFile={selectedFile}
                 handleFileSelect={handleFileSelect}

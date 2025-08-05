@@ -46,17 +46,14 @@ const Hero = () => {
             color: theColorSchemeish === "dark" ? "#fff" : undefined
           }}
         >
-          <Title
-            order={1}
-            ta="center"
-            mb="md"
-            style={{
-              fontWeight: 800,
-              color: theColorSchemeish === "dark" ? "#fff" : undefined
-            }}
-          >
-            HyTOP
-          </Title>
+          <div style={{ marginBottom: "1rem" }}>
+            <img
+              src="/logo.svg"
+              style={{
+                height: "20em"
+              }}
+            />
+          </div>
           <Text
             c={theColorSchemeish === "dark" ? undefined : "dimmed"}
             size="lg"
@@ -99,6 +96,21 @@ const Hero = () => {
               }}
             >
               Sign up
+            </Button>
+            <Button
+              size="md"
+              color={primaryColor}
+              radius="md"
+              component="a"
+              href="/about"
+              style={{
+                fontWeight: 600,
+                fontSize: 18,
+                paddingLeft: 32,
+                paddingRight: 32
+              }}
+            >
+              About Page
             </Button>
           </Group>
         </Paper>
