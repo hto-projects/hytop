@@ -81,10 +81,10 @@ const paneTypes = [
 ];
 
 const DEFAULT_PANE_WIDTHS = {
-  explorer: 200,
+  explorer: 260,
   editor: 600,
   preview: 400,
-  settings: 320
+  settings: 260
 };
 
 const MIN_PANE_WIDTH = 60;
