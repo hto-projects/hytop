@@ -23,6 +23,9 @@ interface EditorState {
   isLoading?: boolean;
   vimMode: boolean;
   lastClosedTab?: string | null;
+  projectName?: string;
+  projectDescription?: string;
+  currentProjectName?: string;
 }
 
 const getInitialMonacoSettings = () => {
@@ -58,7 +61,10 @@ const initialState: EditorState = {
   ...getInitialMonacoSettings(),
   userIsOwner: false,
   isLoading: false,
-  lastClosedTab: null
+  lastClosedTab: null,
+  projectName: "",
+  projectDescription: "",
+  currentProjectName: undefined
 };
 
 const editorSlice = createSlice({
@@ -196,6 +202,15 @@ const editorSlice = createSlice({
       if (state.selectedFile === fileName) {
         state.selectedFile = state.tabs.length > 0 ? state.tabs[0] : null;
       }
+    },
+    setProjectName(state, action: PayloadAction<string>) {
+      state.projectName = action.payload;
+    },
+    setProjectDescription(state, action: PayloadAction<string>) {
+      state.projectDescription = action.payload;
+    },
+    setCurrentProjectName(state, action: PayloadAction<string>) {
+      state.currentProjectName = action.payload;
     }
   }
 });
@@ -220,6 +235,9 @@ export const {
   setVimMode,
   setUserIsOwner,
   setEditorIsLoading,
-  deleteFile
+  deleteFile,
+  setProjectName,
+  setProjectDescription,
+  setCurrentProjectName
 } = editorSlice.actions;
 export default editorSlice.reducer;

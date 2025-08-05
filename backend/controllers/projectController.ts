@@ -241,6 +241,148 @@ const checkOwnership = asyncHandler(async (req: any, res) => {
   }
 });
 
+const findProjectById = async (projectId: string): Promise<IProject> => {
+  let starterExists: boolean = false;
+  try {
+    await fs.promises.access(
+      `./backend/starters/${projectId}`,
+      fs.constants.R_OK
+    );
+    starterExists = true;
+  } catch (e) {
+    starterExists = false;
+  }
+
+  if (starterExists) {
+    try {
+      const fileNames: string[] = await fs.promises.readdir(
+        `./backend/starters/${projectId}`
+      );
+      const projectFiles: IProjectFile[] = [];
+      for (const fileName of fileNames) {
+        const fileContent: string = await fs.promises.readFile(
+          `./backend/starters/${projectId}/${fileName}`,
+          "utf-8"
+        );
+        projectFiles.push({
+          fileName: fileName,
+          fileContent: fileContent
+        });
+      }
+      const starterProject: IProject = {
+        projectName: projectId,
+        projectDescription: "Starter project",
+        projectFiles: projectFiles,
+        projectId: projectId,
+        projectStatus: "frozen",
+        projectOwnerId: "0"
+      };
+      console.log("Starter project created:", starterProject);
+
+      return starterProject;
+    } catch (e) {
+      throw new Error(
+        `:( project with id ${projectId} could not be found in starter projects :(`
+      );
+    }
+  } else {
+    try {
+      const existingProject: IProject = await Project.findOne({
+        projectId: projectId
+      });
+      if (!existingProject) {
+        throw new Error(
+          `:( project with id ${projectId} could not be found in the database :(`
+        );
+      }
+      return existingProject;
+    } catch (e) {
+      throw new Error(
+        `:( project with id ${projectId} could not be found in the database :(`
+      );
+    }
+  }
+};
+const changeProjectName = asyncHandler(async (req: any, res) => {
+  const { projectId, newProjectName } = req.body;
+  const foundProject: IProject = await findProject(newProjectName);
+  if (foundProject) {
+    res.status(400);
+    throw new Error(`:( project with name ${newProjectName} already exists :(`);
+  }
+
+  if (!projectId || !newProjectName) {
+    res.status(400);
+    throw new Error("Missing projectId or newProjectName");
+  }
+  const existingProject = await findProjectById(projectId);
+  if (!existingProject) {
+    res.status(404);
+    throw new Error(":( project not found :(");
+  }
+  if (req.user._id !== existingProject.projectOwnerId) {
+    res.status(401);
+    throw new Error("Not authorized to change project name");
+  }
+
+  try {
+    await Project.findOneAndUpdate(
+      { projectId },
+      { projectName: newProjectName }
+    );
+  } catch (error) {
+    console.error("Error updating project name:", error);
+  }
+
+  const project = await findProjectById(projectId);
+  if (!project) {
+    res.status(404);
+    throw new Error(":( project not found :(");
+  }
+
+  res.json({
+    message: "Project name updated",
+    projectName: project.projectName
+  });
+});
+
+const changeProjectDescription = asyncHandler(async (req: any, res) => {
+  const { projectId, newProjectDescription } = req.body;
+
+  if (!projectId || !newProjectDescription) {
+    res.status(400);
+    throw new Error("Missing projectId or newProjectDescription");
+  }
+
+  const existingProject = await findProjectById(projectId);
+  if (!existingProject) {
+    res.status(404);
+    throw new Error(":( project not found :(");
+  }
+  if (req.user._id !== existingProject.projectOwnerId) {
+    res.status(401);
+    throw new Error("Not authorized to change project Description");
+  }
+
+  try {
+    await Project.findOneAndUpdate(
+      { projectId },
+      { projectDescription: newProjectDescription }
+    );
+  } catch (error) {
+    console.error("Error updating project description:", error);
+  }
+  const project = await findProjectById(projectId);
+  if (!project) {
+    res.status(404);
+    throw new Error(":( project not found :(");
+  }
+  res.json({
+    message: "Project description updated",
+    projectDescription: project.projectDescription
+  });
+});
+
 // @desc    Update an existing project
 // @route   POST /api/projects/update
 // @access  NOT Public
@@ -274,6 +416,29 @@ const updateProject = asyncHandler(async (req: any, res) => {
   }
 });
 
+const getProjectDescription = asyncHandler(async (req: any, res) => {
+  const projectId: string = req.params.projectId;
+  let project: IProject;
+
+  if (!projectId) {
+    res.status(400);
+    throw new Error("Missing projectId");
+  }
+
+  project = await findProjectById(projectId);
+  if (!project) {
+    res.status(404);
+    throw new Error(":( project not found :(");
+  }
+  console.log("Project ID:", projectId);
+  console.log("Project name:", project.projectName);
+  console.log("Project description:", project.projectDescription);
+
+  res.json({
+    projectDescription: project.projectDescription
+  });
+});
+
 // @desc    Get a project
 // @route   GET /get/:projectId
 // @access  Public
@@ -289,6 +454,20 @@ const getProject = asyncHandler(async (req: any, res) => {
   }
 
   res.send(project);
+});
+
+const getProjectId = asyncHandler(async (req: any, res) => {
+  const projectName: string = req.params.projectName;
+  let project: IProject;
+
+  try {
+    project = await findProject(projectName);
+  } catch (e) {
+    res.status(400);
+    throw new Error(":( project not found :(");
+  }
+
+  res.json({ projectId: project.projectId });
 });
 
 // @desc    Render a project file
@@ -346,5 +525,10 @@ export {
   checkOwnership,
   getProject,
   copyProject,
-  renderFile
+  renderFile,
+  findProjectById,
+  changeProjectName,
+  changeProjectDescription,
+  getProjectId,
+  getProjectDescription
 };

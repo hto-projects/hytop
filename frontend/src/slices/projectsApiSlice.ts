@@ -17,6 +17,32 @@ export const projectsApiSlice = apiSlice.injectEndpoints({
         body: data
       })
     }),
+    findProjectById: builder.query({
+      query: (projectId) => ({
+        url: `${PROJECTS_URL}/find/${projectId}`,
+        method: "GET"
+      })
+    }),
+    changeProjectName: builder.mutation({
+      query: (data) => ({
+        url: `${PROJECTS_URL}/change-name/${data.projectId}`,
+        method: "POST",
+        body: data
+      })
+    }),
+    getProjectDescription: builder.query({
+      query: (projectId) => ({
+        url: `${PROJECTS_URL}/get-description/${projectId}`,
+        method: "GET"
+      })
+    }),
+    changeProjectDescription: builder.mutation({
+      query: (data) => ({
+        url: `${PROJECTS_URL}/change-description/${data.projectId}`,
+        method: "POST",
+        body: data
+      })
+    }),
     copyProject: builder.mutation({
       query: (data) => ({
         url: `${PROJECTS_URL}/copy`,
@@ -27,6 +53,12 @@ export const projectsApiSlice = apiSlice.injectEndpoints({
     getProject: builder.query({
       query: (projectName) => ({
         url: `${PROJECTS_URL}/get/${projectName}`,
+        method: "GET"
+      })
+    }),
+    getProjectId: builder.query({
+      query: (projectId) => ({
+        url: `${PROJECTS_URL}/get-id/${projectId}`,
         method: "GET"
       })
     }),
@@ -44,5 +76,10 @@ export const {
   useUpdateProjectMutation,
   useCopyProjectMutation,
   useGetProjectQuery,
-  useCheckOwnershipQuery
+  useCheckOwnershipQuery,
+  useFindProjectByIdQuery,
+  useChangeProjectDescriptionMutation,
+  useChangeProjectNameMutation,
+  useGetProjectIdQuery,
+  useGetProjectDescriptionQuery
 } = projectsApiSlice;

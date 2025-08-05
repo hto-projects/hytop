@@ -4,14 +4,16 @@ import {
   ActionIcon,
   useComputedColorScheme
 } from "@mantine/core";
-import { PiFilesBold, PiGearBold } from "react-icons/pi";
+import { PiFilesBold, PiPencilBold, PiGearBold } from "react-icons/pi";
 import React from "react";
 import { useSelector } from "react-redux";
 
 const Sidebar = ({ sidebarTab, setSidebarTab, openPane }) => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
-  const handleSidebarButton = (tabbyCat: "explorer" | "settings") => {
+  const handleSidebarButton = (
+    tabbyCat: "explorer" | "preferences" | "settings"
+  ) => {
     if (sidebarTab === tabbyCat) {
       setSidebarTab(null);
       openPane && openPane(tabbyCat, true);
@@ -48,6 +50,16 @@ const Sidebar = ({ sidebarTab, setSidebarTab, openPane }) => {
           style={{ marginBottom: 4 }}
         >
           <PiFilesBold />
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Preferences" position="right">
+        <ActionIcon
+          color={sidebarTab === "preferences" ? primaryColor : "gray"}
+          variant={sidebarTab === "preferences" ? "filled" : "subtle"}
+          size="lg"
+          onClick={() => handleSidebarButton("preferences")}
+        >
+          <PiPencilBold />
         </ActionIcon>
       </Tooltip>
       <Tooltip label="Settings" position="right">
