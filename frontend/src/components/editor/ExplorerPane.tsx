@@ -104,9 +104,9 @@ const ExplorerPane = ({
         backgroundColor:
           theColorScheme === "dark" ? "#181A1B" : style?.backgroundColor
       }}
-      draggable
-      onDragStart={() => onDragStart("explorer")}
-      onDragOver={(e) => onDragOver(e, "explorer")}
+      // draggable
+      // onDragStart={() => onDragStart("explorer")}
+      // onDragOver={(e) => onDragOver(e, "explorer")}
     >
       <Group
         align="apart"

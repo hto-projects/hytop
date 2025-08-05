@@ -44,9 +44,9 @@ const PreviewPane = ({
         color: theColorScheme === "dark" ? "white" : undefined,
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined
       }}
-      draggable
-      onDragStart={() => onDragStart("preview")}
-      onDragOver={(e) => onDragOver(e, "preview")}
+      // draggable
+      // onDragStart={() => onDragStart("preview")}
+      // onDragOver={(e) => onDragOver(e, "preview")}
     >
       <Group
         align="apart"
