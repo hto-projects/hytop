@@ -1,0 +1,22 @@
+#main {
+  width: 400px;
+  height: 400px;
+  border: 2px solid black;
+}
+
+.horizontal {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.cell {
+  height: 100px;
+}
+
+.black {
+  background: black;
+}
+
+.yellow {
+  background: gold;
+}

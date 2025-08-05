@@ -1,12 +1,13 @@
 {
-  "name": "MERN TS AUTH",
+  "name": "HYTOP",
   "version": "1.0.0",
-  "description": "Boiler-plate code for a MERN stack application that uses TypeScript and includes user authentication.",
+  "description": "Hyland Tech Outreach Portal",
   "main": "server.js",
   "scripts": {
     "server": "ts-node-dev --respawn --pretty --transpile-only ./backend/server.ts",
     "client": "npm run dev --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "update": "npm i && cd frontend && npm i && cd .."
   },
   "author": "Hyland Software, Inc.",
   "license": "MIT",

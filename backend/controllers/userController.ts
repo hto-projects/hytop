@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
 import generateToken from "../utils/generateToken";
 import { v4 as uuidv4 } from "uuid";
+import Project from "../models/projectModel";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/auth
@@ -126,10 +127,21 @@ const updateUserProfile = asyncHandler(async (req: any, res) => {
   }
 });
 
+const getUserProjects = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+  if (!userId) {
+    res.status(400);
+    throw new Error("User ID is required");
+  }
+  const projects = await Project.find({ projectOwnerId: userId });
+  res.json(projects);
+});
+
 export {
   authUser,
   registerUser,
   logoutUser,
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  getUserProjects
 };
