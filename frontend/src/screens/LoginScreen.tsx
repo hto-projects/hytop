@@ -1,14 +1,28 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Button, Row, Col } from "react-bootstrap";
-import FormContainer from "../components/FormContainer";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Container,
+  Paper,
+  Title,
+  TextInput,
+  PasswordInput,
+  Center,
+  Box,
+  useComputedColorScheme,
+  Text
+} from "@mantine/core";
+import Button from "../components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 
-const LoginScreen = ({ setScreen }) => {
+const LoginScreen = ({
+  setScreen
+}: {
+  setScreen?: (screen: string) => void;
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,9 +33,11 @@ const LoginScreen = ({ setScreen }) => {
 
   const { userInfo } = useSelector((state: any) => state.auth);
 
+  const theColorScheme = useComputedColorScheme("light");
+
   useEffect(() => {
     if (userInfo) {
-      setScreen("main");
+      navigate("/");
     }
   }, [navigate, userInfo]);
 
@@ -30,59 +46,113 @@ const LoginScreen = ({ setScreen }) => {
     try {
       const res = await login({ username, password }).unwrap();
       dispatch(setCredentials({ ...res }));
-      setScreen("main");
+      navigate("/");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
   };
 
   return (
-    <FormContainer>
-      <div style={{ width: "200vh" }}></div>
-      <h1>Sign In</h1>
-
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="my-2" controlId="username">
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="username"
-            placeholder="Enter username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Button
-          disabled={isLoading}
-          type="submit"
-          variant="primary"
-          className="mt-3"
+    <Box
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        background: theColorScheme === "dark" ? "#181A1B" : undefined,
+        color: theColorScheme === "dark" ? "#fff" : undefined,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <Container size={600} my={40}>
+        <Paper
+          shadow="md"
+          p={48}
+          radius="md"
+          withBorder
+          style={{
+            maxWidth: 520,
+            margin: "0 auto",
+            background: theColorScheme === "dark" ? "#23272A" : undefined,
+            color: theColorScheme === "dark" ? "#fff" : undefined
+          }}
         >
-          Sign In
-        </Button>
-      </Form>
-
-      {isLoading && <Loader />}
-
-      <Row className="py-3">
-        <Col>
-          New Customer?
-          <Button onClick={() => setScreen("register")} variant="light">
-            Register
-          </Button>
-        </Col>
-      </Row>
-    </FormContainer>
+          <Title order={2} ta="center" mb="md">
+            Sign In
+          </Title>
+          <form
+            onSubmit={submitHandler}
+            style={{ maxWidth: 440, width: "100%", margin: "0 auto" }}
+          >
+            <TextInput
+              label="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              autoFocus
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <PasswordInput
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <Center mt="md">
+              <Button
+                type="submit"
+                size="md"
+                disabled={isLoading}
+                style={{ width: "100%" }}
+              >
+                {isLoading ? "Signing In..." : "Sign In"}
+              </Button>
+            </Center>
+            {isLoading && (
+              <Center mt="md">
+                <Loader />
+              </Center>
+            )}
+          </form>
+          <Text ta="center" mt="md">
+            Don't have an account?{" "}
+            <Button
+              onClick={() =>
+                setScreen ? setScreen("register") : navigate("/register")
+              }
+              variant="hi"
+              size="sm"
+              style={{ padding: 1, marginLeft: 4 }}
+            >
+              Register
+            </Button>
+          </Text>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

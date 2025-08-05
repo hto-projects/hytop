@@ -3,7 +3,6 @@ import "mantine-contextmenu/styles.css";
 import { createTheme, MantineProvider, ColorSchemeScript } from "@mantine/core";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -11,11 +10,14 @@ import {
   RouterProvider
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import store from "./store.js";
+import store from "./store";
 import { Provider, useSelector, useDispatch } from "react-redux";
-import HomeScreen from "./screens/HomeScreen.jsx";
-import ProfileScreen from "./screens/ProfileScreen.jsx";
-import PrivateRoute from "./components/PrivateRoute.jsx";
+import App from "./App";
+import HomeScreen from "./screens/HomeScreen";
+import PrivateRoute from "./components/PrivateRoute";
+import ProfileScreen from "./screens/ProfileScreen";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
 import CreateProjectScreen from "./screens/CreateProject";
 import ProjectEditor from "./screens/ProjectEditor";
 import CopyProjectScreen from "./screens/CopyProject";
@@ -24,8 +26,8 @@ import { getCustomTheme, defaultTheme } from "./theme";
 import { useEffect } from "react";
 import { setMonacoTheme } from "./slices/editorSlice";
 import { setColorScheme } from "./slices/themeSlice";
+import { getCustomTheme, defaultTheme } from "./theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
-import RegisterScreen from "./screens/RegisterScreen";
 import AuthContainer from "./components/AuthContainer";
 import "./fonts/comic-mono.css";
 
@@ -35,8 +37,9 @@ const router = createBrowserRouter(
       <Route path="/create-project" element={<CreateProjectScreen />} />
       <Route path="/e/:projectName" element={<ProjectEditor />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
-      <Route path="/register-screen" element={<AuthContainer />} />
       <Route path="/about" element={<AboutScreen />} />
+      <Route path="/login" element={<LoginScreen />} />
+      <Route path="/register" element={<RegisterScreen />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />

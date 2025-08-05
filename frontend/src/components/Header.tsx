@@ -7,7 +7,7 @@ import {
   useComputedColorScheme,
   Button
 } from "@mantine/core";
-import { PiFloppyDiskBold, PiGitForkBold } from "react-icons/pi";
+import { PiFloppyDiskBold, PiGitForkBold, PiHouseBold } from "react-icons/pi";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
@@ -21,7 +21,8 @@ const Header = () => {
 
   const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
   const isEditor = !!match;
-  const projectName = match ? match[2] : "";
+  let projectName = match ? match[2] : "";
+  projectName = decodeURIComponent(projectName);
 
   const userIsOwner = useSelector((state: any) =>
     isEditor ? state.editor.userIsOwner : false
@@ -52,6 +53,20 @@ const Header = () => {
         position: "relative"
       }}
     >
+      <ActionIcon
+        component={Link}
+        to="/"
+        size="xs"
+        variant="subtle"
+        style={{
+          color: theColorScheme === "dark" ? "#fff" : undefined,
+          width: 25,
+          height: 25,
+          margin: "0 0 0 0"
+        }}
+      >
+        <PiHouseBold />
+      </ActionIcon>
       <Text fw={700} c={theColorScheme === "dark" ? "#fff" : undefined}>
         {isEditor && projectName ? projectName : "HyTOP"}
       </Text>

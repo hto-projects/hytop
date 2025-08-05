@@ -1,14 +1,28 @@
 import { useState, useEffect } from "react";
-import { Form, Button, Row, Col } from "react-bootstrap";
-import FormContainer from "../components/FormContainer";
+import {
+  Container,
+  Paper,
+  Title,
+  TextInput,
+  PasswordInput,
+  Center,
+  Box,
+  useComputedColorScheme,
+  Text
+} from "@mantine/core";
+import Button from "../components/Button";
 import Loader from "../components/Loader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRegisterMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 
-const RegisterScreen = ({ setScreen }) => {
+const RegisterScreen = ({
+  setScreen
+}: {
+  setScreen?: (screen: string) => void;
+}) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUserName] = useState("");
@@ -22,14 +36,31 @@ const RegisterScreen = ({ setScreen }) => {
 
   const { userInfo } = useSelector((state: any) => state.auth);
 
+  const theColorScheme = useComputedColorScheme("light");
+
   useEffect(() => {
     if (userInfo) {
-      setScreen("main");
+      navigate("/");
     }
   }, [navigate, userInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    if (password.length < 8) {
+      toast.error("Password needs to be 8 characters");
+      return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      toast.error("Password needs to have a capital letter");
+      return;
+    } //capital letteSr
+
+    if (!/[0-9]/.test(password)) {
+      toast.error("Password needs to conatin atleast 1 number");
+      return;
+    } //must contain number
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -42,83 +73,168 @@ const RegisterScreen = ({ setScreen }) => {
           password
         }).unwrap();
         dispatch(setCredentials({ ...res }));
-        setScreen("main");
+        navigate("/");
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
     }
   };
+
   return (
-    <FormContainer>
-      <div style={{ width: "200vh" }}></div>
-
-      <h1>Register</h1>
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="my-2" controlId="name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="name"
-            placeholder="Enter name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="email">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="email">
-          <Form.Label>User Name</Form.Label>
-          <Form.Control
-            type="username"
-            placeholder="Enter Username"
-            value={username}
-            onChange={(e) => setUserName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group className="my-2" controlId="confirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Button type="submit" variant="primary" className="mt-3">
-          Register
-        </Button>
-
-        {isLoading && <Loader />}
-      </Form>
-
-      <Row className="py-3">
-        <Col>
-          Already have an account?
-          <Button onClick={() => setScreen("sign in")} variant="light">
-            Sign In
-          </Button>
-        </Col>
-      </Row>
-    </FormContainer>
+    <Box
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        background: theColorScheme === "dark" ? "#181A1B" : undefined,
+        color: theColorScheme === "dark" ? "#fff" : undefined,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <Container size={600} my={40}>
+        <Paper
+          shadow="md"
+          p={48}
+          radius="md"
+          withBorder
+          style={{
+            maxWidth: 520,
+            margin: "0 auto",
+            background: theColorScheme === "dark" ? "#23272A" : undefined,
+            color: theColorScheme === "dark" ? "#fff" : undefined
+          }}
+        >
+          <Title order={2} ta="center" mb="md">
+            Register
+          </Title>
+          <form
+            onSubmit={submitHandler}
+            style={{ maxWidth: 440, width: "100%", margin: "0 auto" }}
+          >
+            <TextInput
+              label="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              autoFocus
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <TextInput
+              label="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <TextInput
+              label="Username"
+              value={username}
+              onChange={(e) => setUserName(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <PasswordInput
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <PasswordInput
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              mb="md"
+              size="md"
+              style={{ width: "100%" }}
+              styles={{
+                input: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  width: "100%"
+                },
+                label: {
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            <Center mt="md">
+              <Button
+                type="submit"
+                size="md"
+                disabled={isLoading}
+                style={{ width: "100%" }}
+              >
+                {isLoading ? "Registering..." : "Register"}
+              </Button>
+            </Center>
+            {isLoading && (
+              <Center mt="md">
+                <Loader />
+              </Center>
+            )}
+          </form>
+          <Text ta="center" mt="md">
+            Already have an account?{" "}
+            <Button
+              onClick={() =>
+                setScreen ? setScreen("sign in") : navigate("/login")
+              }
+              variant="hi"
+              size="sm"
+              style={{ padding: 1, marginLeft: 4 }}
+            >
+              Sign In
+            </Button>
+          </Text>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 
