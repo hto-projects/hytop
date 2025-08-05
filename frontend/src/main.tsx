@@ -22,7 +22,6 @@ import CreateProjectScreen from "./screens/CreateProject";
 import ProjectEditor from "./screens/ProjectEditor";
 import CopyProjectScreen from "./screens/CopyProject";
 import AboutScreen from "./screens/AboutScreen";
-import { getCustomTheme, defaultTheme } from "./theme";
 import { useEffect } from "react";
 import { setMonacoTheme } from "./slices/editorSlice";
 import { setColorScheme } from "./slices/themeSlice";
