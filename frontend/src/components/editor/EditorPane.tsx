@@ -216,9 +216,9 @@ const EditorPane = ({
         color: theColorScheme === "dark" ? "white" : undefined,
         background: theColorScheme === "dark" ? "#181A1B" : "#f3f4f8"
       }}
-      draggable
-      onDragStart={() => onDragStart("editor")}
-      onDragOver={(e) => onDragOver(e, "editor")}
+      // draggable
+      // onDragStart={() => onDragStart("editor")}
+      // onDragOver={(e) => onDragOver(e, "editor")}
     >
       {renderTabBar(primaryColor)}
       <Group

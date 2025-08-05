@@ -108,9 +108,9 @@ const SettingsPane = ({
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined,
         overflow: "hidden"
       }}
-      draggable
-      onDragStart={() => onDragStart("settings")}
-      onDragOver={(e) => onDragOver(e, "settings")}
+      // draggable
+      // onDragStart={() => onDragStart("settings")}
+      // onDragOver={(e) => onDragOver(e, "settings")}
     >
       <Group
         align="apart"

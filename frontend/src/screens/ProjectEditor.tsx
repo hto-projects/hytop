@@ -95,11 +95,11 @@ const paneTypes = [
 ];
 
 const DEFAULT_PANE_WIDTHS = {
-  explorer: 200,
+  explorer: 260,
   editor: 600,
   preview: 400,
-  preferences: 320,
-  settings: 320
+  settings: 260
+  preferences: 260,
 };
 
 const MIN_PANE_WIDTH = 60;
@@ -181,20 +181,25 @@ const ProjectEditor = () => {
     }
   }, [activeTab, selectedFile, monaco]);
 
-  const [dragged, setDragged] = React.useState<string | null>(null);
+  // TODO: fix drag and resize functionality
+  // const [dragged, setDragged] = React.useState<string | null>(null);
 
-  const onDragStart = (pane: string) => setDragged(pane);
-  const onDragOver = (e: React.DragEvent, pane: string) => {
-    e.preventDefault();
-    if (dragged && dragged !== pane) {
-      const newOrder = [...paneState.order];
-      const fromIdx = newOrder.indexOf(dragged);
-      const toIdx = newOrder.indexOf(pane);
-      newOrder.splice(fromIdx, 1);
-      newOrder.splice(toIdx, 0, dragged);
-      dispatch(setPaneState({ ...paneState, order: newOrder }));
-    }
-  };
+  // placeholder
+  const onDragStart = (pane: string) => {};
+  const onDragOver = (e: React.DragEvent, pane: string) => {};
+
+  // const onDragStart = (pane: string) => setDragged(pane);
+  // const onDragOver = (e: React.DragEvent, pane: string) => {
+  //   e.preventDefault();
+  //   if (dragged && dragged !== pane) {
+  //     const newOrder = [...paneState.order];
+  //     const fromIdx = newOrder.indexOf(dragged);
+  //     const toIdx = newOrder.indexOf(pane);
+  //     newOrder.splice(fromIdx, 1);
+  //     newOrder.splice(toIdx, 0, dragged);
+  //     dispatch(setPaneState({ ...paneState, order: newOrder }));
+  //   }
+  // };
 
   const closePane = (pane: string) => {
     dispatch(
@@ -471,64 +476,74 @@ const ProjectEditor = () => {
   }, [userIsOwner, projectFiles, projectName, projectVersion]);
 
   // honestly idk this barely works
-  const [paneWidths, setPaneWidths] = React.useState(() => ({
-    ...DEFAULT_PANE_WIDTHS
-  }));
+  // const [paneWidths, setPaneWidths] = React.useState(() => ({
+  //   ...DEFAULT_PANE_WIDTHS
+  // }));
+  // const paneOrder = paneState.order.filter((p) => paneState.open[p]);
+
+  // const closedPanes = paneTypes.filter((p) => !paneState.open[p.key]);
+
+  // const resizingRef = React.useRef<{
+  //   idx: number;
+  //   startX: number;
+  //   startWidths: number[];
+  // } | null>(null);
+
+  // const canResize = paneOrder.length > 1;
+
+  const paneWidths = DEFAULT_PANE_WIDTHS;
   const paneOrder = paneState.order.filter((p) => paneState.open[p]);
-
   const closedPanes = paneTypes.filter((p) => !paneState.open[p.key]);
+  const canResize = false;
 
-  const resizingRef = React.useRef<{
-    idx: number;
-    startX: number;
-    startWidths: number[];
-  } | null>(null);
+  // const onResizerMouseDown = (idx: number, e: React.MouseEvent) => {
+  //   if (!canResize) return;
+  //   resizingRef.current = {
+  //     idx,
+  //     startX: e.clientX,
+  //     startWidths: paneOrder.map((p) => paneWidths[p] || DEFAULT_PANE_WIDTHS[p])
+  //   };
+  //   document.addEventListener("mousemove", onResizerMouseMove);
+  //   document.addEventListener("mouseup", onResizerMouseUp);
+  // };
 
-  const canResize = paneOrder.length > 1;
+  // const onResizerMouseMove = (e: MouseEvent) => {
+  //   if (!resizingRef.current) return;
+  //   const { idx, startX, startWidths } = resizingRef.current;
+  //   const delta = e.clientX - startX;
+  //   const leftPane = paneOrder[idx];
+  //   const rightPane = paneOrder[idx + 1];
 
-  const onResizerMouseDown = (idx: number, e: React.MouseEvent) => {
-    if (!canResize) return;
-    resizingRef.current = {
-      idx,
-      startX: e.clientX,
-      startWidths: paneOrder.map((p) => paneWidths[p] || DEFAULT_PANE_WIDTHS[p])
-    };
-    document.addEventListener("mousemove", onResizerMouseMove);
-    document.addEventListener("mouseup", onResizerMouseUp);
-  };
+  //   const totalWidth = startWidths[idx] + startWidths[idx + 1];
 
-  const onResizerMouseMove = (e: MouseEvent) => {
-    if (!resizingRef.current) return;
-    const { idx, startX, startWidths } = resizingRef.current;
-    const delta = e.clientX - startX;
-    const leftPane = paneOrder[idx];
-    const rightPane = paneOrder[idx + 1];
+  //   let newLeft = startWidths[idx] + delta;
+  //   let newRight = startWidths[idx + 1] - delta;
 
-    const totalWidth = startWidths[idx] + startWidths[idx + 1];
+  //   if (newLeft < MIN_PANE_WIDTH) {
+  //     newLeft = MIN_PANE_WIDTH;
+  //     newRight = totalWidth - MIN_PANE_WIDTH;
+  //   } else if (newRight < MIN_PANE_WIDTH) {
+  //     newRight = MIN_PANE_WIDTH;
+  //     newLeft = totalWidth - MIN_PANE_WIDTH;
+  //   }
 
-    let newLeft = startWidths[idx] + delta;
-    let newRight = startWidths[idx + 1] - delta;
+  //   setPaneWidths((prev) => ({
+  //     ...prev,
+  //     [leftPane]: newLeft,
+  //     [rightPane]: newRight
+  //   }));
+  // };
 
-    if (newLeft < MIN_PANE_WIDTH) {
-      newLeft = MIN_PANE_WIDTH;
-      newRight = totalWidth - MIN_PANE_WIDTH;
-    } else if (newRight < MIN_PANE_WIDTH) {
-      newRight = MIN_PANE_WIDTH;
-      newLeft = totalWidth - MIN_PANE_WIDTH;
-    }
+  // const onResizerMouseUp = () => {
+  //   document.removeEventListener("mousemove", onResizerMouseMove);
+  //   document.removeEventListener("mouseup", onResizerMouseUp);
+  //   resizingRef.current = null;
+  // };
 
-    setPaneWidths((prev) => ({
-      ...prev,
-      [leftPane]: newLeft,
-      [rightPane]: newRight
-    }));
-  };
-
-  const onResizerMouseUp = () => {
-    document.removeEventListener("mousemove", onResizerMouseMove);
-    document.removeEventListener("mouseup", onResizerMouseUp);
-    resizingRef.current = null;
-  };
+  // placeholder
+  const onResizerMouseDown = (idx: number, e: React.MouseEvent) => {};
+  const onResizerMouseMove = (e: MouseEvent) => {};
+  const onResizerMouseUp = () => {};
 
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const darkMode = useSelector((state: any) => state.theme.darkMode);
@@ -876,24 +891,18 @@ const ProjectEditor = () => {
                   }}
                   onMouseDown={(e) => onResizerMouseDown(0, e)}
                   onDoubleClick={() => {
-                    setPaneWidths((prev) => ({
-                      ...prev,
-                      explorer: DEFAULT_PANE_WIDTHS.explorer,
-                      [paneOrder.find(
-                        (p) =>
-                          p !== "explorer" &&
-                          p !== "preferences" &&
-                          p !== "settings"
-                      )!]:
-                        DEFAULT_PANE_WIDTHS[
-                          paneOrder.find(
-                            (p) =>
-                              p !== "explorer" &&
-                              p !== "preferences" &&
-                              p !== "settings"
-                          )!
-                        ]
-                    }));
+                    // setPaneWidths((prev) => ({
+                    //   ...prev,
+                    //   explorer: DEFAULT_PANE_WIDTHS.explorer,
+                    //   [paneOrder.find(
+                    //     (p) => p !== "explorer" && p !== "settings"
+                    //   )!]:
+                    //     DEFAULT_PANE_WIDTHS[
+                    //       paneOrder.find(
+                    //         (p) => p !== "explorer" && p !== "settings"
+                    //       )!
+                    //     ]
+                    // }));
                   }}
                 >
                   <div
@@ -1007,14 +1016,14 @@ const ProjectEditor = () => {
                       onResizerMouseDown(paneOrder.indexOf(pane), e)
                     }
                     onDoubleClick={() => {
-                      setPaneWidths((prev) => ({
-                        ...prev,
-                        [pane]: DEFAULT_PANE_WIDTHS[pane],
-                        [paneOrder[paneOrder.indexOf(pane) + 1]]:
-                          DEFAULT_PANE_WIDTHS[
-                            paneOrder[paneOrder.indexOf(pane) + 1]
-                          ]
-                      }));
+                      // setPaneWidths((prev) => ({
+                      //   ...prev,
+                      //   [pane]: DEFAULT_PANE_WIDTHS[pane],
+                      //   [paneOrder[paneOrder.indexOf(pane) + 1]]:
+                      //     DEFAULT_PANE_WIDTHS[
+                      //       paneOrder[paneOrder.indexOf(pane) + 1]
+                      //     ]
+                      // }));
                     }}
                   >
                     <div
