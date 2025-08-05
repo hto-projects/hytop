@@ -77,6 +77,14 @@ const LoginScreen = ({
             color: theColorScheme === "dark" ? "#fff" : undefined
           }}
         >
+          <Center mb="lg">
+            <img
+              src="/favicon.svg"
+              style={{
+                height: "5em"
+              }}
+            />
+          </Center>
           <Title order={2} ta="center" mb="md">
             Sign In
           </Title>
