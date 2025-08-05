@@ -100,6 +100,21 @@ const Hero = () => {
             >
               Sign up
             </Button>
+            <Button
+              size="md"
+              color={primaryColor}
+              radius="md"
+              component="a"
+              href="/about"
+              style={{
+                fontWeight: 600,
+                fontSize: 18,
+                paddingLeft: 32,
+                paddingRight: 32
+              }}
+            >
+              About Page
+            </Button>
           </Group>
         </Paper>
       </Container>

@@ -19,6 +19,7 @@ import PrivateRoute from "./components/PrivateRoute.jsx";
 import CreateProjectScreen from "./screens/CreateProject";
 import ProjectEditor from "./screens/ProjectEditor";
 import CopyProjectScreen from "./screens/CopyProject";
+import AboutScreen from "./screens/AboutScreen";
 import { getCustomTheme, defaultTheme } from "./theme";
 import { useEffect } from "react";
 import { setMonacoTheme } from "./slices/editorSlice";
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
       <Route path="/e/:projectName" element={<ProjectEditor />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
       <Route path="/register-screen" element={<AuthContainer />} />
+      <Route path="/about" element={<AboutScreen />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />
