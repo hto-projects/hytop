@@ -46,17 +46,14 @@ const Hero = () => {
             color: theColorSchemeish === "dark" ? "#fff" : undefined
           }}
         >
-          <Title
-            order={1}
-            ta="center"
-            mb="md"
-            style={{
-              fontWeight: 800,
-              color: theColorSchemeish === "dark" ? "#fff" : undefined
-            }}
-          >
-            HyTOP
-          </Title>
+          <div style={{ marginBottom: "1rem" }}>
+            <img
+              src="/logo.svg"
+              style={{
+                height: "20em"
+              }}
+            />
+          </div>
           <Text
             c={theColorSchemeish === "dark" ? undefined : "dimmed"}
             size="lg"

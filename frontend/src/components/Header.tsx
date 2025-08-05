@@ -53,23 +53,25 @@ const Header = () => {
         position: "relative"
       }}
     >
-      <ActionIcon
-        component={Link}
-        to="/"
-        size="xs"
-        variant="subtle"
-        style={{
-          color: theColorScheme === "dark" ? "#fff" : undefined,
-          width: 25,
-          height: 25,
-          margin: "0 0 0 0"
-        }}
-      >
-        <PiHouseBold />
-      </ActionIcon>
-      <Text fw={700} c={theColorScheme === "dark" ? "#fff" : undefined}>
-        {isEditor && projectName ? projectName : "HyTOP"}
-      </Text>
+      <Group gap="xs">
+        <ActionIcon
+          component={Link}
+          to="/"
+          size="lg"
+          variant="subtle"
+          style={{
+            color: theColorScheme === "dark" ? "#fff" : undefined,
+            width: 32,
+            height: 32,
+            margin: "0 4px 0 0"
+          }}
+        >
+          <PiHouseBold />
+        </ActionIcon>
+        <Text fw={700} c={theColorScheme === "dark" ? "#fff" : undefined}>
+          {isEditor && projectName ? projectName : "HyTOP"}
+        </Text>
+      </Group>
       {isEditor && (
         <Group gap={0}>
           {userIsOwner ? (
