@@ -36,12 +36,17 @@ function setupMonacoModels({
       !model ||
       (typeof model.isDisposed === "function" && model.isDisposed())
     ) {
-      model = monaco.editor.createModel(
-        file.fileContent || "",
-        getMonacoLang(file.fileName),
-        uri
-      );
-      modelsRef.current[file.fileName] = model;
+      model = monaco.editor.getModel(uri);
+      if (model) {
+        modelsRef.current[file.fileName] = model;
+      } else {
+        model = monaco.editor.createModel(
+          file.fileContent || "",
+          getMonacoLang(file.fileName),
+          uri
+        );
+        modelsRef.current[file.fileName] = model;
+      }
     } else if (
       model.getValue() !== file.fileContent &&
       file.fileContent !== ""
@@ -59,12 +64,17 @@ function setupMonacoModels({
     !model ||
     (typeof model.isDisposed === "function" && model.isDisposed())
   ) {
-    model = monaco.editor.createModel(
-      fileContent,
-      getMonacoLang(activeTab),
-      uri
-    );
-    modelsRef.current[activeTab] = model;
+    model = monaco.editor.getModel(uri);
+    if (model) {
+      modelsRef.current[activeTab] = model;
+    } else {
+      model = monaco.editor.createModel(
+        fileContent,
+        getMonacoLang(activeTab),
+        uri
+      );
+      modelsRef.current[activeTab] = model;
+    }
   } else if (model.getValue() !== fileContent && fileContent !== "") {
     model.setValue(fileContent);
   }

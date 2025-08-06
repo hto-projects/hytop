@@ -344,6 +344,22 @@ const ProjectEditor = () => {
   const viewStatesRef = useRef<{ [filename: string]: any }>({});
 
   useEffect(() => {
+    return () => {
+      if (monaco) {
+        Object.values(modelsRef.current).forEach((model: any) => {
+          if (model && typeof model.dispose === "function") {
+            try {
+              model.dispose();
+            } catch (e) {}
+          }
+        });
+        modelsRef.current = {};
+        viewStatesRef.current = {};
+      }
+    };
+  }, [monaco]);
+
+  useEffect(() => {
     if (!monaco) return;
     Object.keys(modelsRef.current).forEach((fname) => {
       if (!projectFiles.find((f) => f.fileName === fname)) {
@@ -355,12 +371,17 @@ const ProjectEditor = () => {
     projectFiles.forEach((file) => {
       if (!modelsRef.current[file.fileName]) {
         const uri = monaco.Uri.parse(`file:///${file.fileName}`);
-        const model = monaco.editor.createModel(
-          file.fileContent,
-          getMonacoLang(file.fileName),
-          uri
-        );
-        modelsRef.current[file.fileName] = model;
+        let model = monaco.editor.getModel(uri);
+        if (model) {
+          modelsRef.current[file.fileName] = model;
+        } else {
+          model = monaco.editor.createModel(
+            file.fileContent,
+            getMonacoLang(file.fileName),
+            uri
+          );
+          modelsRef.current[file.fileName] = model;
+        }
         viewStatesRef.current[file.fileName] = null;
       } else {
         const model = modelsRef.current[file.fileName];
@@ -570,7 +591,47 @@ const ProjectEditor = () => {
 
   useEffect(() => {
     if (projectData?.data) {
-      dispatch(setProjectFiles(projectData.data.projectFiles));
+      const currentReduxFiles = projectFiles;
+      const serverFiles = projectData.data.projectFiles;
+
+      if (currentReduxFiles.length === 0) {
+        dispatch(setProjectFiles(serverFiles));
+      } else {
+        const mergedFiles = serverFiles.map((serverFile) => {
+          const existingFile = currentReduxFiles.find(
+            (f) => f.fileName === serverFile.fileName
+          );
+          if (existingFile) {
+            const model = modelsRef.current[serverFile.fileName];
+            if (model && typeof model.getValue === "function") {
+              const modelContent = model.getValue();
+              if (modelContent && modelContent !== serverFile.fileContent) {
+                setUnsavedFiles((prev) => ({
+                  ...prev,
+                  [serverFile.fileName]: true
+                }));
+                return { ...serverFile, fileContent: modelContent };
+              }
+            }
+            if (existingFile.fileContent !== serverFile.fileContent) {
+              setUnsavedFiles((prev) => ({
+                ...prev,
+                [serverFile.fileName]: true
+              }));
+              return existingFile;
+            }
+          }
+          return serverFile;
+        });
+
+        const reduxOnlyFlies = currentReduxFiles.filter(
+          (reduxFile) =>
+            !serverFiles.find((sf) => sf.fileName === reduxFile.fileName)
+        );
+
+        dispatch(setProjectFiles([...mergedFiles, ...reduxOnlyFlies]));
+      }
+
       dispatch(setCurrentProjectName(projectData.data.projectName));
     }
   }, [projectData?.data]);
