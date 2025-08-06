@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { useComputedColorScheme } from "@mantine/core";
+import Logo from "./Logo";
 
 const Hero = () => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
@@ -22,7 +23,8 @@ const Hero = () => {
         color: theColorSchemeish === "dark" ? "#fff" : undefined,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        overflow: "auto"
       }}
     >
       <Container
@@ -47,11 +49,10 @@ const Hero = () => {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-            <img
-              src="/logo.svg"
-              style={{
-                height: "20em"
-              }}
+            <Logo
+              svgPath="/logo.svg"
+              height="20em"
+              style={{ marginBottom: "0.5rem" }}
             />
           </div>
           <Text

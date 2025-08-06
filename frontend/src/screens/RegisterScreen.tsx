@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRegisterMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
+import Logo from "../components/Logo";
 
 const RegisterScreen = ({
   setScreen
@@ -87,9 +88,9 @@ const RegisterScreen = ({
         width: "100vw",
         background: theColorScheme === "dark" ? "#181A1B" : undefined,
         color: theColorScheme === "dark" ? "#fff" : undefined,
-        display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        overflow: "auto"
       }}
     >
       <Container size={600} my={40}>
@@ -106,12 +107,7 @@ const RegisterScreen = ({
           }}
         >
           <Center mb="lg">
-            <img
-              src="/favicon.svg"
-              style={{
-                height: "5em"
-              }}
-            />
+            <Logo svgPath="/favicon.svg" height="5em" />
           </Center>
           <Title order={2} ta="center" mb="md">
             Register
