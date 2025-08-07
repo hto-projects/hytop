@@ -74,7 +74,8 @@ const ProfileScreen = () => {
         color: theColorScheme === "dark" ? "#fff" : undefined,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        overflow: "auto"
       }}
     >
       <Container size={1200} my={40}>
