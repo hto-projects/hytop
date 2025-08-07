@@ -15,6 +15,7 @@ import {
   Box
 } from "@mantine/core";
 import Button from "../components/Button";
+import Logo from "../components/Logo";
 
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
@@ -50,7 +51,8 @@ const CreateProjectScreen = () => {
         color: theColorSchemeish === "dark" ? "#fff" : undefined,
         display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        overflow: "auto"
       }}
     >
       <Container
@@ -73,12 +75,7 @@ const CreateProjectScreen = () => {
           }}
         >
           <Center mb="lg">
-            <img
-              src="/favicon.svg"
-              style={{
-                height: "10em"
-              }}
-            />
+            <Logo svgPath="/favicon.svg" height="10em" />
           </Center>
           <Title
             order={2}
