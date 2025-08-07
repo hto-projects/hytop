@@ -71,6 +71,17 @@ const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
+    resetEditorState(state) {
+      return {
+        ...initialState,
+        monacoTheme: state.monacoTheme,
+        monacoFont: state.monacoFont,
+        monacoFontSize: state.monacoFontSize,
+        monacoWordWrap: state.monacoWordWrap,
+        vimMode: state.vimMode,
+        paneState: state.paneState
+      };
+    },
     setPaneState(state, action: PayloadAction<PaneState>) {
       state.paneState = action.payload;
     },
@@ -216,6 +227,7 @@ const editorSlice = createSlice({
 });
 
 export const {
+  resetEditorState,
   setPaneState,
   setSelectedFile,
   setProjectFiles,
