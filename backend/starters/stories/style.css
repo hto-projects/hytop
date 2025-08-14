@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Agu+Display&family=Bebas+Neue&family=Cedarville+Cursive&family=Inter:wght@100..900&family=Playwrite+AU+VIC+Guides&family=VT323&display=swap");
+
+body {
+  background: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6208f106-928e-47bb-80b1-ce55b9e82b98/dyu8dx-956f96a9-d374-454b-8d7c-d16a916cb9b8.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzYyMDhmMTA2LTkyOGUtNDdiYi04MGIxLWNlNTViOWU4MmI5OFwvZHl1OGR4LTk1NmY5NmE5LWQzNzQtNDU0Yi04ZDdjLWQxNmE5MTZjYjliOC5qcGcifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.5NER1lxGPtTMBKi4Ks3bR6M0wxp74Dlkd-RGFBQjTCM);
+}
+
+h1 {
+  font-family: "Jokerman";
+  text-align: center;
+  font-size: 50px;
+  font-weight: normal;
+}
+
+button {
+  background: rgba(141, 93, 3, 0.705);
+  color: wheat;
+  border: none;
+  font-family: "Cedarville Cursive";
+  font-size: 20px;
+  transition: 290ms;
+}
+
+button:hover {
+  cursor: pointer;
+  background: rgba(141, 93, 3, 1);
+}

@@ -1,0 +1,13 @@
+#ex-1-canvas {
+  height: 480px;
+  width: 500px;
+  background-color: black;
+}
+
+.input-controls {
+  padding: 5px;
+}
+
+.input-controls button {
+  margin: 5px;
+}

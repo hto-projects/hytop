@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Edu+TAS+Beginner&display=swap");
+
+body {
+  background: #73203a;
+  color: #b5985a;
+  font-family: "Edu TAS Beginner", monospace;
+  text-align: center;
+  font-size: 2em;
+}
+
+h1 {
+  font-family: "Bungee Spice", monospace;
+  font-size: 2em;
+  font-weight: 100;
+  margin-bottom: -10px;
+}
+
+button {
+  font-family: "Edu TAS Beginner";
+  font-size: 1em;
+  background: #b5985a;
+  color: #73203a;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: 250ms;
+  border: none;
+  display: block;
+  margin: 10px auto;
+}
+
+img {
+  height: 200px;
+  display: block;
+  margin: 10px auto;
+}
+
+.code {
+  color: white;
+  font-family: consolas;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+#mottos {
+  border: 2px dotted #b5985a;
+  width: 300px;
+  padding: 5px;
+  margin: 0 auto;
+}
