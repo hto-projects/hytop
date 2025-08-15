@@ -11,13 +11,15 @@ import {
   Box
 } from "@mantine/core";
 import { PiFloppyDiskBold, PiGitForkBold, PiHouseBold } from "react-icons/pi";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { IProject } from "../../../shared/types";
-import { current } from "@reduxjs/toolkit";
+import { useCheckOwnershipQuery } from "../slices/projectsApiSlice";
+import { setUserIsOwner } from "../slices/editorSlice";
 
-const Header = (projectName, getProject) => {
+const Header = ({ projectName, getProject }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
@@ -28,12 +30,36 @@ const Header = (projectName, getProject) => {
   let routeProjectName = match ? match[2] : "";
   routeProjectName = decodeURIComponent(routeProjectName);
 
-  const userIsOwner = useSelector((state: any) =>
+  // Directly query ownership status to avoid stale state
+  const { data: ownershipData, isLoading: ownershipLoading } =
+    useCheckOwnershipQuery(routeProjectName, {
+      // Skip if not in editor
+      skip: !isEditor,
+      // Always refetch when component mounts
+      refetchOnMountOrArgChange: true
+    });
+
+  // Get the ownership status directly from the query, not from Redux
+  const isOwner = ownershipData?.isOwner || false;
+
+  // Also update Redux state for other components
+  useEffect(() => {
+    if (isEditor && ownershipData !== undefined) {
+      dispatch(setUserIsOwner(isOwner));
+    }
+  }, [isEditor, ownershipData, isOwner, dispatch]);
+
+  // Also get from Redux for fallback
+  const userIsOwnerFromRedux = useSelector((state: any) =>
     isEditor ? state.editor.userIsOwner : false
   );
-  const isLoading = useSelector((state: any) =>
-    isEditor ? state.editor.isLoading : false
-  );
+
+  // Use the direct query result as the primary source of truth, fall back to Redux
+  const userIsOwner = isOwner !== undefined ? isOwner : userIsOwnerFromRedux;
+
+  const isLoading =
+    useSelector((state: any) => (isEditor ? state.editor.isLoading : false)) ||
+    ownershipLoading;
 
   const currentProjectName = useSelector((state: any) =>
     isEditor ? state.editor.currentProjectName : ""
@@ -90,7 +116,6 @@ const Header = (projectName, getProject) => {
               }}
             >
               {currentProjectName || "HyTOP"}
-              {userIsOwner}
             </Text>
           </Menu.Target>
         </Menu>
@@ -102,7 +127,7 @@ const Header = (projectName, getProject) => {
       )}
       {isEditor && (
         <Group gap={0}>
-          {userIsOwner ? (
+          {userIsOwner === true ? (
             <Tooltip label="Save All">
               <ActionIcon
                 onClick={saveAllFiles}
