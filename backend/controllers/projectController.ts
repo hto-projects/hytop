@@ -5,7 +5,7 @@ import generateToken from "../utils/generateToken";
 import fs from "fs";
 import { IProject, IProjectFile } from "../../shared/types";
 import { userInfo } from "os";
-
+import slugify from "slugify";
 const findProject = async (projectName: string): Promise<IProject> => {
   let starterExists: boolean = false;
   try {
@@ -306,10 +306,11 @@ const findProjectById = async (projectId: string): Promise<IProject> => {
 };
 const changeProjectName = asyncHandler(async (req: any, res) => {
   const { projectId, newProjectName } = req.body;
-  const foundProject: IProject = await findProject(newProjectName);
+  const slugifiedProjectName = slugify(newProjectName, { replacement: '-', lower: true, strict: true });
+  const foundProject: IProject = await findProject(slugifiedProjectName);
   if (foundProject) {
     res.status(400);
-    throw new Error(`:( project with name ${newProjectName} already exists :(`);
+    throw new Error(`:( project with name ${slugifiedProjectName} already exists :(`);
   }
 
   if (!projectId || !newProjectName) {
@@ -329,7 +330,7 @@ const changeProjectName = asyncHandler(async (req: any, res) => {
   try {
     await Project.findOneAndUpdate(
       { projectId },
-      { projectName: newProjectName }
+      { projectName: slugifiedProjectName }
     );
   } catch (error) {
     console.error("Error updating project name:", error);
@@ -343,7 +344,8 @@ const changeProjectName = asyncHandler(async (req: any, res) => {
 
   res.json({
     message: "Project name updated",
-    projectName: project.projectName
+    projectName: slugifiedProjectName,
+    originalName: newProjectName
   });
 });
 
