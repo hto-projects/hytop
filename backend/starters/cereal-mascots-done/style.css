@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Seymour+One&family=Zeyada&family=Wendy+One&family=Shadows+Into+Light&display=swap');
+
+body {
+  background: #ffe957;
+  color: black;
+  font-family: "Shadows Into Light", Arial;
+  font-size: 2em;
+  text-align: center;
+}
+
+h1 {
+  font-family: "Wendy One", Arial;
+  font-size: 2em;
+  color: white;
+  -webkit-text-stroke: 1px black;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+
+p {
+  margin: 0px;
+}
+
+button {
+  font-family: inherit;
+  font-size: 25px;
+  background: black;
+  border: none;
+  font-weight: bold;
+  color: #ffe957;
+  padding: 0px 50px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 390ms color;
+}
+
+button:hover {
+  color: white;
+  transition: 390ms color;
+}
+
+#mascot-container > div {
+  display: inline-block;
+  border: 2px solid black;
+  padding: 10px;
+  width: 350px;
+  height: 350px;
+  margin: 10px;
+  text-align: center;
+  background: #ffdb57;
+  box-shadow: -2px 2px 1px black;
+  transition: 250ms;
+  transform-style: preserve-3d;
+}
+
+#mascot-container > div > div {
+  position: absolute;
+  background: inherit;
+  top: 0px;
+  left: 0px;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  padding: 10px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+#mascot-container > div > div:nth-child(2) {
+  transform: rotateY(180deg);
+  padding: 10px;
+  font-size: 28px;
+}
+
+#mascot-container > div:hover {
+  box-shadow: -4px 4px 2px black;
+  transform: translate(2px, -2px);
+  cursor: pointer;
+}
+
+#mascot-container > div > div > img {
+  height: 190px;
+  border: 1px solid black;
+}
+
+#mascot-container > div > div > h4 {
+  margin: 0px;
+}
+
+#mascot-container > div.flipped {
+  transform: rotateY(180deg);
+  background: orange;
+  box-shadow: 2px 2px 1px black;
+}
+
+#mascot-container > div.flipped:hover {
+  transform: translate(2px, -2px) rotateY(180deg);
+  box-shadow: 4px 4px 2px black;
+}

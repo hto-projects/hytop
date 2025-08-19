@@ -1,0 +1,24 @@
+body {
+  color: #ffebee;
+  background: navy;
+  font-family: Georgia;
+  font-size: 1.5em;
+}
+
+button {
+  font-family: Georgia;
+  font-size: .75em;
+  background: purple;
+  color: white;
+  border: 2px solid #ffebee;
+}
+
+input {
+  width: 500px;
+  height: 50px;
+  font-size: 1em;
+}
+
+img {
+  width: 500px;
+}

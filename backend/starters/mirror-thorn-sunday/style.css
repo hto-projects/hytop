@@ -1,0 +1,10 @@
+body {
+  color: black;
+  background: #b8ffc6;
+  font-family: Georgia;
+}
+
+p {
+  font-size: 1.2em;
+  font-weight: bold;
+}
