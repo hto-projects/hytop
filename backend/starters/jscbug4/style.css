@@ -1,0 +1,22 @@
+body {
+  background-color: white;
+  color: #e23cb6;
+  font-size: 20px;
+}
+
+h1 > span {
+  font-family: jokerman;
+  display: inline-flex;
+}
+
+h1 > span > span:nth-child(3n + 1) {
+  color: #7575ff;
+}
+
+h1 > span > span:nth-child(3n + 2) {
+  color: #ff4d4d;
+}
+
+h1 > span > span:nth-child(3n + 3) {
+  color: #ffea05;
+}

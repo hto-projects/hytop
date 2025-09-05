@@ -4,7 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 import generateToken from "../utils/generateToken";
 import fs from "fs";
 import { IProject, IProjectFile } from "../../shared/types";
-import { userInfo } from "os";
+import slugify from "slugify";
+
+const slugifyProjectName = (unsluggedName: string): string => {
+  return slugify(unsluggedName, {
+    replacement: "-",
+    lower: true,
+    strict: true
+  });
+};
 
 const findProject = async (projectName: string): Promise<IProject> => {
   let starterExists: boolean = false;
@@ -97,11 +105,14 @@ const createProject = asyncHandler(async (req: any, res) => {
   const userId = getUserId(req, res);
 
   const { projectName, projectDescription } = req.body;
+  const slugifiedProjectName = slugifyProjectName(projectName);
 
-  const foundProject: IProject = await findProject(projectName);
+  const foundProject: IProject = await findProject(slugifiedProjectName);
   if (foundProject) {
     res.status(400);
-    throw new Error(`:( project with name ${projectName} already exists :(`);
+    throw new Error(
+      `:( project with name ${slugifiedProjectName} already exists :(`
+    );
   }
 
   const newProjectId: string = uuidv4();
@@ -114,7 +125,7 @@ const createProject = asyncHandler(async (req: any, res) => {
   ];
 
   const projectToCreate: IProject = {
-    projectName,
+    projectName: slugifiedProjectName,
     projectDescription,
     projectFiles: starterProjectFiles,
     projectId: newProjectId,
@@ -126,9 +137,9 @@ const createProject = asyncHandler(async (req: any, res) => {
     await Project.create(projectToCreate);
 
     res.status(201).json({
-      message: `Project "${projectName}" created!`,
+      message: `Project "${slugifiedProjectName}" created!`,
       projectId: newProjectId,
-      projectName: projectName,
+      projectName: slugifiedProjectName,
       projectOwnerId: userId
     });
   } catch (error) {
@@ -306,10 +317,13 @@ const findProjectById = async (projectId: string): Promise<IProject> => {
 };
 const changeProjectName = asyncHandler(async (req: any, res) => {
   const { projectId, newProjectName } = req.body;
-  const foundProject: IProject = await findProject(newProjectName);
+  const slugifiedProjectName = slugifyProjectName(newProjectName);
+  const foundProject: IProject = await findProject(slugifiedProjectName);
   if (foundProject) {
     res.status(400);
-    throw new Error(`:( project with name ${newProjectName} already exists :(`);
+    throw new Error(
+      `:( project with name ${slugifiedProjectName} already exists :(`
+    );
   }
 
   if (!projectId || !newProjectName) {
@@ -329,7 +343,7 @@ const changeProjectName = asyncHandler(async (req: any, res) => {
   try {
     await Project.findOneAndUpdate(
       { projectId },
-      { projectName: newProjectName }
+      { projectName: slugifiedProjectName }
     );
   } catch (error) {
     console.error("Error updating project name:", error);
@@ -343,7 +357,8 @@ const changeProjectName = asyncHandler(async (req: any, res) => {
 
   res.json({
     message: "Project name updated",
-    projectName: project.projectName
+    projectName: slugifiedProjectName,
+    originalName: newProjectName
   });
 });
 

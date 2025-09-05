@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Unbounded&display=swap');
+
+body {
+  background: #640c48;
+  color: white;
+  font-family: "Unbounded";
+}
+
+.jumbotron {
+  position: relative;
+  background: #640c48;
+  border-radius: 0px;
+  font-family: "Fredoka One";
+}
+
+.jumbotron p {
+  font-family: "Unbounded";
+}
+
+.jumbotron::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: url("https://github.com/hytechclub/web-103/raw/main/Assets/jamesbrown.jpg");
+  transform: scaleX(-1);
+  background-size: cover;
+  filter: opacity(30%);
+}
+
+.jumbotron .container {
+  position: relative;
+}
+
+.row {
+  padding: 20px;
+}
+
+.row.one {
+  background: #3a3a59;
+}
+
+.row.two {
+  background: #754d5f;
+}
+
+.play {
+  cursor: pointer;
+}
+
+.song {
+  font-weight: bold;
+}
+
+.row.top {
+  border-bottom: 1px solid #b78585;
+  height: 50px;
+}
+
+.row.top div {
+  font-size: .8em;
+  color: #b78585;
+}
+
+#playlist {
+  min-width: 400px;
+}

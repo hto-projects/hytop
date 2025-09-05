@@ -73,21 +73,29 @@ const SettingsPane = ({
   const handleSave = async () => {
     let didChange = false;
     if (changeProjectName && nameInput && nameInput !== effectiveProjectName) {
-      if ((await changeProjectName(nameInput)) == false) {
+      try {
+        const result = await changeProjectName(nameInput);
+        if (result !== false) {
+          didChange = true;
+          // Update the text input with the slugified name returned from backend
+          if (result && result.projectName) {
+            setNameInput(result.projectName);
+            dispatch(setCurrentProjectName(result.projectName));
+          } else {
+            dispatch(setCurrentProjectName(nameInput));
+          }
+        }
+      } catch (error) {
+        console.error("Error changing project name:", error);
         didChange = false;
-      } else {
-        didChange = true;
-        dispatch(setCurrentProjectName(nameInput));
       }
     }
     if (changeProjectDescription && descInput !== effectiveProjectDescription) {
       await changeProjectDescription(descInput);
-
       didChange = true;
     }
     setEditing(false);
     if (didChange) {
-      setNameInput(nameInput);
       setDescInput(descInput);
     }
   };
@@ -150,6 +158,7 @@ const SettingsPane = ({
         <Box p={8} style={{ minWidth: 240 }}>
           <TextInput
             label="Project Name"
+            description="Will be converted to URL-friendly format (lowercase, hyphens)"
             value={nameInput}
             onChange={(e) => setNameInput(e.currentTarget.value)}
             size="xs"
@@ -163,6 +172,10 @@ const SettingsPane = ({
               label: {
                 color: theColorScheme === "dark" ? "#fff" : undefined,
                 fontSize: 12
+              },
+              description: {
+                color: theColorScheme === "dark" ? "#888" : "#666",
+                fontSize: 10
               }
             }}
           />

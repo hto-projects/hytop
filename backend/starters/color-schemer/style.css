@@ -1,0 +1,31 @@
+:root {
+  --main-bg-color: blue;
+  --main-text-color: white;
+  --secondary-bg-color: yellow;
+  --secondary-text-color: black;
+  --accent-one: red;
+  --accent-two: lime;
+}
+
+body {
+  background: var(--main-bg-color);
+  color: var(--main-text-color);
+}
+
+#color-box {
+  background: var(--secondary-bg-color);
+  border: 10px solid var(--accent-one);
+  color: var(--secondary-text-color);
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  max-width: 800px;
+}
+
+#color-box > div:nth-child(2) {
+  background: var(--accent-two);
+  border: 10px solid var(--accent-one);
+  border-radius: 100%;
+  width: 100px;
+  height: 100px;
+}

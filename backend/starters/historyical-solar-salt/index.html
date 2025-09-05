@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <h1>2000s Nickelodeon</h1>
+    <p>This page should display a Nickelodeon show based on its ranking in an array.</p>
+    <p>For example, since <em>Avatar: The Last Airbender</em> is the best show of all time, it should show up when <strong>1</strong> is entered.</p>
+    <p>But it currently displays the wrong show 😢</p>
+    <hr/>
+    <h3>
+      Which rank would you like to see?
+      <input type="number" id="rank" placeholder="Rank">
+    </h3>
+    <button onclick="displayShow()">Display Show</button>
+    <hr/>
+    <h2 id="ranked-show"></h2>
+  </body>
+</html>

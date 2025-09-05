@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Smokum&display=swap');
+
+h1 {
+  font-family: "Smokum";
+  font-size: 120px;
+  margin: 0px;
+  font-weight: normal;
+}
+
+body {
+  background: black;
+  text-align: center;
+}
+
+.jumbotron {
+  background: #47280a;
+  color: #ffdd94;
+  text-align: center;
+}
+
+p {
+  padding: 0px;
+  margin: 0px;
+}
+
+img {
+  width: 200px;
+  cursor: pointer;
+  transition: 500ms;
+}
+
+img:hover {
+  width: 300px;
+}
+
+.col-sm-6 > div {
+  background: #ffdd94;
+  color: #47280a;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 5px;
+  text-align: left;
+}
+
+ol {
+  margin-bottom: 0px;
+  margin-left: -20px;
+}

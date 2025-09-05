@@ -1,0 +1,36 @@
+@import url("https://fonts.googleapis.com/css2?family=Cutive+Mono&family=Rubik+Moonrocks&display=swap");
+
+body {
+  background: black;
+  color: white;
+  font-family: "Cutive Mono", monospace;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+h1 {
+  font-family: "Rubik Moonrocks", monospace;
+  font-size: 3em;
+  font-weight: 100;
+  margin-bottom: -10px;
+}
+
+button {
+  font-family: "Cutive Mono", monospace;
+  font-size: 1em;
+  background: white;
+  padding: 10px;
+  cursor: pointer;
+  box-shadow: none;
+  transition: 250ms;
+}
+
+button:hover {
+  box-shadow: -4px 4px 8px white;
+  border: 2px solid black;
+  transform: translate(2px, -2px);
+}
+
+#container {
+  margin: 0 auto;
+}

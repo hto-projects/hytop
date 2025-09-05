@@ -88,6 +88,7 @@ const CreateProjectScreen = () => {
           <form onSubmit={submitHandler}>
             <TextInput
               label="Project Name"
+              description="Will be converted to URL-friendly format (lowercase, hyphens)"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               required

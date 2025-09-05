@@ -1,0 +1,10 @@
+body,
+button {
+  font-family: courier, monospace;
+}
+
+#secret-picture {
+  margin-top: 10px;
+  height: 300px;
+  display: none;
+}

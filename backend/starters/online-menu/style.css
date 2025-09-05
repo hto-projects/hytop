@@ -1,0 +1,92 @@
+body, h1, h2, p {
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  text-align: center;
+}
+
+/* Add a border to the images */
+img {
+  border: 5px solid #ff8080;
+  transition: all 0.3s ease-in-out;
+  height: 100px;
+}
+
+/* Add a drop shadow to the header elements */
+h1, h2 {
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+h2 > span {
+  color: red;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: .4s;
+}
+
+h2 > span:hover {
+  color: #ff8080;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+th, td {
+  padding: 5px;
+}
+
+table {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+td {
+  text-align: right;
+}
+
+td:first-child {
+  text-align: left;
+}
+
+h2 {
+  user-select: none;
+}
+
+#item-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  max-width: 1400px;
+}
+
+#item-container > div {
+  display: flex;
+  flex-direction: row;
+  min-width: 450px;
+  max-width: 600px;
+  margin: 5px;
+}
+
+#item-container > div > div {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+#item-container h2 {
+  display: flex;
+  align-items: center;
+  margin: 0px 0px 0px 10px;
+}
+
+#item-container span {
+  margin-left: 10px;
+}
+
+#item-container p {
+  margin: 0px 0px 0px 10px;
+}

@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat&family=Unbounded:wght@700&display=swap');
+
+body {
+  background: yellow;
+  color: red;
+  font-family: "Caveat", cursive;
+  font-size: 1.6em;
+  text-align: center;
+}
+
+h1 {
+  font-family: "Unbounded", cursive;
+}
+
+button {
+  background: red;
+  color: yellow;
+  border: none;
+  font-family: "Unbounded", cursive;
+  font-size: 1.2em;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+button:hover {
+  opacity: .75;
+}
+
+img {
+  height: 300px;
+}

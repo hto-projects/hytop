@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Monoton&family=Fredoka+One&display=swap');
+
+body {
+  color: gold;
+  font-size: 1.75em;
+  font-family: "Fredoka One", Arial, sans-serif;
+  background: url("https://github.com/hytechclub/web-103/raw/main/Assets/bootsy.jpg") black top/100% no-repeat;
+  margin: 0px;
+}
+
+h1 {
+  font-family: "Monoton", Arial, sans-serif;
+  font-weight: normal;
+  z-index: 5;
+  padding: 20px;
+}
+
+button {
+  font-size: 1em;
+  background: gold;
+  color: black;
+  border: none;
+  font-family: "Fredoka One", Arial, sans-serif;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 10px;
+  transition: .5s;
+  margin-left: 20px;
+}
+
+button:hover {
+  transform: translate(6px, -6px);
+  box-shadow: white -6px 6px 0px;
+}
+
+.filter {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  margin: 0px;
+  z-index: -1;
+  opacity: .25;
+  background-color: purple;
+}

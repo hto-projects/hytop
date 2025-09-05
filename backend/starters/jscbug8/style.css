@@ -1,0 +1,42 @@
+@import url("https://fonts.cdnfonts.com/css/fortune-coin");
+
+img {
+  height: 300px;
+  border: 2px solid #d99a35;
+}
+
+h1 {
+  font-family: "Fortune Coin";
+  font-size: 60px;
+  margin-bottom: 0px;
+}
+
+body {
+  background: #45230f;
+  color: #d99a35;
+  font-size: 20px;
+  text-align: center;
+  font-family: "Times New Roman";
+}
+
+div {
+  text-align: left;
+  margin: 0 auto;
+  width: 700px;
+}
+
+button {
+  background: #d99a35;
+  color: #45230f;
+  border: none;
+  padding: 20px;
+  border-radius: 10px;
+  font-family: "Times New Roman";
+  font-size: 20px;
+  transition: 300ms;
+}
+
+button:hover {
+  cursor: pointer;
+  background: white;
+}
