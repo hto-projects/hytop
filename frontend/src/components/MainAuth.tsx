@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
+import { apiSlice } from "../slices/apiSlice";
 
 const MainAuth = ({ userInfo, setScreen }) => {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ const MainAuth = ({ userInfo, setScreen }) => {
     try {
       await logoutApiCall(null).unwrap();
       dispatch(logout(null));
+      dispatch(apiSlice.util.resetApiState());
     } catch (err) {
       console.error(err);
     }

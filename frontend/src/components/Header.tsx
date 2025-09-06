@@ -11,13 +11,15 @@ import {
   Box
 } from "@mantine/core";
 import { PiFloppyDiskBold, PiGitForkBold, PiHouseBold } from "react-icons/pi";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { IProject } from "../../../shared/types";
-import { current } from "@reduxjs/toolkit";
+import { useCheckOwnershipQuery } from "../slices/projectsApiSlice";
+import { setUserIsOwner } from "../slices/editorSlice";
 
-const Header = (projectName, getProject) => {
+const Header = ({ projectName, getProject }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
@@ -28,16 +30,32 @@ const Header = (projectName, getProject) => {
   let routeProjectName = match ? match[2] : "";
   routeProjectName = decodeURIComponent(routeProjectName);
 
-  const userIsOwner = useSelector((state: any) =>
-    isEditor ? state.editor.userIsOwner : false
-  );
-  const isLoading = useSelector((state: any) =>
+  const {
+    data: ownershipData,
+    isLoading: ownershipLoading,
+    error: ownershipError
+  } = useCheckOwnershipQuery(routeProjectName, {
+    skip: !isEditor || !routeProjectName,
+    refetchOnMountOrArgChange: true
+  });
+
+  const isOwner = ownershipData?.isOwner || false;
+  const projectExists = ownershipData?.projectExists !== false;
+
+  useEffect(() => {
+    if (isEditor && ownershipData !== undefined) {
+      dispatch(setUserIsOwner(isOwner));
+    }
+  }, [isEditor, ownershipData, isOwner, dispatch]);
+
+  const editorIsLoading = useSelector((state: any) =>
     isEditor ? state.editor.isLoading : false
   );
 
   const currentProjectName = useSelector((state: any) =>
-    isEditor ? state.editor.currentProjectName : ""
+    isEditor ? state.editor.currentProjectName || routeProjectName : ""
   );
+  const isLoading = editorIsLoading || ownershipLoading;
 
   const saveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("saveAllFiles"));
@@ -82,7 +100,7 @@ const Header = (projectName, getProject) => {
               fw={700}
               c={theColorScheme === "dark" ? "#fff" : undefined}
               style={{
-                cursor: userIsOwner ? "pointer" : "default",
+                cursor: isOwner ? "pointer" : "default",
                 paddingRight: 4,
                 paddingLeft: 4,
                 display: "inline-flex",
@@ -90,7 +108,6 @@ const Header = (projectName, getProject) => {
               }}
             >
               {currentProjectName || "HyTOP"}
-              {userIsOwner}
             </Text>
           </Menu.Target>
         </Menu>
@@ -102,7 +119,7 @@ const Header = (projectName, getProject) => {
       )}
       {isEditor && (
         <Group gap={0}>
-          {userIsOwner ? (
+          {isOwner === true ? (
             <Tooltip label="Save All">
               <ActionIcon
                 onClick={saveAllFiles}
@@ -115,7 +132,7 @@ const Header = (projectName, getProject) => {
                 <PiFloppyDiskBold />
               </ActionIcon>
             </Tooltip>
-          ) : (
+          ) : projectExists ? (
             <Tooltip label="Fork Project">
               <ActionIcon
                 onClick={forkProject}
@@ -129,7 +146,7 @@ const Header = (projectName, getProject) => {
                 <PiGitForkBold />
               </ActionIcon>
             </Tooltip>
-          )}
+          ) : null}
         </Group>
       )}
       <Group gap={0} ml="auto">

@@ -7,7 +7,8 @@ import {
   useChangeProjectDescriptionMutation,
   useChangeProjectNameMutation,
   useGetProjectIdQuery,
-  useGetProjectDescriptionQuery
+  useGetProjectDescriptionQuery,
+  util as projectsApiUtil
 } from "../slices/projectsApiSlice";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -59,7 +60,8 @@ import {
   syncTabsWithFiles,
   setEditorIsLoading,
   setUserIsOwner,
-  setCurrentProjectName
+  setCurrentProjectName,
+  resetEditorState
 } from "../slices/editorSlice";
 import { IProject } from "../../../shared/types";
 import { useState } from "react";
@@ -112,8 +114,14 @@ const ProjectEditor = () => {
   const { projectName } = useParams();
   const { projectName: routeProjectName } = useParams();
   const dispatch = useDispatch();
-  const ownership: any = useCheckOwnershipQuery(projectName);
-  const projectData: any = useGetProjectQuery(projectName);
+  const ownership: any = useCheckOwnershipQuery(projectName, {
+    refetchOnMountOrArgChange: true
+  });
+  const [shouldRefreshData, setShouldRefreshData] = useState(true);
+  const projectData: any = useGetProjectQuery(projectName, {
+    skip: !projectName,
+    refetchOnMountOrArgChange: true
+  });
   const [updateProject, { isLoading }] = useUpdateProjectMutation();
   const [changeProjectName] = useChangeProjectNameMutation();
   const [changeProjectDescription] = useChangeProjectDescriptionMutation();
@@ -345,6 +353,8 @@ const ProjectEditor = () => {
 
   useEffect(() => {
     return () => {
+      dispatch(resetEditorState());
+
       if (monaco) {
         Object.values(modelsRef.current).forEach((model: any) => {
           if (model && typeof model.dispose === "function") {
@@ -357,7 +367,7 @@ const ProjectEditor = () => {
         viewStatesRef.current = {};
       }
     };
-  }, [monaco]);
+  }, [monaco, dispatch]);
 
   useEffect(() => {
     if (!monaco) return;
@@ -578,6 +588,12 @@ const ProjectEditor = () => {
   }, [userIsOwner, projectFiles, projectName, projectVersion]);
 
   React.useEffect(() => {
+    if (ownership.data !== undefined) {
+      dispatch(setUserIsOwner(ownership.data.isOwner || false));
+    }
+  }, [ownership.data, dispatch]);
+
+  React.useEffect(() => {
     dispatch(setUserIsOwner(userIsOwner));
   }, [userIsOwner, dispatch]);
   React.useEffect(() => {
@@ -590,52 +606,78 @@ const ProjectEditor = () => {
   const [readyToSetTab, setReadyToSetTab] = React.useState(false);
 
   useEffect(() => {
-    if (projectData?.data) {
-      const currentReduxFiles = projectFiles;
-      const serverFiles = projectData.data.projectFiles;
-
-      if (currentReduxFiles.length === 0) {
-        dispatch(setProjectFiles(serverFiles));
-      } else {
-        const mergedFiles = serverFiles.map((serverFile) => {
-          const existingFile = currentReduxFiles.find(
-            (f) => f.fileName === serverFile.fileName
-          );
-          if (existingFile) {
-            const model = modelsRef.current[serverFile.fileName];
-            if (model && typeof model.getValue === "function") {
-              const modelContent = model.getValue();
-              if (modelContent && modelContent !== serverFile.fileContent) {
-                setUnsavedFiles((prev) => ({
-                  ...prev,
-                  [serverFile.fileName]: true
-                }));
-                return { ...serverFile, fileContent: modelContent };
-              }
-            }
-            if (existingFile.fileContent !== serverFile.fileContent) {
-              setUnsavedFiles((prev) => ({
-                ...prev,
-                [serverFile.fileName]: true
-              }));
-              return existingFile;
-            }
-          }
-          return serverFile;
-        });
-
-        const reduxOnlyFlies = currentReduxFiles.filter(
-          (reduxFile) =>
-            !serverFiles.find((sf) => sf.fileName === reduxFile.fileName)
+    const focus = () => {
+      if (shouldRefreshData && projectName) {
+        dispatch(
+          projectsApiUtil.invalidateTags([
+            { type: "ProjectFiles", id: projectName },
+            { type: "ProjectOwnership", id: projectName }
+          ])
         );
 
-        dispatch(setProjectFiles([...mergedFiles, ...reduxOnlyFlies]));
+        setShouldRefreshData(false);
       }
+    };
+
+    window.addEventListener("focus", focus);
+    return () => {
+      window.removeEventListener("focus", focus);
+    };
+  }, [shouldRefreshData, projectName, dispatch]);
+
+  useEffect(() => {
+    const popper = () => {
+      if (projectName) {
+        setShouldRefreshData(true);
+        dispatch(
+          projectsApiUtil.invalidateTags([
+            { type: "ProjectFiles", id: projectName },
+            { type: "ProjectOwnership", id: projectName }
+          ])
+        );
+      }
+    };
+
+    window.addEventListener("popstate", popper);
+    return () => {
+      window.removeEventListener("popstate", popper);
+    };
+  }, [projectName, dispatch]);
+
+  useEffect(() => {
+    dispatch(resetEditorState());
+
+    if (monaco) {
+      Object.values(modelsRef.current).forEach((model: any) => {
+        if (model && typeof model.dispose === "function") {
+          try {
+            model.dispose();
+          } catch (e) {}
+        }
+      });
+      modelsRef.current = {};
+      viewStatesRef.current = {};
+    }
+  }, [projectName, dispatch, monaco]);
+
+  useEffect(() => {
+    if (projectData?.data) {
+      const serverFiles = projectData.data.projectFiles;
+
+      dispatch(setProjectFiles(serverFiles));
+      setUnsavedFiles({});
 
       dispatch(setCurrentProjectName(projectData.data.projectName));
-    }
-  }, [projectData?.data]);
 
+      setShouldRefreshData(false);
+
+      if (serverFiles.length > 0 && !activeTab && tabs.length === 0) {
+        dispatch(setTabs([serverFiles[0].fileName]));
+        dispatch(setActiveTab(serverFiles[0].fileName));
+        dispatch(setSelectedFile(serverFiles[0].fileName));
+      }
+    }
+  }, [projectData?.data, dispatch, activeTab, tabs.length]);
   useEffect(() => {
     if (!monaco) return;
     if (
@@ -649,6 +691,14 @@ const ProjectEditor = () => {
     projectFiles.map((f) => f.fileName).join(","),
     Object.keys(modelsRef.current).join(",")
   ]);
+
+  useEffect(() => {
+    if (projectFiles.length > 0 && tabs.length === 0 && !activeTab) {
+      dispatch(setTabs([projectFiles[0].fileName]));
+      dispatch(setActiveTab(projectFiles[0].fileName));
+      dispatch(setSelectedFile(projectFiles[0].fileName));
+    }
+  }, [projectFiles.length, tabs.length, activeTab, dispatch]);
 
   useEffect(() => {
     if (!readyToSetTab) return;
@@ -679,7 +729,13 @@ const ProjectEditor = () => {
       dispatch(setSelectedFile(fileNames[0]));
     }
     setReadyToSetTab(false);
-  }, [readyToSetTab]);
+  }, [
+    readyToSetTab,
+    dispatch,
+    localStorageTabs,
+    localStorageSelectedFile,
+    projectFiles
+  ]);
 
   useEffect(() => {
     if (activeTab) {
@@ -985,7 +1041,7 @@ const ProjectEditor = () => {
               pane !== "preferences" &&
               pane !== "settings" &&
               (pane !== "editor" ||
-                (paneState.open.editor && tabs.length > 0 && activeTab))
+                (paneState.open.editor && projectFiles.length > 0))
           )
           .map((pane, idx, arr) => {
             const isPreviewMaximized =
@@ -1011,6 +1067,7 @@ const ProjectEditor = () => {
                         handleTabClose={handleTabClose}
                         // I don't know why this is needed but it was screaming at me and this works for some reason lol
                         primaryColor={undefined}
+                        userIsOwner={userIsOwner}
                       />
                     )}
                     unsavedFiles={unsavedFiles}

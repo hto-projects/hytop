@@ -13,11 +13,30 @@ const App = () => {
   const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
   const isEditor = !!match;
   const projectName = match ? decodeURIComponent(match[2]) : undefined;
-  const getProject = useGetProjectQuery(projectName);
+
+  const getProject = useGetProjectQuery(projectName, {
+    skip: !projectName,
+    refetchOnMountOrArgChange: true
+  });
 
   const [currentProjectName, setCurrentProjectName] = useState(
     projectName || ""
   );
+
+  const [headerKey, setHeaderKey] = useState(Date.now());
+
+  useEffect(() => {
+    setHeaderKey(Date.now());
+
+    const pop = () => {
+      setHeaderKey(Date.now());
+    };
+
+    window.addEventListener("popstate", pop);
+    return () => {
+      window.removeEventListener("popstate", pop);
+    };
+  }, [location.pathname]);
 
   return (
     <>
@@ -26,6 +45,7 @@ const App = () => {
         theme={theColorScheme === "dark" ? "dark" : "light"}
       />
       <Header
+        key={headerKey}
         projectName={isEditor ? currentProjectName : undefined}
         getProject={getProject}
       />
