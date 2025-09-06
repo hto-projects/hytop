@@ -38,9 +38,15 @@ const protectAllowAnon = asyncHandler(async (req: any, res, next) => {
 
       next();
     } catch (error) {
-      console.error(error);
-      res.status(401);
-      throw new Error("Not authorized, token failed");
+      console.error("Invalid token in protectAllowAnon:", error);
+      res.cookie("jwt", "", {
+        httpOnly: false,
+        secure: true,
+        sameSite: false,
+        expires: new Date(0)
+      });
+      req.user = null;
+      next();
     }
   } else {
     next();

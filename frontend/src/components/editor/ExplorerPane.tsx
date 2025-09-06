@@ -200,21 +200,25 @@ const ExplorerPane = ({
                 handleFileSelect(file.fileName);
               }
             }}
-            onContextMenu={showContextMenu([
-              {
-                key: "rename",
-                icon: <PiPencilBold size={14} />,
-                title: "Rename",
-                onClick: () => startRename(file.fileName)
-              },
-              {
-                key: "delete",
-                icon: <PiTrashBold size={14} />,
-                title: "Delete",
-                color: "red",
-                onClick: () => handleDeleteFile(file.fileName)
-              }
-            ])}
+            onContextMenu={
+              userOwnsProject
+                ? showContextMenu([
+                    {
+                      key: "rename",
+                      icon: <PiPencilBold size={14} />,
+                      title: "Rename",
+                      onClick: () => startRename(file.fileName)
+                    },
+                    {
+                      key: "delete",
+                      icon: <PiTrashBold size={14} />,
+                      title: "Delete",
+                      color: "red",
+                      onClick: () => handleDeleteFile(file.fileName)
+                    }
+                  ])
+                : undefined
+            }
           >
             {unsavedFiles[file.fileName] && (
               <PiDotOutlineFill

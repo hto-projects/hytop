@@ -30,40 +30,32 @@ const Header = ({ projectName, getProject }) => {
   let routeProjectName = match ? match[2] : "";
   routeProjectName = decodeURIComponent(routeProjectName);
 
-  // Directly query ownership status to avoid stale state
-  const { data: ownershipData, isLoading: ownershipLoading } =
-    useCheckOwnershipQuery(routeProjectName, {
-      // Skip if not in editor
-      skip: !isEditor,
-      // Always refetch when component mounts
-      refetchOnMountOrArgChange: true
-    });
+  const {
+    data: ownershipData,
+    isLoading: ownershipLoading,
+    error: ownershipError
+  } = useCheckOwnershipQuery(routeProjectName, {
+    skip: !isEditor || !routeProjectName,
+    refetchOnMountOrArgChange: true
+  });
 
-  // Get the ownership status directly from the query, not from Redux
   const isOwner = ownershipData?.isOwner || false;
+  const projectExists = ownershipData?.projectExists !== false;
 
-  // Also update Redux state for other components
   useEffect(() => {
     if (isEditor && ownershipData !== undefined) {
       dispatch(setUserIsOwner(isOwner));
     }
   }, [isEditor, ownershipData, isOwner, dispatch]);
 
-  // Also get from Redux for fallback
-  const userIsOwnerFromRedux = useSelector((state: any) =>
-    isEditor ? state.editor.userIsOwner : false
+  const editorIsLoading = useSelector((state: any) =>
+    isEditor ? state.editor.isLoading : false
   );
-
-  // Use the direct query result as the primary source of truth, fall back to Redux
-  const userIsOwner = isOwner !== undefined ? isOwner : userIsOwnerFromRedux;
-
-  const isLoading =
-    useSelector((state: any) => (isEditor ? state.editor.isLoading : false)) ||
-    ownershipLoading;
 
   const currentProjectName = useSelector((state: any) =>
-    isEditor ? state.editor.currentProjectName : ""
+    isEditor ? state.editor.currentProjectName || routeProjectName : ""
   );
+  const isLoading = editorIsLoading || ownershipLoading;
 
   const saveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("saveAllFiles"));
@@ -108,7 +100,7 @@ const Header = ({ projectName, getProject }) => {
               fw={700}
               c={theColorScheme === "dark" ? "#fff" : undefined}
               style={{
-                cursor: userIsOwner ? "pointer" : "default",
+                cursor: isOwner ? "pointer" : "default",
                 paddingRight: 4,
                 paddingLeft: 4,
                 display: "inline-flex",
@@ -127,7 +119,7 @@ const Header = ({ projectName, getProject }) => {
       )}
       {isEditor && (
         <Group gap={0}>
-          {userIsOwner === true ? (
+          {isOwner === true ? (
             <Tooltip label="Save All">
               <ActionIcon
                 onClick={saveAllFiles}
@@ -140,7 +132,7 @@ const Header = ({ projectName, getProject }) => {
                 <PiFloppyDiskBold />
               </ActionIcon>
             </Tooltip>
-          ) : (
+          ) : projectExists ? (
             <Tooltip label="Fork Project">
               <ActionIcon
                 onClick={forkProject}
@@ -154,7 +146,7 @@ const Header = ({ projectName, getProject }) => {
                 <PiGitForkBold />
               </ActionIcon>
             </Tooltip>
-          )}
+          ) : null}
         </Group>
       )}
       <Group gap={0} ml="auto">

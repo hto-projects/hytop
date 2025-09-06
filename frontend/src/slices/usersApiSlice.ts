@@ -8,13 +8,15 @@ export const userApiSlice = apiSlice.injectEndpoints({
         url: `${USERS_URL}/auth`,
         method: "POST",
         body: data
-      })
+      }),
+      invalidatesTags: ["ProjectOwnership"]
     }),
     logout: builder.mutation({
       query: () => ({
         url: `${USERS_URL}/logout`,
         method: "POST"
-      })
+      }),
+      invalidatesTags: ["ProjectOwnership", "Project", "ProjectFiles"]
     }),
     register: builder.mutation({
       query: (data) => ({

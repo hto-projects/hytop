@@ -16,11 +16,13 @@ import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import {
   useUpdateUserMutation,
-  useGetUserProjectsQuery
+  useGetUserProjectsQuery,
+  useLogoutMutation
 } from "../slices/usersApiSlice";
 import { setCredentials, logout } from "../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import ProjectList from "../components/ProjectList";
+import { apiSlice } from "../slices/apiSlice";
 
 const ProfileScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
@@ -39,6 +41,7 @@ const ProfileScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
+  const [logoutApiCall] = useLogoutMutation();
   const theColorScheme = useComputedColorScheme("light");
 
   const submitHandler = async (e) => {
@@ -60,9 +63,18 @@ const ProfileScreen = () => {
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logout(null));
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logoutApiCall(null).unwrap();
+      dispatch(logout(null));
+      dispatch(apiSlice.util.resetApiState());
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      dispatch(logout(null));
+      dispatch(apiSlice.util.resetApiState());
+      navigate("/login");
+    }
   };
 
   return (

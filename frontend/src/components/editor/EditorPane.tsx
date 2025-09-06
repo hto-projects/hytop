@@ -28,7 +28,7 @@ function setupMonacoModels({
   activeTab,
   getMonacoLang
 }) {
-  if (!monaco || !editorRef.current || !activeTab) return;
+  if (!monaco || !editorRef.current) return;
   projectFiles.forEach((file) => {
     const uri = monaco.Uri.parse(`file:///${file.fileName}`);
     let model = modelsRef.current[file.fileName];
@@ -55,33 +55,39 @@ function setupMonacoModels({
     }
   });
 
-  const filey = projectFiles.find((f) => f.fileName === activeTab);
-  const fileContent = filey ? filey.fileContent || "" : "";
-  const uri = monaco.Uri.parse(`file:///${activeTab}`);
-  let model = modelsRef.current[activeTab];
-
-  if (
-    !model ||
-    (typeof model.isDisposed === "function" && model.isDisposed())
-  ) {
-    model = monaco.editor.getModel(uri);
-    if (model) {
-      modelsRef.current[activeTab] = model;
-    } else {
-      model = monaco.editor.createModel(
-        fileContent,
-        getMonacoLang(activeTab),
-        uri
-      );
-      modelsRef.current[activeTab] = model;
-    }
-  } else if (model.getValue() !== fileContent && fileContent !== "") {
-    model.setValue(fileContent);
+  if (!activeTab && projectFiles.length > 0) {
+    activeTab = projectFiles[0].fileName;
   }
 
-  if (typeof model.isDisposed !== "function" || !model.isDisposed()) {
-    if (editorRef.current.getModel() !== model) {
-      editorRef.current.setModel(model);
+  if (activeTab) {
+    const filey = projectFiles.find((f) => f.fileName === activeTab);
+    const fileContent = filey ? filey.fileContent || "" : "";
+    const uri = monaco.Uri.parse(`file:///${activeTab}`);
+    let model = modelsRef.current[activeTab];
+
+    if (
+      !model ||
+      (typeof model.isDisposed === "function" && model.isDisposed())
+    ) {
+      model = monaco.editor.getModel(uri);
+      if (model) {
+        modelsRef.current[activeTab] = model;
+      } else {
+        model = monaco.editor.createModel(
+          fileContent,
+          getMonacoLang(activeTab),
+          uri
+        );
+        modelsRef.current[activeTab] = model;
+      }
+    } else if (model.getValue() !== fileContent && fileContent !== "") {
+      model.setValue(fileContent);
+    }
+
+    if (typeof model.isDisposed !== "function" || !model.isDisposed()) {
+      if (editorRef.current.getModel() !== model) {
+        editorRef.current.setModel(model);
+      }
     }
   }
 }
@@ -126,12 +132,18 @@ const EditorPane = ({
       } catch {}
     }
     editorRef.current = editor;
+
+    let currentActiveTab = activeTab;
+    if (!currentActiveTab && projectFiles.length > 0) {
+      currentActiveTab = projectFiles[0].fileName;
+    }
+
     setupMonacoModels({
       monaco,
       editorRef,
       modelsRef,
       projectFiles,
-      activeTab,
+      activeTab: currentActiveTab,
       getMonacoLang
     });
 
@@ -243,13 +255,21 @@ const EditorPane = ({
       >
         <Group gap={4}>
           <PiCodeBold />
-          {unsavedFiles[activeTab] && (
+          {unsavedFiles[
+            activeTab ||
+              (projectFiles.length > 0 ? projectFiles[0].fileName : "")
+          ] && (
             <PiDotOutlineFill
               color="#FFA94D"
               style={{ marginRight: 4, fontSize: 16 }}
             />
           )}
-          <Text size="sm">{activeTab || "No file selected"}</Text>
+          <Text size="sm">
+            {activeTab ||
+              (projectFiles.length > 0
+                ? projectFiles[0].fileName
+                : "No file selected")}
+          </Text>
         </Group>
         <Tooltip label={"Undo"} position="top">
           <ActionIcon
@@ -260,7 +280,7 @@ const EditorPane = ({
             }}
             size="sm"
             title="Undo"
-            disabled={!activeTab}
+            disabled={!activeTab && projectFiles.length === 0}
           >
             <PiArrowCounterClockwiseBold />
           </ActionIcon>
@@ -274,7 +294,7 @@ const EditorPane = ({
             }}
             size="sm"
             title="Redo"
-            disabled={!activeTab}
+            disabled={!activeTab && projectFiles.length === 0}
           >
             <PiArrowClockwiseBold />
           </ActionIcon>
@@ -286,6 +306,7 @@ const EditorPane = ({
             size="sm"
             color={primaryColor}
             title="Save this file"
+            disabled={projectFiles.length === 0}
           >
             <PiFloppyDiskBold color={primaryColor} />
           </ActionIcon>
@@ -320,7 +341,10 @@ const EditorPane = ({
             theme={monacoTheme}
             height="100%"
             width="100%"
-            language={getMonacoLang(activeTab)}
+            language={getMonacoLang(
+              activeTab ||
+                (projectFiles.length > 0 ? projectFiles[0].fileName : "")
+            )}
             options={{
               readOnly: !userIsOwner,
               minimap: { enabled: true },

@@ -670,8 +670,14 @@ const ProjectEditor = () => {
       dispatch(setCurrentProjectName(projectData.data.projectName));
 
       setShouldRefreshData(false);
+
+      if (serverFiles.length > 0 && !activeTab && tabs.length === 0) {
+        dispatch(setTabs([serverFiles[0].fileName]));
+        dispatch(setActiveTab(serverFiles[0].fileName));
+        dispatch(setSelectedFile(serverFiles[0].fileName));
+      }
     }
-  }, [projectData?.data, dispatch]);
+  }, [projectData?.data, dispatch, activeTab, tabs.length]);
   useEffect(() => {
     if (!monaco) return;
     if (
@@ -685,6 +691,14 @@ const ProjectEditor = () => {
     projectFiles.map((f) => f.fileName).join(","),
     Object.keys(modelsRef.current).join(",")
   ]);
+
+  useEffect(() => {
+    if (projectFiles.length > 0 && tabs.length === 0 && !activeTab) {
+      dispatch(setTabs([projectFiles[0].fileName]));
+      dispatch(setActiveTab(projectFiles[0].fileName));
+      dispatch(setSelectedFile(projectFiles[0].fileName));
+    }
+  }, [projectFiles.length, tabs.length, activeTab, dispatch]);
 
   useEffect(() => {
     if (!readyToSetTab) return;
@@ -715,7 +729,13 @@ const ProjectEditor = () => {
       dispatch(setSelectedFile(fileNames[0]));
     }
     setReadyToSetTab(false);
-  }, [readyToSetTab]);
+  }, [
+    readyToSetTab,
+    dispatch,
+    localStorageTabs,
+    localStorageSelectedFile,
+    projectFiles
+  ]);
 
   useEffect(() => {
     if (activeTab) {
@@ -1021,7 +1041,7 @@ const ProjectEditor = () => {
               pane !== "preferences" &&
               pane !== "settings" &&
               (pane !== "editor" ||
-                (paneState.open.editor && tabs.length > 0 && activeTab))
+                (paneState.open.editor && projectFiles.length > 0))
           )
           .map((pane, idx, arr) => {
             const isPreviewMaximized =
@@ -1047,6 +1067,7 @@ const ProjectEditor = () => {
                         handleTabClose={handleTabClose}
                         // I don't know why this is needed but it was screaming at me and this works for some reason lol
                         primaryColor={undefined}
+                        userIsOwner={userIsOwner}
                       />
                     )}
                     unsavedFiles={unsavedFiles}

@@ -15,7 +15,8 @@ const TabBar = ({
   unsavedFiles,
   handleTabClick,
   handleTabClose,
-  primaryColor: propPrimaryColor
+  primaryColor: propPrimaryColor,
+  userIsOwner = true
 }) => {
   const primaryColor =
     propPrimaryColor || useSelector((state: any) => state.theme.primaryColor);
@@ -83,15 +84,17 @@ const TabBar = ({
               style={{ marginRight: 4, fontSize: 14 }}
             />
           )}
-          <ActionIcon
-            variant="subtle"
-            size="xs"
-            style={{ marginLeft: 2 }}
-            onClick={(e) => handleTabClose(fileName, e)}
-            title="Close tab"
-          >
-            <PiXBold size={12} />
-          </ActionIcon>
+          {userIsOwner && (
+            <ActionIcon
+              variant="subtle"
+              size="xs"
+              style={{ marginLeft: 2 }}
+              onClick={(e) => handleTabClose(fileName, e)}
+              title="Close tab"
+            >
+              <PiXBold size={12} />
+            </ActionIcon>
+          )}
         </Box>
       ))}
     </Box>

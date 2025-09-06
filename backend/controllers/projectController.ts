@@ -74,7 +74,7 @@ const findProject = async (projectName: string): Promise<IProject> => {
 };
 
 const getUserId = (req, res) => {
-  if (req.user) {
+  if (req.user && req.user._id) {
     return req.user._id;
   }
 
@@ -86,7 +86,12 @@ const getUserId = (req, res) => {
         token,
         process.env.JWT_SECRET
       );
-      userId = decoded.userId;
+      if (decoded.tmp) {
+        userId = decoded.userId;
+      } else {
+        userId = require("uuid").v4();
+        generateToken(res, userId, true);
+      }
     } catch {
       userId = require("uuid").v4();
       generateToken(res, userId, true);
@@ -240,17 +245,21 @@ const checkOwnership = asyncHandler(async (req: any, res) => {
   const user = req.user;
   const projectName: string = req.params.projectName;
 
-  const existingProject: IProject = await findProject(projectName);
-  if (!existingProject) {
-    res.status(400);
+  let existingProject: IProject;
+  try {
+    existingProject = await findProject(projectName);
+  } catch (e) {
+    res.status(404);
     throw new Error(":( project not found :(");
   }
 
-  if (existingProject.projectOwnerId !== user._id) {
-    res.json({ isOwner: false });
-  } else {
-    res.json({ isOwner: true });
+  if (!user || !user._id) {
+    res.json({ isOwner: false, projectExists: true });
+    return;
   }
+
+  const isOwner = existingProject.projectOwnerId === user._id;
+  res.json({ isOwner, projectExists: true });
 });
 
 const findProjectById = async (projectId: string): Promise<IProject> => {
@@ -317,25 +326,40 @@ const findProjectById = async (projectId: string): Promise<IProject> => {
 };
 const changeProjectName = asyncHandler(async (req: any, res) => {
   const { projectId, newProjectName } = req.body;
-  const slugifiedProjectName = slugifyProjectName(newProjectName);
-  const foundProject: IProject = await findProject(slugifiedProjectName);
-  if (foundProject) {
-    res.status(400);
-    throw new Error(
-      `:( project with name ${slugifiedProjectName} already exists :(`
-    );
+  const user = req.user;
+
+  if (!user || !user._id) {
+    res.status(401);
+    throw new Error("Not authorized to change project name");
   }
 
   if (!projectId || !newProjectName) {
     res.status(400);
     throw new Error("Missing projectId or newProjectName");
   }
+
+  const slugifiedProjectName = slugifyProjectName(newProjectName);
+
+  try {
+    const foundProject: IProject = await findProject(slugifiedProjectName);
+    if (foundProject) {
+      res.status(400);
+      throw new Error(
+        `:( project with name ${slugifiedProjectName} already exists :(`
+      );
+    }
+  } catch (e) {
+    if (!e.message.includes("could not be found")) {
+      throw e;
+    }
+  }
   const existingProject = await findProjectById(projectId);
   if (!existingProject) {
     res.status(404);
     throw new Error(":( project not found :(");
   }
-  if (req.user._id !== existingProject.projectOwnerId) {
+
+  if (user._id !== existingProject.projectOwnerId) {
     res.status(401);
     throw new Error("Not authorized to change project name");
   }
@@ -347,12 +371,8 @@ const changeProjectName = asyncHandler(async (req: any, res) => {
     );
   } catch (error) {
     console.error("Error updating project name:", error);
-  }
-
-  const project = await findProjectById(projectId);
-  if (!project) {
-    res.status(404);
-    throw new Error(":( project not found :(");
+    res.status(500);
+    throw new Error(":( failed to update project name :(");
   }
 
   res.json({
@@ -364,8 +384,14 @@ const changeProjectName = asyncHandler(async (req: any, res) => {
 
 const changeProjectDescription = asyncHandler(async (req: any, res) => {
   const { projectId, newProjectDescription } = req.body;
+  const user = req.user;
 
-  if (!projectId || !newProjectDescription) {
+  if (!user || !user._id) {
+    res.status(401);
+    throw new Error("Not authorized to change project description");
+  }
+
+  if (!projectId || newProjectDescription === undefined) {
     res.status(400);
     throw new Error("Missing projectId or newProjectDescription");
   }
@@ -375,9 +401,10 @@ const changeProjectDescription = asyncHandler(async (req: any, res) => {
     res.status(404);
     throw new Error(":( project not found :(");
   }
-  if (req.user._id !== existingProject.projectOwnerId) {
+
+  if (user._id !== existingProject.projectOwnerId) {
     res.status(401);
-    throw new Error("Not authorized to change project Description");
+    throw new Error("Not authorized to change project description");
   }
 
   try {
@@ -387,15 +414,13 @@ const changeProjectDescription = asyncHandler(async (req: any, res) => {
     );
   } catch (error) {
     console.error("Error updating project description:", error);
+    res.status(500);
+    throw new Error("Failed to update project description");
   }
-  const project = await findProjectById(projectId);
-  if (!project) {
-    res.status(404);
-    throw new Error(":( project not found :(");
-  }
+
   res.json({
     message: "Project description updated",
-    projectDescription: project.projectDescription
+    projectDescription: newProjectDescription
   });
 });
 
@@ -403,14 +428,20 @@ const changeProjectDescription = asyncHandler(async (req: any, res) => {
 // @route   POST /api/projects/update
 // @access  NOT Public
 const updateProject = asyncHandler(async (req: any, res) => {
-  console.log("here");
   const user = req.user;
   const projectName: string = req.body.projectName;
   const projectFiles: IProjectFile[] = req.body.projectFiles;
 
-  const existingProject = await findProject(projectName);
-  if (!existingProject) {
-    res.status(400);
+  if (!user || !user._id) {
+    res.status(401);
+    throw new Error("Not authorized to update this project");
+  }
+
+  let existingProject: IProject;
+  try {
+    existingProject = await findProject(projectName);
+  } catch (e) {
+    res.status(404);
     throw new Error(":( project not found :(");
   }
 
