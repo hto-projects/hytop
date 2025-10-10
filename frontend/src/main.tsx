@@ -22,6 +22,7 @@ import CreateProjectScreen from "./screens/CreateProject";
 import ProjectEditor from "./screens/ProjectEditor";
 import CopyProjectScreen from "./screens/CopyProject";
 import AboutScreen from "./screens/AboutScreen";
+import LatestUpdatesScreen from "./screens/LatestUpdates";
 import { useEffect } from "react";
 import { setMonacoTheme } from "./slices/editorSlice";
 import { setColorScheme } from "./slices/themeSlice";
@@ -37,6 +38,7 @@ const router = createBrowserRouter(
       <Route path="/e/:projectName" element={<ProjectEditor />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
       <Route path="/about" element={<AboutScreen />} />
+      <Route path="/latest-updates" element={<LatestUpdatesScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route index={true} path="/" element={<HomeScreen />} />

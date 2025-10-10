@@ -62,6 +62,12 @@ export const projectsApiSlice = apiSlice.injectEndpoints({
         method: "GET"
       })
     }),
+    getLatestProjects: builder.query({
+      query: () => ({
+        url: `${PROJECTS_URL}/latest`,
+        method: "GET"
+      })
+    }),
     checkOwnership: builder.query({
       query: (projectName) => ({
         url: `${PROJECTS_URL}/check-ownership/${projectName}`,
@@ -81,5 +87,6 @@ export const {
   useChangeProjectDescriptionMutation,
   useChangeProjectNameMutation,
   useGetProjectIdQuery,
-  useGetProjectDescriptionQuery
+  useGetProjectDescriptionQuery,
+  useGetLatestProjectsQuery
 } = projectsApiSlice;

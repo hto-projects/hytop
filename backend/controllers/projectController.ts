@@ -315,6 +315,7 @@ const findProjectById = async (projectId: string): Promise<IProject> => {
     }
   }
 };
+
 const changeProjectName = asyncHandler(async (req: any, res) => {
   const { projectId, newProjectName } = req.body;
   const slugifiedProjectName = slugifyProjectName(newProjectName);
@@ -456,6 +457,11 @@ const getProjectDescription = asyncHandler(async (req: any, res) => {
   });
 });
 
+const getLatest = asyncHandler(async (req: any, res) => {
+  const projects = await Project.find({}).sort({ updatedAt: -1 }).limit(40);
+  res.json(projects);
+});
+
 // @desc    Get a project
 // @route   GET /get/:projectId
 // @access  Public
@@ -547,5 +553,6 @@ export {
   changeProjectName,
   changeProjectDescription,
   getProjectId,
-  getProjectDescription
+  getProjectDescription,
+  getLatest
 };

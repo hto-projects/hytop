@@ -9,6 +9,7 @@ import {
   changeProjectDescription,
   findProjectById,
   getProjectId,
+  getLatest,
   getProjectDescription
 } from "../controllers/projectController";
 import { protectAllowAnon } from "../middleware/authMiddleware";
@@ -19,6 +20,7 @@ router.post("/create", createProject);
 router.post("/update", protectAllowAnon, updateProject);
 router.post("/copy", copyProject);
 router.get("/find/:projectId", findProjectById);
+router.get("/latest", getLatest);
 router.get("/get-id/:projectName", getProjectId);
 router.post("/change-name/:projectId", protectAllowAnon, changeProjectName);
 router.post(
