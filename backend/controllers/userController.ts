@@ -137,11 +137,40 @@ const getUserProjects = asyncHandler(async (req, res) => {
   res.json(projects);
 });
 
+const allUsersAndTheirProjects = asyncHandler(async (req, res) => {
+  const users = await User.find({});
+  const usersWithProjects = [];
+  for (const user of users) {
+    const projects = await Project.find({ projectOwnerId: user._id });
+    usersWithProjects.push({
+      user,
+      projects
+    });
+  }
+
+  res.json(usersWithProjects);
+});
+
+const getProjectsForUser = asyncHandler(async (req, res) => {
+  const userName = req.params.userName;
+  const user = await User.findOne({ username: userName });
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+  const projects = await Project.find({ projectOwnerId: user._id });
+  res.json(
+    projects.map((p) => `https://hytop.onrender.com/e/${p.projectName}`)
+  );
+});
+
 export {
   authUser,
   registerUser,
   logoutUser,
   getUserProfile,
   updateUserProfile,
-  getUserProjects
+  getUserProjects,
+  allUsersAndTheirProjects,
+  getProjectsForUser
 };
