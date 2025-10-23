@@ -531,6 +531,10 @@ const renderFile = asyncHandler(async (req: any, res) => {
     res.setHeader("Content-Type", "text/html");
   }
 
+  if (fileName.endsWith(".txt")) {
+    res.setHeader("Content-Type", "text/plain");
+  }
+
   if (fileName.endsWith(".js")) {
     res.setHeader("Content-Type", "text/javascript");
   }
