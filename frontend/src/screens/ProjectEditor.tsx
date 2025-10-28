@@ -11,39 +11,15 @@ import {
 } from "../slices/projectsApiSlice";
 
 import { useDispatch, useSelector } from "react-redux";
-import {
-  ActionIcon,
-  Group,
-  Tooltip,
-  Box,
-  Loader,
-  Text,
-  Paper,
-  TextInput,
-  Menu,
-  CopyButton,
-  useComputedColorScheme
-} from "@mantine/core";
+import { Box, useComputedColorScheme } from "@mantine/core";
 import {
   PiFilesBold,
   PiCodeBold,
   PiMonitorBold,
-  PiFloppyDiskBold,
-  PiGitForkBold,
-  PiXBold,
-  PiFilePlusBold,
-  PiFileCss,
-  PiFileHtml,
-  PiFileJs,
   PiGearBold,
-  PiPencilBold,
-  PiDotOutlineFill,
-  PiLinkBold,
-  PiArrowSquareOutBold,
-  PiArrowCounterClockwiseBold,
-  PiArrowClockwiseBold
+  PiPencilBold
 } from "react-icons/pi";
-import MonacoEditor, { useMonaco } from "@monaco-editor/react";
+import { useMonaco } from "@monaco-editor/react";
 import {
   setPaneState,
   setSelectedFile,
@@ -61,7 +37,6 @@ import {
   setUserIsOwner,
   setCurrentProjectName
 } from "../slices/editorSlice";
-import { IProject } from "../../../shared/types";
 import { useState } from "react";
 
 import { RootState } from "../store";
@@ -71,12 +46,15 @@ import PreviewPane from "../components/editor/PreviewPane";
 import SettingsPane from "../components/editor/SettingsPane";
 import Sidebar from "../components/editor/Sidebar";
 import TabBar from "../components/editor/TabBar";
-import Header from "../components/Header";
 import { toast } from "react-toastify";
 import PreferencesPane from "../components/editor/PreferencesPane";
 import { setProjectName, setProjectDescription } from "../slices/editorSlice";
 import { useNavigate } from "react-router-dom";
-import { ref } from "process";
+import prettier from "prettier/standalone";
+import parserHtml from "prettier/plugins/html";
+import parserBabel from "prettier/plugins/babel";
+import parserEstree from "prettier/plugins/estree";
+import parserCss from "prettier/plugins/postcss";
 
 function getMonacoLang(filename: string) {
   if (!filename) return "plaintext";
@@ -130,7 +108,7 @@ const ProjectEditor = () => {
   });
 
   const projectDescription = projectDescriptionData?.data?.projectDescription;
-  const [currentProjectName, setCurrentProjectNamem] = useState(
+  const [currentProjectName, _setCurrentProjectName] = useState(
     projectName || ""
   );
   const [currentProjectDescription, setCurrentProjectDescription] = useState(
@@ -339,6 +317,84 @@ const ProjectEditor = () => {
     } catch (err) {}
   };
 
+  const formatAndSaveAllFiles = async () => {
+    const parserByFileExtension = new Map<
+      string,
+      { parser: string; plugins: any[] }
+    >([
+      ["html", { parser: "html", plugins: [parserHtml] }],
+      ["css", { parser: "css", plugins: [parserCss] }],
+      ["js", { parser: "babel", plugins: [parserBabel, parserEstree] }]
+    ]);
+
+    try {
+      console.log("projectFiles", projectFiles);
+
+      const formattedFiles = [];
+      for (const file of projectFiles) {
+        const fileExtension = file.fileName.split(".").pop() || "";
+        const config = parserByFileExtension.get(fileExtension);
+        if (config) {
+          const formatted = await prettier.format(file.fileContent, {
+            parser: config.parser,
+            plugins: config.plugins
+          });
+          formattedFiles.push({
+            fileContent: formatted,
+            fileName: file.fileName
+          });
+        } else {
+          console.error(
+            `No Prettier parser found for file extension: ${fileExtension}. Skipping formatting this file.`
+          );
+          formattedFiles.push({
+            fileContent: file.fileContent,
+            fileName: file.fileName
+          });
+        }
+      }
+
+      dispatch(setProjectFiles(formattedFiles));
+
+      // Update Monaco Editor models with formatted content
+      if (monaco) {
+        formattedFiles.forEach((file) => {
+          const model = modelsRef.current[file.fileName];
+          if (model && model.getValue() !== file.fileContent) {
+            // Save current view state before updating
+            if (activeTab === file.fileName && editorRef.current) {
+              viewStatesRef.current[file.fileName] =
+                editorRef.current.saveViewState();
+            }
+
+            // Update model content
+            model.setValue(file.fileContent);
+
+            // Restore view state if this is the active tab
+            if (
+              activeTab === file.fileName &&
+              editorRef.current &&
+              viewStatesRef.current[file.fileName]
+            ) {
+              editorRef.current.restoreViewState(
+                viewStatesRef.current[file.fileName]
+              );
+            }
+          }
+        });
+      }
+
+      // Save to backend
+      await updateProject({
+        projectFiles: formattedFiles,
+        projectName
+      }).unwrap();
+      dispatch(setProjectVersion(projectVersion + 1));
+      setUnsavedFiles({});
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const editorRef = useRef<any>(null);
   const modelsRef = useRef<{ [filename: string]: any }>({});
   const viewStatesRef = useRef<{ [filename: string]: any }>({});
@@ -578,6 +634,14 @@ const ProjectEditor = () => {
   }, [userIsOwner, projectFiles, projectName, projectVersion]);
 
   React.useEffect(() => {
+    const handler = () => {
+      formatAndSaveAllFiles();
+    };
+    window.addEventListener("formatAndSaveAllFiles", handler);
+    return () => window.removeEventListener("formatAndSaveAllFiles", handler);
+  });
+
+  React.useEffect(() => {
     dispatch(setUserIsOwner(userIsOwner));
   }, [userIsOwner, dispatch]);
   React.useEffect(() => {
@@ -666,8 +730,8 @@ const ProjectEditor = () => {
       savedSelectedFile && fileNames.includes(savedSelectedFile)
         ? savedSelectedFile
         : validTabs.length > 0
-        ? validTabs[0]
-        : fileNames[0];
+          ? validTabs[0]
+          : fileNames[0];
 
     if (validTabs.length > 0) {
       dispatch(setTabs(validTabs));
@@ -814,7 +878,7 @@ const ProjectEditor = () => {
         projectId,
         newProjectName: newName
       }).unwrap();
-      setCurrentProjectNamem(res.projectName);
+      _setCurrentProjectName(res.projectName);
       dispatch(setProjectName(res.projectName));
 
       if (res.projectName !== projectName) {
@@ -848,7 +912,7 @@ const ProjectEditor = () => {
 
   useEffect(() => {
     if (projectName !== undefined) {
-      setCurrentProjectNamem(projectName);
+      _setCurrentProjectName(projectName);
     }
   }, [projectName]);
 
