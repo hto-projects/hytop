@@ -10,7 +10,12 @@ import {
   TextInput,
   Box
 } from "@mantine/core";
-import { PiFloppyDiskBold, PiGitForkBold, PiHouseBold } from "react-icons/pi";
+import {
+  PiFloppyDiskBold,
+  PiGitForkBold,
+  PiHouseBold,
+  PiMagicWandBold
+} from "react-icons/pi";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
@@ -41,6 +46,9 @@ const Header = (projectName, getProject) => {
 
   const saveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("saveAllFiles"));
+  };
+  const formatAndSaveAllFiles = () => {
+    window.dispatchEvent(new CustomEvent("formatAndSaveAllFiles"));
   };
   const forkProject = () => {
     window.location.href = `/c/${routeProjectName}`;
@@ -130,6 +138,24 @@ const Header = (projectName, getProject) => {
               </ActionIcon>
             </Tooltip>
           )}
+        </Group>
+      )}
+      {isEditor && (
+        <Group gap={0}>
+          {userIsOwner ? (
+            <Tooltip label="Format with Prettier and Save All">
+              <ActionIcon
+                onClick={formatAndSaveAllFiles}
+                color={primaryColor}
+                size="md"
+                style={{
+                  color: theColorScheme === "dark" ? "#fff" : undefined
+                }}
+              >
+                <PiMagicWandBold />
+              </ActionIcon>
+            </Tooltip>
+          ) : null}
         </Group>
       )}
       <Group gap={0} ml="auto">
