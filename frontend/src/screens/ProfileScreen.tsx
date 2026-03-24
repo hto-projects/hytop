@@ -14,6 +14,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import AdminPanel from "../components/AdminPanel";
 import {
   useUpdateUserMutation,
   useGetUserProjectsQuery
@@ -35,6 +36,8 @@ const ProfileScreen = () => {
   const [name, setName] = useState(userInfo ? userInfo.name : "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const userIsAdmin = userInfo?.admin || false;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -73,7 +76,6 @@ const ProfileScreen = () => {
         background: theColorScheme === "dark" ? "#181A1B" : undefined,
         color: theColorScheme === "dark" ? "#fff" : undefined,
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
         overflow: "auto"
       }}
@@ -191,7 +193,7 @@ const ProfileScreen = () => {
           <div
             style={{
               flex: 2,
-              minWidth: 320,
+              minWidth: 700,
               borderLeft:
                 theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
               paddingLeft: 48
@@ -206,6 +208,8 @@ const ProfileScreen = () => {
               error={projectsError}
             />
           </div>
+
+          {userIsAdmin && <AdminPanel />}
         </Paper>
       </Container>
     </Box>
