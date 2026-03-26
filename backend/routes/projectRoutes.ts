@@ -10,7 +10,8 @@ import {
   findProjectById,
   getProjectId,
   getLatest,
-  getProjectDescription
+  getProjectDescription,
+  allProjects
 } from "../controllers/projectController";
 import { protectAllowAnon } from "../middleware/authMiddleware";
 
@@ -31,5 +32,6 @@ router.post(
 router.get("/get-description/:projectId", getProjectDescription);
 router.get("/get/:projectName", getProject);
 router.get("/check-ownership/:projectName", protectAllowAnon, checkOwnership);
+router.get("/all", allProjects);
 
 export default router;

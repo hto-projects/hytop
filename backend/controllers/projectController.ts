@@ -546,6 +546,11 @@ const renderFile = asyncHandler(async (req: any, res) => {
   res.send(projectFile.fileContent);
 });
 
+const allProjects = asyncHandler(async (req, res) => {
+  const projects = await Project.find();
+  res.json(projects);
+});
+
 export {
   createProject,
   updateProject,
@@ -558,5 +563,6 @@ export {
   changeProjectDescription,
   getProjectId,
   getProjectDescription,
-  getLatest
+  getLatest,
+  allProjects
 };
