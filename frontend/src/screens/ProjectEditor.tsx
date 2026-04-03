@@ -369,6 +369,31 @@ const ProjectEditor = () => {
     } catch (err) {}
   };
 
+  const generateUniqueFileName = (
+    fileName: string,
+    existingFileNames: Set<string>
+  ): string => {
+    const lowerFileName = fileName.toLowerCase();
+    if (!existingFileNames.has(lowerFileName)) {
+      return fileName;
+    }
+
+    const extension = getFileExtension(fileName);
+    const nameWithoutExtension = fileName.slice(0, -(extension.length + 1));
+
+    let counter = 1;
+    let uniqueName: string;
+    do {
+      uniqueName =
+        extension.length > 0
+          ? `${nameWithoutExtension} (${counter}).${extension}`
+          : `${nameWithoutExtension} (${counter})`;
+      counter++;
+    } while (existingFileNames.has(uniqueName.toLowerCase()));
+
+    return uniqueName;
+  };
+
   const handleDroppedFiles = async (droppedFiles: File[]) => {
     if (!userIsOwner) {
       return;
@@ -377,17 +402,19 @@ const ProjectEditor = () => {
     const currentFileNames = new Set(
       projectFiles.map((existingFile) => existingFile.fileName.toLowerCase())
     );
-    const duplicateFiles: string[] = [];
+    const renameFiles: { original: string; renamed: string }[] = [];
     const unsupportedFiles: string[] = [];
     const filesToAdd: { fileName: string; fileContent: string }[] = [];
 
     for (const droppedFile of droppedFiles) {
-      const fileName = droppedFile.name;
+      let fileName = droppedFile.name;
       const extension = getFileExtension(fileName);
 
+      // Check if file already exists and generate unique name if needed
       if (currentFileNames.has(fileName.toLowerCase())) {
-        duplicateFiles.push(fileName);
-        continue;
+        const uniqueName = generateUniqueFileName(fileName, currentFileNames);
+        renameFiles.push({ original: fileName, renamed: uniqueName });
+        fileName = uniqueName;
       }
 
       if (
@@ -430,15 +457,15 @@ const ProjectEditor = () => {
       toast.error("Failed to save dropped files.");
     }
 
-    if (duplicateFiles.length > 0) {
-      toast.info(
-        `Skipped duplicate file${duplicateFiles.length > 1 ? "s" : ""}: ${duplicateFiles.join(", ")}`
-      );
-    }
-
     if (unsupportedFiles.length > 0) {
       toast.warn(
         `Unsupported file${unsupportedFiles.length > 1 ? "s" : ""} skipped: ${unsupportedFiles.join(", ")}`
+      );
+    }
+
+    if (renameFiles.length > 0) {
+      toast.info(
+        `File${renameFiles.length > 1 ? "s" : ""} renamed to avoid duplicates: ${renameFiles.map((f) => `${f.original} → ${f.renamed}`).join(", ")}`
       );
     }
   };
