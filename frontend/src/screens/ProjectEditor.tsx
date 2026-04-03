@@ -86,6 +86,32 @@ function getMonacoLang(filename: string) {
   return "plaintext";
 }
 
+const SUPPORTED_TEXT_EXTENSIONS = new Set(["html", "css", "js"]);
+const SUPPORTED_IMAGE_EXTENSIONS = new Set([
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "webp",
+  "svg"
+]);
+
+const readImageFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve((reader.result as string) || "");
+    reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
+    reader.readAsDataURL(file);
+  });
+
+const getFileExtension = (fileName: string) => {
+  const parts = fileName.split(".");
+  if (parts.length < 2) {
+    return "";
+  }
+  return parts[parts.length - 1].toLowerCase();
+};
+
 const paneTypes = [
   { key: "explorer", icon: <PiFilesBold />, label: "Files" },
   { key: "editor", icon: <PiCodeBold />, label: "Editor" },
@@ -337,6 +363,80 @@ const ProjectEditor = () => {
       dispatch(setProjectVersion(projectVersion + 1));
       setUnsavedFiles({});
     } catch (err) {}
+  };
+
+  const handleDroppedFiles = async (droppedFiles: File[]) => {
+    if (!userIsOwner) {
+      return;
+    }
+
+    const currentFileNames = new Set(
+      projectFiles.map((existingFile) => existingFile.fileName.toLowerCase())
+    );
+    const duplicateFiles: string[] = [];
+    const unsupportedFiles: string[] = [];
+    const filesToAdd: { fileName: string; fileContent: string }[] = [];
+
+    for (const droppedFile of droppedFiles) {
+      const fileName = droppedFile.name;
+      const extension = getFileExtension(fileName);
+
+      if (currentFileNames.has(fileName.toLowerCase())) {
+        duplicateFiles.push(fileName);
+        continue;
+      }
+
+      if (
+        !SUPPORTED_TEXT_EXTENSIONS.has(extension) &&
+        !SUPPORTED_IMAGE_EXTENSIONS.has(extension)
+      ) {
+        unsupportedFiles.push(fileName);
+        continue;
+      }
+
+      try {
+        const fileContent = SUPPORTED_TEXT_EXTENSIONS.has(extension)
+          ? await droppedFile.text()
+          : await readImageFileAsDataUrl(droppedFile);
+
+        filesToAdd.push({
+          fileName,
+          fileContent
+        });
+        currentFileNames.add(fileName.toLowerCase());
+      } catch {
+        unsupportedFiles.push(fileName);
+      }
+    }
+
+    if (filesToAdd.length === 0) {
+      if (unsupportedFiles.length > 0) {
+        toast.error("No supported files were dropped.");
+      }
+      return;
+    }
+
+    const updatedFiles = [...projectFiles, ...filesToAdd];
+    dispatch(setProjectFiles(updatedFiles));
+
+    try {
+      await updateProject({ projectFiles: updatedFiles, projectName }).unwrap();
+      dispatch(setProjectVersion(projectVersion + 1));
+    } catch {
+      toast.error("Failed to save dropped files.");
+    }
+
+    if (duplicateFiles.length > 0) {
+      toast.info(
+        `Skipped duplicate file${duplicateFiles.length > 1 ? "s" : ""}: ${duplicateFiles.join(", ")}`
+      );
+    }
+
+    if (unsupportedFiles.length > 0) {
+      toast.warn(
+        `Unsupported file${unsupportedFiles.length > 1 ? "s" : ""} skipped: ${unsupportedFiles.join(", ")}`
+      );
+    }
   };
 
   const editorRef = useRef<any>(null);
@@ -666,8 +766,8 @@ const ProjectEditor = () => {
       savedSelectedFile && fileNames.includes(savedSelectedFile)
         ? savedSelectedFile
         : validTabs.length > 0
-        ? validTabs[0]
-        : fileNames[0];
+          ? validTabs[0]
+          : fileNames[0];
 
     if (validTabs.length > 0) {
       dispatch(setTabs(validTabs));
@@ -908,6 +1008,7 @@ const ProjectEditor = () => {
                 confirmRename={confirmRename}
                 cancelRename={cancelRename}
                 style={undefined}
+                onDropFiles={handleDroppedFiles}
               />
             )}
             {sidebarTab === "preferences" && paneState.open.preferences && (
