@@ -13,7 +13,11 @@ import {
   PiArrowCounterClockwiseBold,
   PiArrowClockwiseBold,
   PiFloppyDiskBold,
-  PiXBold
+  PiXBold,
+  PiImageBold,
+  PiFileCssBold,
+  PiFileHtmlBold,
+  PiFileJsBold
 } from "react-icons/pi";
 import MonacoEditor from "@monaco-editor/react";
 import React from "react";
@@ -31,6 +35,27 @@ const getFileExtension = (fileName?: string) => {
 
 const isImageFile = (fileName?: string) =>
   IMAGE_EXTENSIONS.has(getFileExtension(fileName));
+
+const getFileIcon = (fileName?: string) => {
+  const ext = getFileExtension(fileName);
+  switch (ext) {
+    case "css":
+      return <PiFileCssBold />;
+    case "html":
+      return <PiFileHtmlBold />;
+    case "js":
+      return <PiFileJsBold />;
+    case "png":
+    case "jpg":
+    case "jpeg":
+    case "gif":
+    case "webp":
+    case "svg":
+      return <PiImageBold />;
+    default:
+      return <PiCodeBold />;
+  }
+};
 
 const toRenderableImageSrc = (
   fileName: string,
@@ -293,7 +318,7 @@ const EditorPane = ({
         }}
       >
         <Group gap={4}>
-          <PiCodeBold />
+          {getFileIcon(activeTab)}
           {unsavedFiles[activeTab] && (
             <PiDotOutlineFill
               color="#FFA94D"
