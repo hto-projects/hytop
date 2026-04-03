@@ -13,79 +13,17 @@ import {
   PiArrowCounterClockwiseBold,
   PiArrowClockwiseBold,
   PiFloppyDiskBold,
-  PiXBold,
-  PiImageBold,
-  PiFileCssBold,
-  PiFileHtmlBold,
-  PiFileJsBold
+  PiXBold
 } from "react-icons/pi";
 import MonacoEditor from "@monaco-editor/react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { initVimMode } from "monaco-vim";
-
-const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "gif", "webp", "svg"]);
-
-const getFileExtension = (fileName?: string) => {
-  if (!fileName) return "";
-  const splitName = fileName.split(".");
-  if (splitName.length < 2) return "";
-  return splitName[splitName.length - 1].toLowerCase();
-};
-
-const isImageFile = (fileName?: string) =>
-  IMAGE_EXTENSIONS.has(getFileExtension(fileName));
-
-const getFileIcon = (fileName?: string) => {
-  const ext = getFileExtension(fileName);
-  switch (ext) {
-    case "css":
-      return <PiFileCssBold />;
-    case "html":
-      return <PiFileHtmlBold />;
-    case "js":
-      return <PiFileJsBold />;
-    case "png":
-    case "jpg":
-    case "jpeg":
-    case "gif":
-    case "webp":
-    case "svg":
-      return <PiImageBold />;
-    default:
-      return <PiCodeBold />;
-  }
-};
-
-const toRenderableImageSrc = (
-  fileName: string,
-  fileContent: string,
-  projectName?: string
-) => {
-  if (fileContent.startsWith("data:")) {
-    return fileContent;
-  }
-  if (/^https?:\/\//i.test(fileContent)) {
-    return fileContent;
-  }
-  if (projectName) {
-    return `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/${encodeURIComponent(fileName)}`;
-  }
-  const extension = getFileExtension(fileName);
-  const mimeByExtension: Record<string, string> = {
-    png: "image/png",
-    jpg: "image/jpeg",
-    jpeg: "image/jpeg",
-    gif: "image/gif",
-    webp: "image/webp",
-    svg: "image/svg+xml"
-  };
-  const mimeType = mimeByExtension[extension];
-  if (!mimeType) {
-    return fileContent;
-  }
-  return `data:${mimeType};base64,${fileContent}`;
-};
+import {
+  isImageFile,
+  getFileIcon,
+  toRenderableImageSrc
+} from "../../utils/imageUtils";
 
 function setupMonacoModels({
   monaco,

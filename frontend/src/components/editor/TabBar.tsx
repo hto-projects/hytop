@@ -1,42 +1,8 @@
 import { Box, ActionIcon, useComputedColorScheme } from "@mantine/core";
-import {
-  PiFileJs,
-  PiFileCss,
-  PiFileHtml,
-  PiImageBold,
-  PiDotOutlineFill,
-  PiXBold
-} from "react-icons/pi";
+import { PiDotOutlineFill, PiXBold } from "react-icons/pi";
 import React from "react";
 import { useSelector } from "react-redux";
-
-const getFileExtension = (fileName?: string) => {
-  if (!fileName) return "";
-  const splitName = fileName.split(".");
-  if (splitName.length < 2) return "";
-  return splitName[splitName.length - 1].toLowerCase();
-};
-
-const getTabIcon = (fileName?: string) => {
-  const ext = getFileExtension(fileName);
-  switch (ext) {
-    case "css":
-      return <PiFileCss size={14} />;
-    case "html":
-      return <PiFileHtml size={14} />;
-    case "js":
-      return <PiFileJs size={14} />;
-    case "png":
-    case "jpg":
-    case "jpeg":
-    case "gif":
-    case "webp":
-    case "svg":
-      return <PiImageBold size={14} />;
-    default:
-      return null;
-  }
-};
+import { getTabIcon } from "../../utils/imageUtils";
 
 const TabBar = ({
   tabs,

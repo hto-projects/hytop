@@ -12,6 +12,12 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 import {
+  SUPPORTED_IMAGE_EXTENSIONS,
+  readImageFileAsDataUrl,
+  getFileExtension,
+  isImageFile
+} from "../utils/imageUtils";
+import {
   ActionIcon,
   Group,
   Tooltip,
@@ -87,33 +93,6 @@ function getMonacoLang(filename: string) {
 }
 
 const SUPPORTED_TEXT_EXTENSIONS = new Set(["html", "css", "js"]);
-const SUPPORTED_IMAGE_EXTENSIONS = new Set([
-  "png",
-  "jpg",
-  "jpeg",
-  "gif",
-  "webp",
-  "svg"
-]);
-
-const readImageFileAsDataUrl = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve((reader.result as string) || "");
-    reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
-    reader.readAsDataURL(file);
-  });
-
-const getFileExtension = (fileName: string) => {
-  const parts = fileName.split(".");
-  if (parts.length < 2) {
-    return "";
-  }
-  return parts[parts.length - 1].toLowerCase();
-};
-
-const isImageFile = (fileName: string) =>
-  SUPPORTED_IMAGE_EXTENSIONS.has(getFileExtension(fileName));
 
 const paneTypes = [
   { key: "explorer", icon: <PiFilesBold />, label: "Files" },
