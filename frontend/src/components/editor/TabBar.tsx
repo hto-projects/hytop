@@ -3,11 +3,40 @@ import {
   PiFileJs,
   PiFileCss,
   PiFileHtml,
+  PiImageBold,
   PiDotOutlineFill,
   PiXBold
 } from "react-icons/pi";
 import React from "react";
 import { useSelector } from "react-redux";
+
+const getFileExtension = (fileName?: string) => {
+  if (!fileName) return "";
+  const splitName = fileName.split(".");
+  if (splitName.length < 2) return "";
+  return splitName[splitName.length - 1].toLowerCase();
+};
+
+const getTabIcon = (fileName?: string) => {
+  const ext = getFileExtension(fileName);
+  switch (ext) {
+    case "css":
+      return <PiFileCss size={14} />;
+    case "html":
+      return <PiFileHtml size={14} />;
+    case "js":
+      return <PiFileJs size={14} />;
+    case "png":
+    case "jpg":
+    case "jpeg":
+    case "gif":
+    case "webp":
+    case "svg":
+      return <PiImageBold size={14} />;
+    default:
+      return null;
+  }
+};
 
 const TabBar = ({
   tabs,
@@ -60,22 +89,12 @@ const TabBar = ({
                   ? "#fff"
                   : "#191f5e"
                 : theColorScheme === "dark"
-                ? "#bbb"
-                : "#444"
+                  ? "#bbb"
+                  : "#444"
           }}
           onClick={() => handleTabClick(fileName)}
         >
-          <span style={{ marginRight: 6 }}>
-            {typeof fileName === "string" && fileName.endsWith(".js") && (
-              <PiFileJs size={14} />
-            )}
-            {typeof fileName === "string" && fileName.endsWith(".css") && (
-              <PiFileCss size={14} />
-            )}
-            {typeof fileName === "string" && fileName.endsWith(".html") && (
-              <PiFileHtml size={14} />
-            )}
-          </span>
+          <span style={{ marginRight: 6 }}>{getTabIcon(fileName)}</span>
           <span style={{ marginRight: 6 }}>{fileName}</span>
           {unsavedFiles[fileName] && (
             <PiDotOutlineFill
