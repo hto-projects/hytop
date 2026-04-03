@@ -112,6 +112,9 @@ const getFileExtension = (fileName: string) => {
   return parts[parts.length - 1].toLowerCase();
 };
 
+const isImageFile = (fileName: string) =>
+  SUPPORTED_IMAGE_EXTENSIONS.has(getFileExtension(fileName));
+
 const paneTypes = [
   { key: "explorer", icon: <PiFilesBold />, label: "Files" },
   { key: "editor", icon: <PiCodeBold />, label: "Editor" },
@@ -195,6 +198,7 @@ const ProjectEditor = () => {
     if (activeTab && modelsRef.current[activeTab]) {
       const model = modelsRef.current[activeTab];
       if (editorRef.current.getModel() !== model) {
+        if (isImageFile(activeTab)) return;
         editorRef.current.setModel(model);
         if (viewStatesRef.current[activeTab]) {
           editorRef.current.restoreViewState(viewStatesRef.current[activeTab]);
@@ -499,22 +503,40 @@ const ProjectEditor = () => {
   useEffect(() => {
     if (!monaco || !editorRef.current) return;
 
+    // If on an image tab, clear the model but don't do anything else
+    if (isImageFile(activeTab)) {
+      try {
+        editorRef.current.setModel(null);
+      } catch {
+        // Silently ignore if editor is not ready
+      }
+      return;
+    }
+
+    // Switching between text files
     const prev = editorRef.current.__lastFile;
     if (prev && modelsRef.current[prev]) {
-      viewStatesRef.current[prev] = editorRef.current.saveViewState();
+      try {
+        viewStatesRef.current[prev] = editorRef.current.saveViewState();
+      } catch {
+        // Silently ignore
+      }
     }
 
     if (activeTab && modelsRef.current[activeTab]) {
       const model = modelsRef.current[activeTab];
-      editorRef.current.setModel(model);
-      if (viewStatesRef.current[activeTab]) {
-        editorRef.current.restoreViewState(viewStatesRef.current[activeTab]);
+      try {
+        editorRef.current.setModel(model);
+        if (viewStatesRef.current[activeTab]) {
+          editorRef.current.restoreViewState(viewStatesRef.current[activeTab]);
+        }
+        editorRef.current.focus();
+        editorRef.current.__lastFile = activeTab;
+        const language = getMonacoLang(activeTab);
+        monaco.editor.setModelLanguage(model, language);
+      } catch {
+        // Silently ignore errors during model operations
       }
-      editorRef.current.focus();
-      editorRef.current.__lastFile = activeTab;
-
-      const language = getMonacoLang(activeTab);
-      monaco.editor.setModelLanguage(model, language);
     }
   }, [activeTab, monaco]);
 
@@ -1122,6 +1144,7 @@ const ProjectEditor = () => {
                     modelsRef={modelsRef}
                     getMonacoLang={getMonacoLang}
                     userIsOwner={userIsOwner}
+                    projectName={projectName}
                   />
                 )}
                 {pane === "preview" && (

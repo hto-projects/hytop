@@ -20,6 +20,48 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { initVimMode } from "monaco-vim";
 
+const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "gif", "webp", "svg"]);
+
+const getFileExtension = (fileName?: string) => {
+  if (!fileName) return "";
+  const splitName = fileName.split(".");
+  if (splitName.length < 2) return "";
+  return splitName[splitName.length - 1].toLowerCase();
+};
+
+const isImageFile = (fileName?: string) =>
+  IMAGE_EXTENSIONS.has(getFileExtension(fileName));
+
+const toRenderableImageSrc = (
+  fileName: string,
+  fileContent: string,
+  projectName?: string
+) => {
+  if (fileContent.startsWith("data:")) {
+    return fileContent;
+  }
+  if (/^https?:\/\//i.test(fileContent)) {
+    return fileContent;
+  }
+  if (projectName) {
+    return `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/${encodeURIComponent(fileName)}`;
+  }
+  const extension = getFileExtension(fileName);
+  const mimeByExtension: Record<string, string> = {
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    gif: "image/gif",
+    webp: "image/webp",
+    svg: "image/svg+xml"
+  };
+  const mimeType = mimeByExtension[extension];
+  if (!mimeType) {
+    return fileContent;
+  }
+  return `data:${mimeType};base64,${fileContent}`;
+};
+
 function setupMonacoModels({
   monaco,
   editorRef,
@@ -30,6 +72,9 @@ function setupMonacoModels({
 }) {
   if (!monaco || !editorRef.current || !activeTab) return;
   projectFiles.forEach((file) => {
+    if (isImageFile(file.fileName)) {
+      return;
+    }
     const uri = monaco.Uri.parse(`file:///${file.fileName}`);
     let model = modelsRef.current[file.fileName];
     if (
@@ -54,6 +99,10 @@ function setupMonacoModels({
       model.setValue(file.fileContent);
     }
   });
+
+  if (isImageFile(activeTab)) {
+    return;
+  }
 
   const filey = projectFiles.find((f) => f.fileName === activeTab);
   const fileContent = filey ? filey.fileContent || "" : "";
@@ -102,6 +151,7 @@ const EditorPane = ({
   modelsRef,
   getMonacoLang,
   userIsOwner,
+  projectName,
   projectFiles = []
 }) => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
@@ -115,25 +165,34 @@ const EditorPane = ({
   );
   const vimModeEnabled = useSelector((state: any) => state.editor.vimMode);
   const theColorScheme = useComputedColorScheme("light");
+  const activeFile = projectFiles.find((f) => f.fileName === activeTab);
+  const activeFileIsImage = isImageFile(activeTab);
+  const activeImageSrc = activeFileIsImage
+    ? projectName
+      ? `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/${encodeURIComponent(activeTab)}`
+      : toRenderableImageSrc(
+          activeTab,
+          activeFile?.fileContent || "",
+          projectName
+        )
+    : "";
 
   const vimStatusRef = React.useRef<HTMLDivElement>(null);
   const vimModeRef = React.useRef<any>(null);
 
   const handleEditorMount = (editor) => {
-    if (editorRef.current && typeof editorRef.current.dispose === "function") {
-      try {
-        editorRef.current.dispose();
-      } catch {}
-    }
     editorRef.current = editor;
-    setupMonacoModels({
-      monaco,
-      editorRef,
-      modelsRef,
-      projectFiles,
-      activeTab,
-      getMonacoLang
-    });
+    // Skip model setup if current tab is an image; will be set up when switching to text
+    if (!isImageFile(activeTab)) {
+      setupMonacoModels({
+        monaco,
+        editorRef,
+        modelsRef,
+        projectFiles,
+        activeTab,
+        getMonacoLang
+      });
+    }
 
     if (vimModeRef.current) {
       vimModeRef.current.dispose();
@@ -179,15 +238,7 @@ const EditorPane = ({
 
   React.useEffect(() => {
     return () => {
-      if (
-        editorRef.current &&
-        typeof editorRef.current.dispose === "function"
-      ) {
-        try {
-          editorRef.current.dispose();
-        } catch {}
-        editorRef.current = null;
-      }
+      editorRef.current = null;
     };
   }, [monaco]);
 
@@ -208,7 +259,7 @@ const EditorPane = ({
         }
       });
     }
-  }, [monaco, monacoFont, editorRef.current]);
+  }, [monaco, monacoFont, editorRef.current, projectName]);
 
   return (
     <Paper
@@ -260,7 +311,7 @@ const EditorPane = ({
             }}
             size="sm"
             title="Undo"
-            disabled={!activeTab}
+            disabled={!activeTab || activeFileIsImage}
           >
             <PiArrowCounterClockwiseBold />
           </ActionIcon>
@@ -274,7 +325,7 @@ const EditorPane = ({
             }}
             size="sm"
             title="Redo"
-            disabled={!activeTab}
+            disabled={!activeTab || activeFileIsImage}
           >
             <PiArrowClockwiseBold />
           </ActionIcon>
@@ -312,28 +363,74 @@ const EditorPane = ({
         <Box
           style={{
             flex: vimModeEnabled ? "1 1 calc(100% - 24px)" : "1 1 100%",
-            minHeight: 0
+            minHeight: 0,
+            position: "relative"
           }}
         >
-          <MonacoEditor
-            key="monaco-singleton"
-            theme={monacoTheme}
-            height="100%"
-            width="100%"
-            language={getMonacoLang(activeTab)}
-            options={{
-              readOnly: !userIsOwner,
-              minimap: { enabled: true },
-              fontSize: monacoFontSize,
-              fontFamily: monacoFont,
-              wordWrap: monacoWordWrap || "off",
-              fontLigatures: false,
-              letterSpacing: 0
+          {/* Image Preview - only visible when activeFileIsImage is true */}
+          <Box
+            style={{
+              width: "100%",
+              height: "100%",
+              display: activeFileIsImage ? "flex" : "none",
+              alignItems: "center",
+              justifyContent: "center",
+              background: theColorScheme === "dark" ? "#111" : "#f8f9fa",
+              overflow: "auto",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 10
             }}
-            onMount={handleEditorMount}
-          />
+          >
+            {activeImageSrc ? (
+              <img
+                src={activeImageSrc}
+                alt={activeTab || "project image"}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain"
+                }}
+              />
+            ) : (
+              <Text
+                size="sm"
+                c={theColorScheme === "dark" ? "gray.4" : "dimmed"}
+              >
+                Unable to render this image file.
+              </Text>
+            )}
+          </Box>
+
+          {/* Monaco Editor - always mounted, visibility controlled by CSS */}
+          <Box
+            style={{
+              width: "100%",
+              height: "100%",
+              display: activeFileIsImage ? "none" : "block"
+            }}
+          >
+            <MonacoEditor
+              key="monaco-singleton"
+              theme={monacoTheme}
+              height="100%"
+              width="100%"
+              language={getMonacoLang(activeTab)}
+              options={{
+                readOnly: !userIsOwner,
+                minimap: { enabled: true },
+                fontSize: monacoFontSize,
+                fontFamily: monacoFont,
+                wordWrap: monacoWordWrap || "off",
+                fontLigatures: false,
+                letterSpacing: 0
+              }}
+              onMount={handleEditorMount}
+            />
+          </Box>
         </Box>
-        {vimModeEnabled && (
+        {vimModeEnabled && !activeFileIsImage && (
           <div
             ref={vimStatusRef}
             style={{
