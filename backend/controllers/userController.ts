@@ -18,7 +18,8 @@ const authUser = asyncHandler(async (req, res) => {
     res.json({
       _id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      admin: user.admin
     });
   } else {
     res.status(401);
@@ -51,6 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
+    admin: false,
     username,
     userId,
     password
@@ -63,7 +65,8 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       username: user.username,
-      email: user.email
+      email: user.email,
+      admin: user.admin
     });
   } else {
     res.status(400);
@@ -92,7 +95,8 @@ const getUserProfile = asyncHandler(async (req: any, res) => {
     res.json({
       _id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      admin: user.admin
     });
   } else {
     res.status(404);
@@ -164,6 +168,25 @@ const getProjectsForUser = asyncHandler(async (req, res) => {
   );
 });
 
+const resetPassword = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username: username });
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  user.password = password;
+  await user.save();
+
+  // return new password
+  res.json({
+    username,
+    newPassword: user.password,
+    message: "Password reset successfully"
+  });
+});
+
 export {
   authUser,
   registerUser,
@@ -172,5 +195,6 @@ export {
   updateUserProfile,
   getUserProjects,
   allUsersAndTheirProjects,
-  getProjectsForUser
+  getProjectsForUser,
+  resetPassword
 };

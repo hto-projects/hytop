@@ -6,16 +6,18 @@ import {
   getUserProfile,
   updateUserProfile,
   allUsersAndTheirProjects,
+  resetPassword,
   getProjectsForUser as getProjectsForUserName
 } from "../controllers/userController";
 import { getUserProjects } from "../controllers/userController";
-import { protect } from "../middleware/authMiddleware";
+import { protect, adminProtect } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
 router.post("/", registerUser);
 router.post("/auth", authUser);
 router.post("/logout", logoutUser);
+router.post("/reset-password", adminProtect, resetPassword);
 
 router
   .route("/profile")
