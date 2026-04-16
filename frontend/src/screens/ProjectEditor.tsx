@@ -17,19 +17,6 @@ import {
   getFileExtension,
   isImageFile
 } from "../utils/imageUtils";
-import {
-  ActionIcon,
-  Group,
-  Tooltip,
-  Box,
-  Loader,
-  Text,
-  Paper,
-  TextInput,
-  Menu,
-  CopyButton,
-  useComputedColorScheme
-} from "@mantine/core";
 import { Box, useComputedColorScheme } from "@mantine/core";
 import {
   PiFilesBold,
