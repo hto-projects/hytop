@@ -21,6 +21,7 @@
     "postcss": "^8.5.5",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
+    "prettier": "^3.6.2",
     "prismjs": "^1.30.0",
     "react": "^19.1.0",
     "react-bootstrap": "^2.7.4",

@@ -16,7 +16,12 @@ const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
   }
 
   if (error) {
-    return <div style={{ color: "red" }}>Error loading projects</div>;
+    return (
+      <div style={{ color: "red" }}>
+        Error loading projects. Maybe try logging out and in again?
+        <pre>{` ` + JSON.stringify(error, null, 2)}</pre>
+      </div>
+    );
   }
 
   if (!projects || projects.length === 0) {
@@ -24,7 +29,15 @@ const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
   }
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 16,
+        overflowY: "scroll",
+        maxHeight: "50vh"
+      }}
+    >
       {[...projects]
         .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
         .map((proj) => (
