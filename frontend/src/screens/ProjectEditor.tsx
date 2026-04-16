@@ -387,7 +387,6 @@ const ProjectEditor = () => {
 
     for (const droppedFile of droppedFiles) {
       let fileName = droppedFile.name;
-      const extension = getFileExtension(fileName);
 
       // Check if file already exists and generate unique name if needed
       if (currentFileNames.has(fileName.toLowerCase())) {
@@ -395,6 +394,8 @@ const ProjectEditor = () => {
         renameFiles.push({ original: fileName, renamed: uniqueName });
         fileName = uniqueName;
       }
+
+      const extension = getFileExtension(fileName);
 
       if (
         !SUPPORTED_TEXT_EXTENSIONS.has(extension) &&

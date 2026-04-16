@@ -37,17 +37,27 @@ export const readImageFileAsDataUrl = (file: File): Promise<string> =>
 export const toRenderableImageSrc = (
   fileName: string,
   fileContent: string,
-  projectName?: string
+  projectName?: string,
+  isImage: boolean = true
 ): string => {
+  // Return empty string if not an image file
+  if (!isImage) {
+    return "";
+  }
+
+  // If projectName is provided, use the backend endpoint
+  if (projectName) {
+    return `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/${encodeURIComponent(fileName)}`;
+  }
+
+  // Otherwise, convert file content to renderable image source
   if (fileContent.startsWith("data:")) {
     return fileContent;
   }
   if (/^https?:\/\//i.test(fileContent)) {
     return fileContent;
   }
-  if (projectName) {
-    return `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/${encodeURIComponent(fileName)}`;
-  }
+
   const extension = getFileExtension(fileName);
   const mimeByExtension: Record<string, string> = {
     png: "image/png",

@@ -130,15 +130,12 @@ const EditorPane = ({
   const theColorScheme = useComputedColorScheme("light");
   const activeFile = projectFiles.find((f) => f.fileName === activeTab);
   const activeFileIsImage = isImageFile(activeTab);
-  const activeImageSrc = activeFileIsImage
-    ? projectName
-      ? `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/${encodeURIComponent(activeTab)}`
-      : toRenderableImageSrc(
-          activeTab,
-          activeFile?.fileContent || "",
-          projectName
-        )
-    : "";
+  const activeImageSrc = toRenderableImageSrc(
+    activeTab,
+    activeFile?.fileContent || "",
+    projectName,
+    activeFileIsImage
+  );
 
   const vimStatusRef = React.useRef<HTMLDivElement>(null);
   const vimModeRef = React.useRef<any>(null);
