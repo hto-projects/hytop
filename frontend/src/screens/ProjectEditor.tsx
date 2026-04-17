@@ -356,15 +356,24 @@ const ProjectEditor = () => {
       return;
     }
 
+    const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
     const currentFileNames = new Set(
       projectFiles.map((existingFile) => existingFile.fileName.toLowerCase())
     );
     const renameFiles: { original: string; renamed: string }[] = [];
     const unsupportedFiles: string[] = [];
+    const oversizedFiles: { name: string; size: string }[] = [];
     const filesToAdd: { fileName: string; fileContent: string }[] = [];
 
     for (const droppedFile of droppedFiles) {
       let fileName = droppedFile.name;
+
+      // Check file size first (before any other processing)
+      if (droppedFile.size > MAX_FILE_SIZE) {
+        const sizeMB = (droppedFile.size / (1024 * 1024)).toFixed(2);
+        oversizedFiles.push({ name: fileName, size: sizeMB });
+        continue;
+      }
 
       // Check if file already exists and generate unique name if needed
       if (currentFileNames.has(fileName.toLowerCase())) {
@@ -399,7 +408,11 @@ const ProjectEditor = () => {
     }
 
     if (filesToAdd.length === 0) {
-      if (unsupportedFiles.length > 0) {
+      if (oversizedFiles.length > 0 && unsupportedFiles.length === 0) {
+        toast.error(
+          `File${oversizedFiles.length > 1 ? "s" : ""} exceeds 3MB limit: ${oversizedFiles.map((f) => `${f.name} (${f.size}MB)`).join(", ")}`
+        );
+      } else if (unsupportedFiles.length > 0) {
         toast.error("No supported files were dropped.");
       }
       return;
@@ -413,6 +426,12 @@ const ProjectEditor = () => {
       dispatch(setProjectVersion(projectVersion + 1));
     } catch {
       toast.error("Failed to save dropped files.");
+    }
+
+    if (oversizedFiles.length > 0) {
+      toast.warn(
+        `File${oversizedFiles.length > 1 ? "s" : ""} skipped (exceeds 3MB): ${oversizedFiles.map((f) => `${f.name} (${f.size}MB)`).join(", ")}`
+      );
     }
 
     if (unsupportedFiles.length > 0) {
