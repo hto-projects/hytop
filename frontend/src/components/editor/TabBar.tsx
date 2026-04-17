@@ -1,13 +1,8 @@
 import { Box, ActionIcon, useComputedColorScheme } from "@mantine/core";
-import {
-  PiFileJs,
-  PiFileCss,
-  PiFileHtml,
-  PiDotOutlineFill,
-  PiXBold
-} from "react-icons/pi";
+import { PiDotOutlineFill, PiXBold } from "react-icons/pi";
 import React from "react";
 import { useSelector } from "react-redux";
+import { getTabIcon } from "../../utils/imageUtils";
 
 const TabBar = ({
   tabs,
@@ -60,22 +55,12 @@ const TabBar = ({
                   ? "#fff"
                   : "#191f5e"
                 : theColorScheme === "dark"
-                ? "#bbb"
-                : "#444"
+                  ? "#bbb"
+                  : "#444"
           }}
           onClick={() => handleTabClick(fileName)}
         >
-          <span style={{ marginRight: 6 }}>
-            {typeof fileName === "string" && fileName.endsWith(".js") && (
-              <PiFileJs size={14} />
-            )}
-            {typeof fileName === "string" && fileName.endsWith(".css") && (
-              <PiFileCss size={14} />
-            )}
-            {typeof fileName === "string" && fileName.endsWith(".html") && (
-              <PiFileHtml size={14} />
-            )}
-          </span>
+          <span style={{ marginRight: 6 }}>{getTabIcon(fileName)}</span>
           <span style={{ marginRight: 6 }}>{fileName}</span>
           {unsavedFiles[fileName] && (
             <PiDotOutlineFill
