@@ -9,6 +9,6 @@ class Coin extends Consumable {
 
   update() {
     super.update();
-    this.ThreeObj.rotation.y += 0.05;
+    this.ThreeObj.rotation.y += (COIN_SPIN / 20);
   }
 }

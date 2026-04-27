@@ -44,7 +44,7 @@ class Enemy {
       .clone()
       .sub(this.target)
       .normalize()
-      .multiplyScalar(-ENEMY_SPEED);
+      .multiplyScalar(-ENEMY_SPEED/50);
     this.enemyObj.position.add(dir);
     if (this.enemyObj.position.distanceTo(game.player.position) < 1) {
       game.gameOver("A monster got you!");

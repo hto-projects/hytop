@@ -14,7 +14,7 @@ class Game {
     this.gameOverHit = false;
     this.winHit = false;
 
-    this.world = new World(this.scene, SKY_COLOR, SUN_COLOR, SUN_BRIGHTNESS);
+    this.world = new World(this.scene, SKY_COLOR, SUN_COLOR, SUN_BRIGHTNESS / 10);
 
     this.camera = new THREE.PerspectiveCamera(
       85,

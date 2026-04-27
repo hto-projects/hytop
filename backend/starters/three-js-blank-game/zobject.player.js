@@ -80,7 +80,7 @@ class Player {
 
     const forward = new THREE.Vector3(Math.sin(game.yaw), 0, Math.cos(game.yaw));
     const keys = game.keysPressed;
-    let speed = PLAYER_SPEED / 5;
+    let speed = PLAYER_SPEED / 50;
     if (keys["w"]) {
       const nextPos = game.player.position.clone().add(forward.clone().multiplyScalar(speed));
       game.player.position.copy(nextPos);
@@ -98,11 +98,11 @@ class Player {
     }
 
     if (keys[" "] && (ALLOW_REJUMP || this.onGround)) {
-      this.velY = JUMP_SPEED;
+      this.velY = JUMP_SPEED / 50;
       this.onGround = false;
     }
 
-    this.velY -= GRAVITY;
+    this.velY -= (GRAVITY / 1000);
     this.position.y += this.velY;
 
     if (this.position.y <= 0) {
