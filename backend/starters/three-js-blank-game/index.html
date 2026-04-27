@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="gameover">
+      <h1>GAME OVER</h1>
+      <p id="gameovermessage"></p>
+      <p>Press ENTER to restart</p>
+    </div>
+    <div id="win">
+      <h1>YOU WIN!</h1>
+      <p>
+        Score: <b><span class="final-score"></span></b>
+      </p>
+      <p>
+        (coins: <span class="score"></span> + time bonus:
+        <span class="time">0</span>)
+      </p>
+      <p>Press ENTER to restart</p>
+    </div>
+    <div id="hud">
+      <p>
+        Score: <span class="score">0</span> | Time: <span class="time">0</span>
+      </p>
+      <p></p>
+      <p><span id="msg"></span></p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+    <script src="variables.js"></script>
+    <script src="zobject.world.js"></script>
+    <script src="zobject.enemy.js"></script>
+    <script src="zobject.consumable.js"></script>
+    <script src="zobject.coin.js"></script>
+    <script src="zobject.platform.js"></script>
+    <script src="zobject.player.js"></script>
+
+    <script src="zobject.game.js"></script>
+
+    <script src="script.js"></script>
+  </body>
+</html>

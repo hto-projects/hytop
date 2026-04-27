@@ -75,7 +75,7 @@ const paneTypes = [
 const DEFAULT_PANE_WIDTHS = {
   explorer: 260,
   editor: 600,
-  preview: 400,
+  preview: 800,
   settings: 260,
   preferences: 260
 };
