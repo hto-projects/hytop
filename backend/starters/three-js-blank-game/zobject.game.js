@@ -75,7 +75,7 @@ class Game {
     this.consumables.push(winBox);
   }
 
-  addConsumable(northPos = 5, eastPos = 5, verticalPos = 1, onConsume = () => {alert("CONSUMPTION COMPLETE")}, size = 1, color = "white", shape = "sphere") {
+  addConsumable(northPos = 5, eastPos = 5, verticalPos = 1, onConsume = () => { console.log("CONSUMED"); }, size = 1, color = "white", shape = "sphere") {
     const consumable = new Consumable(this, northPos, eastPos, verticalPos, onConsume, size / 5, color, shape);
     this.consumables.push(consumable);
   }

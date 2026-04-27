@@ -119,7 +119,6 @@ class World {
     this.scene.add(spotLight.target);
 
     square.rotation.set(Math.PI / 2, 0, direction.rotation);
-    console.log(direction);
     square.position.set(direction.xPos, 5, direction.zPos);
 
     this.scene.add(square);
