@@ -12,9 +12,11 @@ import {
   PiMonitorBold,
   PiXBold,
   PiLinkBold,
-  PiArrowSquareOutBold
+  PiArrowSquareOutBold,
+  PiArrowsOutLineHorizontal,
+  PiArrowsInLineHorizontal
 } from "react-icons/pi";
-import React from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
 const PreviewPane = ({
@@ -29,6 +31,8 @@ const PreviewPane = ({
 }) => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
+  const [bigPane, setBigPane] = useState(false);
+
   return (
     <Paper
       shadow="xs"
@@ -36,7 +40,7 @@ const PreviewPane = ({
       style={{
         minWidth: MIN_PANE_WIDTH,
         maxWidth: 3000,
-        width: width || DEFAULT_PANE_WIDTHS.preview,
+        width: bigPane ? 800 : 400,
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -68,6 +72,15 @@ const PreviewPane = ({
           size="sm"
         >
           <PiXBold />
+        </ActionIcon>
+        <ActionIcon
+          variant="subtle"
+          onClick={() => setBigPane(!bigPane)}
+          size="sm"
+        >
+          <Tooltip label={bigPane ? "Emsmallen" : "Embiggen"} position="top">
+            {bigPane ? <PiArrowsInLineHorizontal /> : <PiArrowsOutLineHorizontal />}
+          </Tooltip>
         </ActionIcon>
       </Group>
       <Box
