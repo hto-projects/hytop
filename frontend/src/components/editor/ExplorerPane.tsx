@@ -16,7 +16,8 @@ import {
   PiXBold,
   PiDotOutlineFill,
   PiPencilBold,
-  PiTrashBold
+  PiTrashBold,
+  PiUploadSimpleBold
 } from "react-icons/pi";
 import React from "react";
 import { useContextMenu } from "mantine-contextmenu";
@@ -44,12 +45,14 @@ const ExplorerPane = ({
   confirmRename,
   cancelRename,
   style,
-  userIsOwner
+  userIsOwner,
+  onDropFiles
 }) => {
   const theColorScheme = useComputedColorScheme("light");
   const [justCreatedFile, setJustCreatedFile] = React.useState<string | null>(
     null
   );
+  const [isDraggingFiles, setIsDraggingFiles] = React.useState(false);
   const { showContextMenu } = useContextMenu();
   const { projectName } = useParams();
   const [updateProject] = useUpdateProjectMutation();
@@ -97,6 +100,53 @@ const ExplorerPane = ({
     setJustCreatedFile(null);
   };
 
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userOwnsProject) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFiles(true);
+  };
+
+  const handleDragOverFiles = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userOwnsProject) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "copy";
+    if (!isDraggingFiles) {
+      setIsDraggingFiles(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userOwnsProject) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDraggingFiles(false);
+    }
+  };
+
+  const handleDropFiles = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userOwnsProject) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFiles(false);
+
+    const droppedFiles = Array.from(e.dataTransfer?.files || []);
+    if (droppedFiles.length === 0 || typeof onDropFiles !== "function") {
+      return;
+    }
+    onDropFiles(droppedFiles);
+  };
+
   return (
     <Box
       p={0}
@@ -113,9 +163,10 @@ const ExplorerPane = ({
         backgroundColor:
           theColorScheme === "dark" ? "#181A1B" : style?.backgroundColor
       }}
-      // draggable
-      // onDragStart={() => onDragStart("explorer")}
-      // onDragOver={(e) => onDragOver(e, "explorer")}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOverFiles}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDropFiles}
     >
       <Group
         align="apart"
@@ -168,7 +219,35 @@ const ExplorerPane = ({
           <PiXBold />
         </ActionIcon>
       </Group>
-      <Box style={{ flex: 1, overflowY: "auto" }}>
+      <Box
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          border:
+            isDraggingFiles && userOwnsProject
+              ? "1px dashed #4C6EF5"
+              : "1px solid transparent",
+          borderRadius: 6,
+          margin: 4,
+          transition: "border-color 120ms ease"
+        }}
+      >
+        {isDraggingFiles && userOwnsProject && (
+          <Box
+            px="sm"
+            py={8}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              color: theColorScheme === "dark" ? "#A5D8FF" : "#364FC7",
+              fontSize: 12
+            }}
+          >
+            <PiUploadSimpleBold size={14} />
+            Drop HTML, CSS, JavaScript, or image files to add them
+          </Box>
+        )}
         {projectFiles.map((file) => (
           <Box
             key={file.fileName}

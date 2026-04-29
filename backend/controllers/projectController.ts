@@ -543,6 +543,29 @@ const renderFile = asyncHandler(async (req: any, res) => {
     res.setHeader("Content-Type", "text/css");
   }
 
+  const imageMimeByExtension: Record<string, string> = {
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    gif: "image/gif",
+    webp: "image/webp",
+    svg: "image/svg+xml"
+  };
+
+  const fileExtension = fileName.split(".").pop()?.toLowerCase() || "";
+  const imageMimeType = imageMimeByExtension[fileExtension];
+
+  if (imageMimeType) {
+    const imageData = projectFile.fileContent || "";
+
+    if (imageData.startsWith("data:")) {
+      const base64Content = imageData.split(",")[1] || "";
+      res.setHeader("Content-Type", imageMimeType);
+      res.send(Buffer.from(base64Content, "base64"));
+      return;
+    }
+  }
+
   res.send(projectFile.fileContent);
 });
 
