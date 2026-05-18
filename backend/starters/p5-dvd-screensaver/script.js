@@ -1,8 +1,8 @@
 // constants
 const BACKGROUND_COLOR = "black";
 const IMG_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Dvd_logo.svg/1280px-Dvd_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail";
-const CANVAS_WIDTH = 1200;
-const CANVAS_HEIGHT = 900;
+const CANVAS_WIDTH = 700;
+const CANVAS_HEIGHT = 500;
 const IMG_START_X = 100;
 const IMG_START_Y = 100;
 const IMG_X_SPEED = 3;
