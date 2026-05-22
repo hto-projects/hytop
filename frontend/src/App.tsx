@@ -1,10 +1,10 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Header from "./components/Header";
+import Header from "./components/Main/Header";
 import { useComputedColorScheme } from "@mantine/core";
 import { useGetProjectQuery } from "./slices/projectsApiSlice";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const App = () => {
   const theColorScheme = useComputedColorScheme("light");

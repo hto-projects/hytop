@@ -21,7 +21,7 @@ import {
 import React from "react";
 import { useContextMenu } from "mantine-contextmenu";
 import { useSelector } from "react-redux";
-import { useUpdateProjectMutation } from "../../slices/projectsApiSlice";
+import { useUpdateProjectMutation } from "../../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
 
 const ExplorerPane = ({

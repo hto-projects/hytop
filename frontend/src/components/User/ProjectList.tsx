@@ -1,5 +1,5 @@
 import { Paper, Text, useComputedColorScheme } from "@mantine/core";
-import { IProject } from "../../../shared/types";
+import { IProject } from "../../../../shared/types";
 import { Link } from "react-router-dom";
 
 interface ProjectListProps {

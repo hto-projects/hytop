@@ -1,6 +1,6 @@
 import "@mantine/core/styles.css";
 import "mantine-contextmenu/styles.css";
-import { createTheme, MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {
@@ -13,23 +13,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import store from "./store";
 import { Provider, useSelector, useDispatch } from "react-redux";
 import App from "./App";
-import HomeScreen from "./screens/HomeScreen";
-import PrivateRoute from "./components/PrivateRoute";
-import ProfileScreen from "./screens/ProfileScreen";
-import LoginScreen from "./screens/LoginScreen";
-import RegisterScreen from "./screens/RegisterScreen";
-import CreateProjectScreen from "./screens/CreateProject";
-import ProjectEditor from "./screens/ProjectEditor";
-import CopyProjectScreen from "./screens/CopyProject";
-import AboutScreen from "./screens/AboutScreen";
-import LatestUpdatesScreen from "./screens/LatestUpdates";
-import { useEffect } from "react";
+import HomeScreen from "./components/Main/HomeScreen";
+import PrivateRoute from "./components/Main/PrivateRoute";
+import ProfileScreen from "./components/User/ProfileScreen";
+import LoginScreen from "./components/User/LoginScreen";
+import RegisterScreen from "./components/User/RegisterScreen";
+import CreateProjectScreen from "./components/Main/CreateProjectScreen";
+import ProjectEditor from "./components/ProjectView/ProjectViewScreen";
+import CopyProjectScreen from "./components/Main/CopyProjectScreen";
+import AboutScreen from "./components/Main/AboutScreen";
+import LatestUpdatesScreen from "./components/Main/LatestUpdatesScreen";
 import { setMonacoTheme } from "./slices/editorSlice";
 import { setColorScheme } from "./slices/themeSlice";
 import { getCustomTheme, defaultTheme } from "./theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
-import AuthContainer from "./components/AuthContainer";
-import "./fonts/comic-mono.css";
+import "./assets/fonts/comic-mono.css";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

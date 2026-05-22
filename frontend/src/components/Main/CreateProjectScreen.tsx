@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import Loader from "../components/Loader";
-import { useCreateProjectMutation } from "../slices/projectsApiSlice";
+import Loader from "../Interface/Loader";
+import { useCreateProjectMutation } from "../../slices/projectsApiSlice";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -14,17 +14,14 @@ import {
   useComputedColorScheme,
   Box
 } from "@mantine/core";
-import Button from "../components/Button";
-import Logo from "../components/Logo";
+import Button from "../Interface/Button";
+import Logo from "../Interface/Logo";
 
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
 
-  const [createdProjectName, setCreatedProjectName] = useState("");
-
   const [createProject, { isLoading }] = useCreateProjectMutation();
-  const redirect = useNavigate();
 
   const theColorSchemeish = useComputedColorScheme("light");
 

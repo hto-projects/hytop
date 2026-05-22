@@ -6,7 +6,7 @@ import {
 } from "@mantine/core";
 import { PiMoonBold, PiSunBold } from "react-icons/pi";
 import { useDispatch } from "react-redux";
-import { setMonacoTheme } from "../slices/editorSlice";
+import { setMonacoTheme } from "../../../slices/editorSlice";
 
 const DarkModeToggle = () => {
   const { setColorScheme } = useMantineColorScheme();

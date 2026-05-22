@@ -1,26 +1,21 @@
 import {
   Container,
   Paper,
-  Title,
   Text,
   Button,
   Group,
   Box
 } from "@mantine/core";
-import { useSelector } from "react-redux";
-import { useComputedColorScheme } from "@mantine/core";
-import Logo from "./Logo";
+import Logo from "../Interface/Logo";
 
-const Hero = () => {
-  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
-  const theColorSchemeish = useComputedColorScheme("light");
+const HomeScreen = () => {
   return (
     <Box
       style={{
         minHeight: "100vh",
         width: "100vw",
-        background: theColorSchemeish === "dark" ? "#181A1B" : undefined,
-        color: theColorSchemeish === "dark" ? "#fff" : undefined,
+        background: "#181A1B",
+        color: "#fff",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -32,7 +27,7 @@ const Hero = () => {
         my={80}
         style={{
           background: "transparent",
-          color: theColorSchemeish === "dark" ? "#fff" : undefined
+          color: "#fff"
         }}
       >
         <Paper
@@ -44,8 +39,8 @@ const Hero = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: theColorSchemeish === "dark" ? "#23272A" : "#fff",
-            color: theColorSchemeish === "dark" ? "#fff" : undefined
+            background: "#23272A",
+            color: "#fff"
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
@@ -56,12 +51,11 @@ const Hero = () => {
             />
           </div>
           <Text
-            c={theColorSchemeish === "dark" ? undefined : "dimmed"}
             size="lg"
             ta="center"
             mb="xl"
             style={{
-              color: theColorSchemeish === "dark" ? "#fff" : undefined
+              color: "#fff"
             }}
           >
             Welcome to the Hyland Tech Outreach Portal. Here, you can build and
@@ -70,7 +64,6 @@ const Hero = () => {
           <Group align="center" mt="md">
             <Button
               size="md"
-              color={primaryColor}
               radius="md"
               component="a"
               href="/create-project"
@@ -85,7 +78,6 @@ const Hero = () => {
             </Button>
             <Button
               size="md"
-              color={primaryColor}
               radius="md"
               component="a"
               href="/register"
@@ -100,7 +92,6 @@ const Hero = () => {
             </Button>
             <Button
               size="md"
-              color={primaryColor}
               radius="md"
               component="a"
               href="/about"
@@ -120,4 +111,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default HomeScreen;

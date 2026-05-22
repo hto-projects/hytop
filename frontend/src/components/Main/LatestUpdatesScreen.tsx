@@ -1,6 +1,6 @@
 import { Title } from "@mantine/core";
-import { useGetLatestProjectsQuery } from "../slices/projectsApiSlice";
-import ProjectList from "../components/ProjectList";
+import { useGetLatestProjectsQuery } from "../../slices/projectsApiSlice";
+import ProjectList from "../User/ProjectList";
 
 const LatestUpdatesScreen = () => {
   const {

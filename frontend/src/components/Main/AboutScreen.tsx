@@ -3,26 +3,20 @@ import {
   Paper,
   Title,
   Text,
-  Button,
   Group,
   Box,
   Image
 } from "@mantine/core";
-import { useSelector } from "react-redux";
-import { useComputedColorScheme } from "@mantine/core";
-import teamimage from "../assets/teamimage.jpg";
+import teamimage from "../../assets/teamimage.jpg";
 
-const AboutThingy = () => {
-  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
-  const theColorSchemeish = useComputedColorScheme("light");
-
+const AboutScreen = () => {
   return (
     <Box
       style={{
         minHeight: "100vh",
         width: "100vw",
-        background: theColorSchemeish === "dark" ? "#181A1B" : undefined,
-        color: theColorSchemeish === "dark" ? "#fff" : undefined,
+        background: "#181A1B",
+        color: "#fff",
         alignItems: "center",
         justifyContent: "center",
         overflow: "auto"
@@ -33,7 +27,7 @@ const AboutThingy = () => {
         my={80}
         style={{
           background: "transparent",
-          color: theColorSchemeish === "dark" ? "#fff" : undefined
+          color: "#fff"
         }}
       >
         <Group align="center" mt="md">
@@ -46,8 +40,8 @@ const AboutThingy = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              background: theColorSchemeish === "dark" ? "#23272A" : "#fff",
-              color: theColorSchemeish === "dark" ? "#fff" : undefined
+              background: "#23272A",
+              color: "#fff"
             }}
           >
             <Title
@@ -56,18 +50,17 @@ const AboutThingy = () => {
               mb="md"
               style={{
                 fontWeight: 800,
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
+                color: "#fff"
               }}
             >
               HyTOP About Page
             </Title>
             <Text
-              c={theColorSchemeish === "dark" ? undefined : "dimmed"}
               size="lg"
               ta="center"
               mb="xl"
               style={{
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
+                color: "#fff"
               }}
             >
               Welcome to the Hyland Tech Outreach Portal's About Page! Here, you
@@ -79,7 +72,7 @@ const AboutThingy = () => {
               mb="md"
               style={{
                 fontWeight: 800,
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
+                color: "#fff"
               }}
             >
               Meet the Team...
@@ -98,8 +91,8 @@ const AboutThingy = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              background: theColorSchemeish === "dark" ? "#23272A" : "#fff",
-              color: theColorSchemeish === "dark" ? "#fff" : undefined
+              background: "#23272A",
+              color: "#fff"
             }}
           >
             <Title
@@ -108,18 +101,17 @@ const AboutThingy = () => {
               mb="md"
               style={{
                 fontWeight: 800,
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
+                color: "#fff"
               }}
             >
               Our Goals!
             </Title>
             <Text
-              c={theColorSchemeish === "dark" ? undefined : "dimmed"}
               size="lg"
               ta="center"
               mb="xl"
               style={{
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
+                color: "#fff"
               }}
             >
               The main mission of the HyTOP team is making an accessible way to
@@ -135,4 +127,4 @@ const AboutThingy = () => {
   );
 };
 
-export default AboutThingy;
+export default AboutScreen;

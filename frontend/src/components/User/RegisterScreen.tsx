@@ -10,14 +10,14 @@ import {
   useComputedColorScheme,
   Text
 } from "@mantine/core";
-import Button from "../components/Button";
-import Loader from "../components/Loader";
+import Button from "../Interface/Button";
+import Loader from "../Interface/Loader";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useRegisterMutation } from "../slices/usersApiSlice";
-import { setCredentials } from "../slices/authSlice";
+import { useRegisterMutation } from "../../slices/usersApiSlice";
+import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
-import Logo from "../components/Logo";
+import Logo from "../Interface/Logo";
 
 const RegisterScreen = ({
   setScreen

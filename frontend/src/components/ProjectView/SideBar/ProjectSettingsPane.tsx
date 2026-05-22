@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setCurrentProjectName } from "../../slices/editorSlice";
+import { setCurrentProjectName } from "../../../slices/editorSlice";
 
 const SettingsPane = ({
   MIN_PANE_WIDTH,

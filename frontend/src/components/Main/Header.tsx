@@ -19,7 +19,7 @@ import {
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { IProject } from "../../../shared/types";
+import { IProject } from "../../../../shared/types";
 import { current } from "@reduxjs/toolkit";
 
 const Header = (projectName, getProject) => {

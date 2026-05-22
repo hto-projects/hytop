@@ -13,15 +13,15 @@ import {
 } from "@mantine/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import Loader from "../components/Loader";
-import AdminPanel from "../components/AdminPanel";
+import Loader from "../Interface/Loader";
+import AdminPanel from "./AdminPanel";
 import {
   useUpdateUserMutation,
   useGetUserProjectsQuery
-} from "../slices/usersApiSlice";
-import { setCredentials, logout } from "../slices/authSlice";
+} from "../../slices/usersApiSlice";
+import { setCredentials, logout } from "../../slices/authSlice";
 import { useNavigate } from "react-router-dom";
-import ProjectList from "../components/ProjectList";
+import ProjectList from "./ProjectList";
 
 const ProfileScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);

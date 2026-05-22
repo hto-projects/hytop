@@ -8,9 +8,7 @@ import {
   ActionIcon
 } from "@mantine/core";
 import {
-  PiGearBold,
   PiXBold,
-  PiFilesBold,
   PiCodeBold,
   PiMonitorBold,
   PiPencilBold
@@ -18,7 +16,7 @@ import {
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { ColorPicker } from "@mantine/core";
-import { setPrimaryColor } from "../../slices/themeSlice";
+import { setPrimaryColor } from "../../../slices/themeSlice";
 import {
   setMonacoTheme,
   setMonacoFont,
@@ -26,9 +24,9 @@ import {
   setMonacoWordWrap,
   setPaneState,
   setVimMode
-} from "../../slices/editorSlice";
+} from "../../../slices/editorSlice";
 import { Select, TextInput, NumberInput } from "@mantine/core";
-import DarkModeToggle from "../DarkModeToggle";
+import DarkModeToggle from "./DarkModeToggle";
 import { useComputedColorScheme } from "@mantine/core";
 
 const PreferencesPane = ({

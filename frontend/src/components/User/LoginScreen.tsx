@@ -11,13 +11,13 @@ import {
   useComputedColorScheme,
   Text
 } from "@mantine/core";
-import Button from "../components/Button";
+import Button from "../Interface/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoginMutation } from "../slices/usersApiSlice";
-import Logo from "../components/Logo";
-import { setCredentials } from "../slices/authSlice";
+import { useLoginMutation } from "../../slices/usersApiSlice";
+import Logo from "../Interface/Logo";
+import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
-import Loader from "../components/Loader";
+import Loader from "../Interface/Loader";
 
 const LoginScreen = ({
   setScreen

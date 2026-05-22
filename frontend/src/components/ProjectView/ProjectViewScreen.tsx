@@ -8,7 +8,7 @@ import {
   useChangeProjectNameMutation,
   useGetProjectIdQuery,
   useGetProjectDescriptionQuery
-} from "../slices/projectsApiSlice";
+} from "../../slices/projectsApiSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Box, useComputedColorScheme } from "@mantine/core";
@@ -36,19 +36,19 @@ import {
   setEditorIsLoading,
   setUserIsOwner,
   setCurrentProjectName
-} from "../slices/editorSlice";
+} from "../../slices/editorSlice";
 import { useState } from "react";
 
-import { RootState } from "../store";
-import ExplorerPane from "../components/editor/ExplorerPane";
-import EditorPane from "../components/editor/EditorPane";
-import PreviewPane from "../components/editor/PreviewPane";
-import SettingsPane from "../components/editor/SettingsPane";
-import Sidebar from "../components/editor/Sidebar";
-import TabBar from "../components/editor/TabBar";
+import { RootState } from "../../store";
+import ExplorerPane from "./SideBar/FileSelectorPane";
+import EditorPane from "./FileEditor/EditorPane";
+import PreviewPane from "./Preview/PreviewPane";
+import SettingsPane from "./SideBar/ProjectSettingsPane";
+import Sidebar from "./SideBar/Sidebar";
+import TabBar from "./FileEditor/TabBar";
 import { toast } from "react-toastify";
-import PreferencesPane from "../components/editor/PreferencesPane";
-import { setProjectName, setProjectDescription } from "../slices/editorSlice";
+import PreferencesPane from "../User/Preferences/PreferencesPane";
+import { setProjectName, setProjectDescription } from "../../slices/editorSlice";
 import { useNavigate } from "react-router-dom";
 import prettier from "prettier/standalone";
 import parserHtml from "prettier/plugins/html";
@@ -86,18 +86,17 @@ const ProjectEditor = () => {
   const theColorScheme = useComputedColorScheme("light");
   const [sidebarTab, setSidebarTab] = React.useState<
     "explorer" | "preferences" | "settings" | null
-  >("explorer");
+  >("explorer"); // should be in Sidebar
   const { projectName } = useParams();
-  const { projectName: routeProjectName } = useParams();
   const dispatch = useDispatch();
   const ownership: any = useCheckOwnershipQuery(projectName);
   const projectData: any = useGetProjectQuery(projectName);
-  const [updateProject, { isLoading }] = useUpdateProjectMutation();
-  const [changeProjectName] = useChangeProjectNameMutation();
-  const [changeProjectDescription] = useChangeProjectDescriptionMutation();
+  const [updateProject, { isLoading }] = useUpdateProjectMutation(); // should be in settings pane
+  const [changeProjectName] = useChangeProjectNameMutation(); // should be in settings pane
+  const [changeProjectDescription] = useChangeProjectDescriptionMutation(); // should be in settings pane
   const navigate = useNavigate();
-  const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
-  const isEditor = !!match;
+  const match = location.pathname.match(/^\/([ec])\/([^/]+)$/); // what's this? idk
+  const isEditor = !!match; // ?
 
   const projectID = useGetProjectIdQuery(projectName, {
     skip: !isEditor || !projectName
@@ -105,15 +104,15 @@ const ProjectEditor = () => {
   const projectId = projectID.data?.projectId;
   const projectDescriptionData = useGetProjectDescriptionQuery(projectId, {
     skip: !projectId
-  });
+  }); // should be in settings pane
 
   const projectDescription = projectDescriptionData?.data?.projectDescription;
   const [currentProjectName, _setCurrentProjectName] = useState(
     projectName || ""
-  );
+  ); // should be in settings pane
   const [currentProjectDescription, setCurrentProjectDescription] = useState(
     projectDescription || ""
-  );
+  ); // should be in settings pane
 
   const {
     paneState,
@@ -159,26 +158,6 @@ const ProjectEditor = () => {
     }
   }, [activeTab, selectedFile, monaco]);
 
-  // TODO: fix drag and resize functionality
-  // const [dragged, setDragged] = React.useState<string | null>(null);
-
-  // placeholder
-  const onDragStart = (pane: string) => {};
-  const onDragOver = (e: React.DragEvent, pane: string) => {};
-
-  // const onDragStart = (pane: string) => setDragged(pane);
-  // const onDragOver = (e: React.DragEvent, pane: string) => {
-  //   e.preventDefault();
-  //   if (dragged && dragged !== pane) {
-  //     const newOrder = [...paneState.order];
-  //     const fromIdx = newOrder.indexOf(dragged);
-  //     const toIdx = newOrder.indexOf(pane);
-  //     newOrder.splice(fromIdx, 1);
-  //     newOrder.splice(toIdx, 0, dragged);
-  //     dispatch(setPaneState({ ...paneState, order: newOrder }));
-  //   }
-  // };
-
   const closePane = (pane: string) => {
     dispatch(
       setPaneState({
@@ -191,7 +170,7 @@ const ProjectEditor = () => {
       (pane === "explorer" || pane === "preferences" || pane === "settings")
     ) {
       setSidebarTab(null);
-    }
+    } // all this should be in sidebar
   };
 
   const openPane = (pane: string, closeNOW?: boolean) => {
@@ -210,28 +189,28 @@ const ProjectEditor = () => {
           open: { ...paneState.open, [pane]: true }
         })
       );
-      setSidebarTab(pane as "explorer" | "preferences" | "settings");
+      setSidebarTab(pane as "explorer" | "preferences" | "settings"); // what the heck
     }
   };
 
   const handleTabClick = (fileName: string) => {
     dispatch(setActiveTab(fileName));
-  };
+  }; // should be in EditorPane
 
   const handleTabClose = (fileName: string, e: React.MouseEvent) => {
     e.stopPropagation();
     dispatch(closeTab(fileName));
-  };
+  }; // should be in EditorPane
 
   const handleFileSelect = (filename: string) => {
     dispatch(openTab(filename));
     dispatch(setSelectedFile(filename));
-  };
+  }; // should be in ExplorerPane
 
   const startRename = (filename: string) => {
     dispatch(setRenamingFile(filename));
     dispatch(setRenameValue(filename));
-  };
+  }; // should be in ExplorerPane
 
   const confirmRename = async (e?: any) => {
     if (
@@ -267,15 +246,14 @@ const ProjectEditor = () => {
     }
     dispatch(setRenamingFile(null));
     dispatch(setRenameValue(""));
-  };
+  }; // dang this is crazy, should be in ExplorerPane
 
   const cancelRename = () => {
     dispatch(setRenamingFile(null));
     dispatch(setRenameValue(""));
-  };
+  }; // should be in ExplorerPane
 
   const addFile = (type: "html" | "css" | "js") => {
-    console.log("layla");
     let ext = "";
     let content = "";
     switch (type) {
@@ -295,7 +273,8 @@ const ProjectEditor = () => {
         ext = "txt";
         content = "";
     }
-    const newFileName = `new-file-${Date.now()}.${ext}`;
+    const newFileName = `new-file-${Date.now()}.${ext}`; // this is wild
+    // maybe just force new file to be named with everything, not selecting type
     dispatch(
       setProjectFiles([
         ...projectFiles,
@@ -317,7 +296,7 @@ const ProjectEditor = () => {
     } catch (err) {}
   };
 
-  const formatAndSaveAllFiles = async () => {
+  const formatAndSaveAllFiles = async () => { // maybe encapsulate this somewhere else
     const parserByFileExtension = new Map<
       string,
       { parser: string; plugins: any[] }
@@ -325,11 +304,9 @@ const ProjectEditor = () => {
       ["html", { parser: "html", plugins: [parserHtml] }],
       ["css", { parser: "css", plugins: [parserCss] }],
       ["js", { parser: "babel", plugins: [parserBabel, parserEstree] }]
-    ]);
+    ]); 
 
     try {
-      console.log("projectFiles", projectFiles);
-
       const formattedFiles = [];
       for (const file of projectFiles) {
         const fileExtension = file.fileName.split(".").pop() || "";
@@ -413,7 +390,7 @@ const ProjectEditor = () => {
         viewStatesRef.current = {};
       }
     };
-  }, [monaco]);
+  }, [monaco]); // idk what this is doing
 
   useEffect(() => {
     if (!monaco) return;
@@ -423,7 +400,7 @@ const ProjectEditor = () => {
         delete modelsRef.current[fname];
         delete viewStatesRef.current[fname];
       }
-    });
+    }); // idk what this is doing
     projectFiles.forEach((file) => {
       if (!modelsRef.current[file.fileName]) {
         const uri = monaco.Uri.parse(`file:///${file.fileName}`);
@@ -450,7 +427,7 @@ const ProjectEditor = () => {
     monaco,
     projectFiles.map((f) => f.fileName).join(","),
     projectFiles.map((f) => f.fileContent).join("||")
-  ]);
+  ]); // idk
 
   useEffect(() => {
     if (!monaco || !editorRef.current) return;
@@ -472,7 +449,7 @@ const ProjectEditor = () => {
       const language = getMonacoLang(activeTab);
       monaco.editor.setModelLanguage(model, language);
     }
-  }, [activeTab, monaco]);
+  }, [activeTab, monaco]); // idk
 
   useEffect(() => {
     if (!monaco) return;
@@ -501,7 +478,7 @@ const ProjectEditor = () => {
           }
         }
       });
-    });
+    }); // idk
 
     return () => {
       Object.values(modelsRef.current).forEach((model: any) => {
@@ -511,7 +488,7 @@ const ProjectEditor = () => {
         }
       });
     };
-  }, [monaco, activeTab, projectFiles.map((f) => f.fileName).join(",")]);
+  }, [monaco, activeTab, projectFiles.map((f) => f.fileName).join(",")]); // idk
 
   const previewUrl = `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/`;
   const Openinnewtabe = async () => {
@@ -552,78 +529,9 @@ const ProjectEditor = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [userIsOwner, projectFiles, projectName, projectVersion]);
 
-  // honestly idk this barely works
-  // const [paneWidths, setPaneWidths] = React.useState(() => ({
-  //   ...DEFAULT_PANE_WIDTHS
-  // }));
-  // const paneOrder = paneState.order.filter((p) => paneState.open[p]);
-
-  // const closedPanes = paneTypes.filter((p) => !paneState.open[p.key]);
-
-  // const resizingRef = React.useRef<{
-  //   idx: number;
-  //   startX: number;
-  //   startWidths: number[];
-  // } | null>(null);
-
-  // const canResize = paneOrder.length > 1;
-
   const paneWidths = DEFAULT_PANE_WIDTHS;
   const paneOrder = paneState.order.filter((p) => paneState.open[p]);
-  const closedPanes = paneTypes.filter((p) => !paneState.open[p.key]);
   const canResize = false;
-
-  // const onResizerMouseDown = (idx: number, e: React.MouseEvent) => {
-  //   if (!canResize) return;
-  //   resizingRef.current = {
-  //     idx,
-  //     startX: e.clientX,
-  //     startWidths: paneOrder.map((p) => paneWidths[p] || DEFAULT_PANE_WIDTHS[p])
-  //   };
-  //   document.addEventListener("mousemove", onResizerMouseMove);
-  //   document.addEventListener("mouseup", onResizerMouseUp);
-  // };
-
-  // const onResizerMouseMove = (e: MouseEvent) => {
-  //   if (!resizingRef.current) return;
-  //   const { idx, startX, startWidths } = resizingRef.current;
-  //   const delta = e.clientX - startX;
-  //   const leftPane = paneOrder[idx];
-  //   const rightPane = paneOrder[idx + 1];
-
-  //   const totalWidth = startWidths[idx] + startWidths[idx + 1];
-
-  //   let newLeft = startWidths[idx] + delta;
-  //   let newRight = startWidths[idx + 1] - delta;
-
-  //   if (newLeft < MIN_PANE_WIDTH) {
-  //     newLeft = MIN_PANE_WIDTH;
-  //     newRight = totalWidth - MIN_PANE_WIDTH;
-  //   } else if (newRight < MIN_PANE_WIDTH) {
-  //     newRight = MIN_PANE_WIDTH;
-  //     newLeft = totalWidth - MIN_PANE_WIDTH;
-  //   }
-
-  //   setPaneWidths((prev) => ({
-  //     ...prev,
-  //     [leftPane]: newLeft,
-  //     [rightPane]: newRight
-  //   }));
-  // };
-
-  // const onResizerMouseUp = () => {
-  //   document.removeEventListener("mousemove", onResizerMouseMove);
-  //   document.removeEventListener("mouseup", onResizerMouseUp);
-  //   resizingRef.current = null;
-  // };
-
-  // placeholder
-  const onResizerMouseDown = (idx: number, e: React.MouseEvent) => {};
-  const onResizerMouseMove = (e: MouseEvent) => {};
-  const onResizerMouseUp = () => {};
-
-  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
-  const darkMode = useSelector((state: any) => state.theme.darkMode);
 
   React.useEffect(() => {
     const handler = () => {
@@ -743,25 +651,25 @@ const ProjectEditor = () => {
       dispatch(setSelectedFile(fileNames[0]));
     }
     setReadyToSetTab(false);
-  }, [readyToSetTab]);
+  }, [readyToSetTab]); // is this worth it?
 
   useEffect(() => {
     if (activeTab) {
       localStorage.setItem(localStorageSelectedFile, activeTab);
     }
-  }, [activeTab, localStorageSelectedFile]);
+  }, [activeTab, localStorageSelectedFile]); // is this worth it?
   useEffect(() => {
     if (tabs && tabs.length) {
       localStorage.setItem(localStorageTabs, JSON.stringify(tabs));
     }
-  }, [tabs, localStorageTabs]);
+  }, [tabs, localStorageTabs]); // is it?
 
   useEffect(() => {
     if (!monaco) return;
     const editor = editorRef.current;
     if (!editor) return;
     if ((editor as any).hipleasework) return;
-    (editor as any).hipleasework = true;
+    (editor as any).hipleasework = true; // truly what
 
     editor.onKeyDown((event) => {
       if (event.browserEvent.key !== ">") return;
@@ -796,7 +704,7 @@ const ProjectEditor = () => {
           "rect",
           "stop",
           "use"
-        ].includes(tag);
+        ].includes(tag); // should not do this by default but what are we gonna do
 
       const selections = editor.getSelections();
       if (!selections) return;
@@ -870,7 +778,7 @@ const ProjectEditor = () => {
     dispatch
   ]);
 
-  const handleChangeProjectName = async (newName: string) => {
+  const handleChangeProjectName = async (newName: string) => { // should be in SettingsPane
     if (!projectId || !newName || newName === currentProjectName) return;
 
     try {
@@ -895,7 +803,7 @@ const ProjectEditor = () => {
     }
   };
 
-  const handleChangeProjectDescription = async (newDesc: string) => {
+  const handleChangeProjectDescription = async (newDesc: string) => { // SettingsPane
     if (!projectId || !newDesc) return;
     try {
       const res = await changeProjectDescription({
@@ -950,13 +858,13 @@ const ProjectEditor = () => {
             openPane={openPane}
           />
           <Box style={{ display: "flex", height: "100%" }}>
-            {sidebarTab === "explorer" && paneState.open.explorer && (
+            {sidebarTab === "explorer" && paneState.open.explorer && ( // not this. please not this. should just be: SideBar, EditorPane, PreviewPane. SideBar = explorer + settings + preferences. EditorPane = TabBar + EditorPane. PreviewPane = PreviewPane.
               <ExplorerPane
                 MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                 DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                 width={paneWidths["explorer"]}
-                onDragStart={onDragStart}
-                onDragOver={onDragOver}
+                onDragStart={() => {}}
+                onDragOver={() => {}}
                 closePane={closePane}
                 addFile={addFile}
                 userIsOwner={userIsOwner}
@@ -979,8 +887,8 @@ const ProjectEditor = () => {
                 MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                 DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                 width={paneWidths["preferences"]}
-                onDragStart={onDragStart}
-                onDragOver={onDragOver}
+                onDragStart={() => {}}
+                onDragOver={() => {}}
                 closePane={closePane}
               />
             )}
@@ -989,8 +897,8 @@ const ProjectEditor = () => {
                 MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                 DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                 width={paneWidths["settings"]}
-                onDragStart={onDragStart}
-                onDragOver={onDragOver}
+                onDragStart={() => {}}
+                onDragOver={() => {}}
                 closePane={closePane}
                 projectId={projectId}
                 projectName={projectName}
@@ -1014,20 +922,9 @@ const ProjectEditor = () => {
                     userSelect: "none",
                     position: "relative"
                   }}
-                  onMouseDown={(e) => onResizerMouseDown(0, e)}
+                  onMouseDown={(e) => {}}
                   onDoubleClick={() => {
-                    // setPaneWidths((prev) => ({
-                    //   ...prev,
-                    //   explorer: DEFAULT_PANE_WIDTHS.explorer,
-                    //   [paneOrder.find(
-                    //     (p) => p !== "explorer" && p !== "settings"
-                    //   )!]:
-                    //     DEFAULT_PANE_WIDTHS[
-                    //       paneOrder.find(
-                    //         (p) => p !== "explorer" && p !== "settings"
-                    //       )!
-                    //     ]
-                    // }));
+
                   }}
                 >
                   <div
@@ -1063,8 +960,8 @@ const ProjectEditor = () => {
                     MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                     DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                     width={paneWidths[pane]}
-                    onDragStart={onDragStart}
-                    onDragOver={onDragOver}
+                    onDragStart={() => {}}
+                    onDragOver={() => {}}
                     closePane={closePane}
                     renderTabBar={() => (
                       <TabBar
@@ -1092,8 +989,8 @@ const ProjectEditor = () => {
                     MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                     DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                     width={isPreviewMaximized ? "100vw" : paneWidths[pane]}
-                    onDragStart={onDragStart}
-                    onDragOver={onDragOver}
+                    onDragStart={() => {}}
+                    onDragOver={() => {}}
                     closePane={closePane}
                     previewUrl={`${
                       import.meta.env.VITE_BACKEND_URL
@@ -1106,8 +1003,8 @@ const ProjectEditor = () => {
                     MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                     DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                     width={paneWidths[pane]}
-                    onDragStart={onDragStart}
-                    onDragOver={onDragOver}
+                    onDragStart={() => {}}
+                    onDragOver={() => {}}
                     closePane={closePane}
                   />
                 )}
@@ -1116,8 +1013,8 @@ const ProjectEditor = () => {
                     MIN_PANE_WIDTH={MIN_PANE_WIDTH}
                     DEFAULT_PANE_WIDTHS={DEFAULT_PANE_WIDTHS}
                     width={paneWidths[pane]}
-                    onDragStart={onDragStart}
-                    onDragOver={onDragOver}
+                    onDragStart={() => {}}
+                    onDragOver={() => {}}
                     closePane={closePane}
                     projectId={projectId}
                     projectName={projectName}
@@ -1137,18 +1034,8 @@ const ProjectEditor = () => {
                       userSelect: "none",
                       position: "relative"
                     }}
-                    onMouseDown={(e) =>
-                      onResizerMouseDown(paneOrder.indexOf(pane), e)
-                    }
+                    onMouseDown={(e) => {}}
                     onDoubleClick={() => {
-                      // setPaneWidths((prev) => ({
-                      //   ...prev,
-                      //   [pane]: DEFAULT_PANE_WIDTHS[pane],
-                      //   [paneOrder[paneOrder.indexOf(pane) + 1]]:
-                      //     DEFAULT_PANE_WIDTHS[
-                      //       paneOrder[paneOrder.indexOf(pane) + 1]
-                      //     ]
-                      // }));
                     }}
                   >
                     <div

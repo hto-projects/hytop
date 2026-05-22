@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import Loader from "../components/Loader";
-import { useCopyProjectMutation } from "../slices/projectsApiSlice";
+import Loader from "../Interface/Loader";
+import { useCopyProjectMutation } from "../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
 
 const CopyProjectScreen = () => {

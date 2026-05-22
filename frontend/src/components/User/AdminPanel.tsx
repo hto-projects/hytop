@@ -8,8 +8,8 @@ import {
   Box
 } from "@mantine/core";
 import { toast } from "react-toastify";
-import Loader from "./Loader";
-import { useResetPasswordMutation } from "../slices/usersApiSlice";
+import Loader from "../Interface/Loader";
+import { useResetPasswordMutation } from "../../slices/usersApiSlice";
 
 const AdminPanel = () => {
   const [resetUsername, setResetUsername] = useState("");
