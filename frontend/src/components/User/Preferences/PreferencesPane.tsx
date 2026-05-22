@@ -28,13 +28,9 @@ import {
 import { Select, TextInput, NumberInput } from "@mantine/core";
 import DarkModeToggle from "./DarkModeToggle";
 import { useComputedColorScheme } from "@mantine/core";
+import { SIDEBAR_WIDTH } from "../../ProjectView/constants";
 
 const PreferencesPane = ({
-  MIN_PANE_WIDTH,
-  DEFAULT_PANE_WIDTHS,
-  width,
-  onDragStart,
-  onDragOver,
   closePane
 }) => {
   const theColorScheme = useComputedColorScheme("light");
@@ -86,9 +82,8 @@ const PreferencesPane = ({
       shadow="xs"
       p={0}
       style={{
-        minWidth: MIN_PANE_WIDTH,
         maxWidth: 600,
-        width: width || DEFAULT_PANE_WIDTHS.preferences,
+        width: SIDEBAR_WIDTH,
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -97,9 +92,6 @@ const PreferencesPane = ({
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined,
         overflow: "hidden"
       }}
-      draggable
-      onDragStart={() => onDragStart("preferences")}
-      onDragOver={(e) => onDragOver(e, "preferences")}
     >
       <Group
         align="apart"

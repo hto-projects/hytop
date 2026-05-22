@@ -20,48 +20,129 @@ import {
 } from "react-icons/pi";
 import React from "react";
 import { useContextMenu } from "mantine-contextmenu";
-import { useSelector } from "react-redux";
-import { useUpdateProjectMutation } from "../../../slices/projectsApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useCheckOwnershipQuery, useGetProjectQuery, useUpdateProjectMutation } from "../../../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
+import { SIDEBAR_WIDTH } from "../../constants";
+import { RootState } from "../../../../store";
+import { openTab, setActiveTab, setProjectFiles, setProjectVersion, setRenameFile, setRenameValue, setRenamingFile, setSelectedFile, setTabs } from "../../../../slices/editorSlice";
+import { useMonaco } from "@monaco-editor/react";
 
 const ExplorerPane = ({
-  MIN_PANE_WIDTH,
-  DEFAULT_PANE_WIDTHS,
-  width,
-  onDragStart,
-  onDragOver,
   closePane,
-  addFile,
-  projectFiles: initialProjectFiles,
-  selectedFile,
-  handleFileSelect,
-  startRename,
-  unsavedFiles,
-  renamingFile,
-  renameValue,
-  dispatch,
-  setRenameValue,
-  confirmRename,
-  cancelRename,
-  style,
+  modelsRef,
   userIsOwner
 }) => {
+  const dispatch = useDispatch();
+  const monaco = useMonaco();
+  const addFile = (type: "html" | "css" | "js") => {
+    let ext = "";
+    let content = "";
+    switch (type) {
+      case "html":
+        ext = "html";
+        content = "";
+        break;
+      case "css":
+        ext = "css";
+        content = "";
+        break;
+      case "js":
+        ext = "js";
+        content = "";
+        break;
+      default:
+        ext = "txt";
+        content = "";
+    }
+    const newFileName = `new-file-${Date.now()}.${ext}`;
+    dispatch(
+      setProjectFiles([
+        ...projectFiles,
+        {
+          fileName: newFileName,
+          fileContent: content
+        }
+      ])
+    );
+    dispatch(setRenamingFile(newFileName));
+    dispatch(setRenameValue(newFileName));
+  };
+
+  const { projectName } = useParams();
+
+  const {
+    selectedFile,
+    projectFiles,
+    projectVersion,
+    renamingFile,
+    renameValue,
+    tabs,
+    activeTab,
+  } = useSelector((state: RootState) => state.editor);
+
+  const handleFileSelect = (filename: string) => {
+      dispatch(openTab(filename));
+      dispatch(setSelectedFile(filename));
+    }; // should be in ExplorerPane
+  
+    const startRename = (filename: string) => {
+      if (userIsOwner) {
+        dispatch(setRenamingFile(filename));
+        dispatch(setRenameValue(filename));
+      }
+    }; // should be in ExplorerPane
+  
+    const confirmRename = async (e?: any) => {
+      if (
+        renameValue &&
+        renameValue !== renamingFile &&
+        !projectFiles.some((y) => y.fileName === renameValue)
+      ) {
+        const updatedFiles = projectFiles.map((ts) =>
+          ts.fileName === renamingFile ? { ...ts, fileName: renameValue } : ts
+        );
+        if (tabs.includes(renamingFile)) {
+          dispatch(
+            setTabs(tabs.map((tab) => (tab === renamingFile ? renameValue : tab)))
+          );
+        }
+        if (activeTab === renamingFile) {
+          dispatch(setActiveTab(renameValue));
+        }
+        if (monaco && modelsRef.current[renamingFile]) {
+          modelsRef.current[renamingFile].dispose();
+          delete modelsRef.current[renamingFile];
+        }
+        dispatch(setProjectFiles(updatedFiles));
+        dispatch(setRenameFile({ oldName: renamingFile, newName: renameValue }));
+        try {
+          await updateProject({
+            projectFiles: updatedFiles,
+            projectName
+          }).unwrap();
+          dispatch(setProjectVersion(projectVersion + 1));
+          setUnsavedFiles({});
+        } catch (err) {}
+      }
+      dispatch(setRenamingFile(null));
+      dispatch(setRenameValue(""));
+    }; // dang this is crazy, should be in ExplorerPane
+  
+    const cancelRename = () => {
+      dispatch(setRenamingFile(null));
+      dispatch(setRenameValue(""));
+    }; // should be in ExplorerPane
+
+      const [unsavedFiles, setUnsavedFiles] = React.useState<{
+        [filename: string]: boolean;
+      }>({});
   const theColorScheme = useComputedColorScheme("light");
   const [justCreatedFile, setJustCreatedFile] = React.useState<string | null>(
     null
   );
   const { showContextMenu } = useContextMenu();
-  const { projectName } = useParams();
   const [updateProject] = useUpdateProjectMutation();
-  const projectFiles = useSelector((state: any) => state.editor.projectFiles);
-
-  let userOwnsProject;
-
-  if (userIsOwner) {
-    userOwnsProject = true;
-  } else {
-    userOwnsProject = false;
-  }
 
   React.useEffect(() => {
     if (renamingFile && projectFiles.some((r) => r.fileName === renamingFile)) {
@@ -101,21 +182,15 @@ const ExplorerPane = ({
     <Box
       p={0}
       style={{
-        minWidth: MIN_PANE_WIDTH,
-        maxWidth: 3000,
-        width: width || DEFAULT_PANE_WIDTHS.explorer,
+        width: SIDEBAR_WIDTH,
         height: "100%",
         display: "flex",
         flexDirection: "column",
         transition: "width 0.1s",
-        ...style,
         color: theColorScheme === "dark" ? "white" : undefined,
         backgroundColor:
-          theColorScheme === "dark" ? "#181A1B" : style?.backgroundColor
+          theColorScheme === "dark" ? "#181A1B" : "white"
       }}
-      // draggable
-      // onDragStart={() => onDragStart("explorer")}
-      // onDragOver={(e) => onDragOver(e, "explorer")}
     >
       <Group
         align="apart"
@@ -130,7 +205,7 @@ const ExplorerPane = ({
           <PiFilesBold />
           <Text size="sm">Files</Text>
         </Group>
-        {userOwnsProject && (
+        {userIsOwner && (
           <Menu shadow="md" width={200}>
             <Menu.Target>
               <ActionIcon variant="subtle" size="sm">
@@ -200,7 +275,7 @@ const ExplorerPane = ({
                 handleFileSelect(file.fileName);
               }
             }}
-            onContextMenu={showContextMenu([
+            onContextMenu={userIsOwner && showContextMenu([
               {
                 key: "rename",
                 icon: <PiPencilBold size={14} />,

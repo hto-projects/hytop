@@ -25,10 +25,7 @@ const App = () => {
         position="bottom-right"
         theme={theColorScheme === "dark" ? "dark" : "light"}
       />
-      <Header
-        projectName={isEditor ? currentProjectName : undefined}
-        getProject={getProject}
-      />
+      <Header />
       <div
         id="main-container"
         style={{

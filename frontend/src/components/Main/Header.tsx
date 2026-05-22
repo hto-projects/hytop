@@ -7,8 +7,6 @@ import {
   useComputedColorScheme,
   Button,
   Menu,
-  TextInput,
-  Box
 } from "@mantine/core";
 import {
   PiFloppyDiskBold,
@@ -16,13 +14,10 @@ import {
   PiHouseBold,
   PiMagicWandBold
 } from "react-icons/pi";
-import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { IProject } from "../../../../shared/types";
-import { current } from "@reduxjs/toolkit";
+import { Link, useLocation } from "react-router-dom";
 
-const Header = (projectName, getProject) => {
+const Header = () => {
   const location = useLocation();
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");

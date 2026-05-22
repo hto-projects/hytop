@@ -19,7 +19,7 @@ import ProfileScreen from "./components/User/ProfileScreen";
 import LoginScreen from "./components/User/LoginScreen";
 import RegisterScreen from "./components/User/RegisterScreen";
 import CreateProjectScreen from "./components/Main/CreateProjectScreen";
-import ProjectEditor from "./components/ProjectView/ProjectViewScreen";
+import ProjectViewScreen from "./components/ProjectView/ProjectViewScreen";
 import CopyProjectScreen from "./components/Main/CopyProjectScreen";
 import AboutScreen from "./components/Main/AboutScreen";
 import LatestUpdatesScreen from "./components/Main/LatestUpdatesScreen";
@@ -33,7 +33,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/create-project" element={<CreateProjectScreen />} />
-      <Route path="/e/:projectName" element={<ProjectEditor />} />
+      <Route path="/e/:projectName" element={<ProjectViewScreen />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
       <Route path="/about" element={<AboutScreen />} />
       <Route path="/latest-updates" element={<LatestUpdatesScreen />} />

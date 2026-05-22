@@ -17,28 +17,36 @@ import {
   PiArrowsInLineHorizontal
 } from "react-icons/pi";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setPaneState } from "../../../slices/editorSlice";
+import { RootState } from "../../../store";
 
-const PreviewPane = ({
-  MIN_PANE_WIDTH,
-  DEFAULT_PANE_WIDTHS,
-  width,
-  onDragStart,
-  onDragOver,
-  closePane,
-  previewUrl,
-  projectVersion
-}) => {
+const PreviewComponent = ({ projectName, projectVersion }) => {
+  const previewUrl = `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/`;
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
   const [bigPane, setBigPane] = useState(false);
+  const dispatch = useDispatch();
+  const { paneState } = useSelector((state: RootState) => state.editor);
+
+  const closePreview = () => {
+    dispatch(
+      setPaneState({
+        ...paneState,
+        open: { ...paneState.open, preview: false }
+      })
+    );
+  };
+
+  if (!paneState.open.preview) {
+    return null;
+  }
 
   return (
     <Paper
       shadow="xs"
       p={0}
       style={{
-        minWidth: MIN_PANE_WIDTH,
         maxWidth: 3000,
         width: bigPane ? 800 : 400,
         height: "100%",
@@ -48,9 +56,6 @@ const PreviewPane = ({
         color: theColorScheme === "dark" ? "white" : undefined,
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined
       }}
-      // draggable
-      // onDragStart={() => onDragStart("preview")}
-      // onDragOver={(e) => onDragOver(e, "preview")}
     >
       <Group
         align="apart"
@@ -66,11 +71,7 @@ const PreviewPane = ({
           <PiMonitorBold />
           <Text size="sm">Preview</Text>
         </Group>
-        <ActionIcon
-          variant="subtle"
-          onClick={() => closePane("preview")}
-          size="sm"
-        >
+        <ActionIcon variant="subtle" onClick={closePreview} size="sm">
           <PiXBold />
         </ActionIcon>
         <ActionIcon
@@ -79,7 +80,11 @@ const PreviewPane = ({
           size="sm"
         >
           <Tooltip label={bigPane ? "Emsmallen" : "Embiggen"} position="top">
-            {bigPane ? <PiArrowsInLineHorizontal /> : <PiArrowsOutLineHorizontal />}
+            {bigPane ? (
+              <PiArrowsInLineHorizontal />
+            ) : (
+              <PiArrowsOutLineHorizontal />
+            )}
           </Tooltip>
         </ActionIcon>
       </Group>
@@ -141,4 +146,4 @@ const PreviewPane = ({
   );
 };
 
-export default PreviewPane;
+export default PreviewComponent;

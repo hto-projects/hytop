@@ -19,6 +19,7 @@ import MonacoEditor from "@monaco-editor/react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { initVimMode } from "monaco-vim";
+import { DEFAULT_PANE_WIDTHS, MIN_PANE_WIDTH } from "../constants";
 
 function setupMonacoModels({
   monaco,
@@ -87,12 +88,6 @@ function setupMonacoModels({
 }
 
 const EditorPane = ({
-  MIN_PANE_WIDTH,
-  DEFAULT_PANE_WIDTHS,
-  width,
-  onDragStart,
-  onDragOver,
-  closePane,
   renderTabBar,
   unsavedFiles,
   activeTab,
@@ -218,7 +213,7 @@ const EditorPane = ({
         flex: 1,
         minWidth: MIN_PANE_WIDTH,
         maxWidth: 3000,
-        width: width || DEFAULT_PANE_WIDTHS.editor,
+        width: DEFAULT_PANE_WIDTHS.editor,
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -226,9 +221,6 @@ const EditorPane = ({
         color: theColorScheme === "dark" ? "white" : undefined,
         background: theColorScheme === "dark" ? "#181A1B" : "#f3f4f8"
       }}
-      // draggable
-      // onDragStart={() => onDragStart("editor")}
-      // onDragOver={(e) => onDragOver(e, "editor")}
     >
       {renderTabBar(primaryColor)}
       <Group
@@ -293,7 +285,7 @@ const EditorPane = ({
         <Tooltip label={"Close"} position="top">
           <ActionIcon
             variant="subtle"
-            onClick={() => closePane("editor")}
+            onClick={() => {}}
             size="sm"
           >
             <PiXBold />

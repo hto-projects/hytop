@@ -6,7 +6,6 @@ import {
   PiDotOutlineFill,
   PiXBold
 } from "react-icons/pi";
-import React from "react";
 import { useSelector } from "react-redux";
 
 const TabBar = ({
@@ -15,10 +14,8 @@ const TabBar = ({
   unsavedFiles,
   handleTabClick,
   handleTabClose,
-  primaryColor: propPrimaryColor
 }) => {
-  const primaryColor =
-    propPrimaryColor || useSelector((state: any) => state.theme.primaryColor);
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
   return (
     <Box

@@ -5,33 +5,79 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { TextInput } from "@mantine/core";
 import { useComputedColorScheme } from "@mantine/core";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setCurrentProjectName } from "../../../slices/editorSlice";
+import { setCurrentProjectName, setProjectDescription, setProjectName } from "../../../../slices/editorSlice";
+import { SIDEBAR_WIDTH } from "../../constants";
+import { useChangeProjectNameMutation, useGetProjectDescriptionQuery, useGetProjectIdQuery, useChangeProjectDescriptionMutation } from "../../../../slices/projectsApiSlice";
+import { toast } from "react-toastify";
 
 const SettingsPane = ({
-  MIN_PANE_WIDTH,
-  DEFAULT_PANE_WIDTHS,
-  width,
-  onDragStart,
-  onDragOver,
-  closePane,
-  projectId,
-  projectName,
-  projectDescription,
-  changeProjectName,
-  changeProjectDescription
+  closePane
 }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { projectName } = useParams();
+  const projectID = useGetProjectIdQuery(projectName, {
+    skip: !projectName
+  });
+  const projectId = projectID.data?.projectId;
+  const projectDescriptionData = useGetProjectDescriptionQuery(projectId, {
+    skip: !projectId
+  });
+
+  const projectDescription = projectDescriptionData?.data?.projectDescription;
   const theColorScheme = useComputedColorScheme("light");
   const location = useLocation();
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
-  const dispatch = useDispatch();
+  const [changeProjectName] = useChangeProjectNameMutation();
+  const [changeProjectDescription] = useChangeProjectDescriptionMutation();
+
+  const handleProjectNameChange = async (newName: string) => {
+    if (!projectId || !newName || newName === currentProjectName) return;
+
+    try {
+      const res = await changeProjectName({
+        projectId,
+        newProjectName: newName
+      }).unwrap();
+      setCurrentProjectNamem(res.projectName);
+      dispatch(setProjectName(res.projectName));
+
+      if (res.projectName !== projectName) {
+        navigate(`/e/${encodeURIComponent(res.projectName)}`, {
+          replace: true
+        });
+      }
+
+      toast.success("Successfully updated project name");
+      return true;
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to update project name");
+      return false;
+    }
+  };
+
+  const handleChangeProjDescFromTop = async (newDesc: string) => { // SettingsPane
+      if (!projectId || !newDesc) return;
+      try {
+        const res = await changeProjectDescription({
+          projectId,
+          newProjectDescription: newDesc
+        }).unwrap();
+        setCurrentProjectDescription(res.projectDescription);
+        dispatch(setProjectDescription(res.projectDescription));
+        toast.success("Successfully updated project description");
+      } catch (err) {
+        toast.error(err?.data?.message || "Failed to update project description");
+      }
+    };
 
   const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
-  const isEditor = !!match;
 
   const [currentProjectName, setCurrentProjectNamem] = useState(
     projectName || ""
@@ -72,26 +118,20 @@ const SettingsPane = ({
 
   const handleSave = async () => {
     let didChange = false;
-    if (changeProjectName && nameInput && nameInput !== effectiveProjectName) {
+    if (handleProjectNameChange && nameInput && nameInput !== effectiveProjectName) {
       try {
-        const result = await changeProjectName(nameInput);
-        if (result !== false) {
+        const result = await handleProjectNameChange(nameInput);
+        if (result) {
           didChange = true;
-          // Update the text input with the slugified name returned from backend
-          if (result && result.projectName) {
-            setNameInput(result.projectName);
-            dispatch(setCurrentProjectName(result.projectName));
-          } else {
-            dispatch(setCurrentProjectName(nameInput));
-          }
+          dispatch(setCurrentProjectName(nameInput));
         }
       } catch (error) {
         console.error("Error changing project name:", error);
         didChange = false;
       }
     }
-    if (changeProjectDescription && descInput !== effectiveProjectDescription) {
-      await changeProjectDescription(descInput);
+    if (handleChangeProjDescFromTop && descInput !== effectiveProjectDescription) {
+      await handleChangeProjDescFromTop(descInput);
       didChange = true;
     }
     setEditing(false);
@@ -105,9 +145,7 @@ const SettingsPane = ({
       shadow="xs"
       p={0}
       style={{
-        minWidth: MIN_PANE_WIDTH,
-        maxWidth: 600,
-        width: width || DEFAULT_PANE_WIDTHS.settings,
+        width: SIDEBAR_WIDTH,
         height: "100%",
         display: "flex",
         flexDirection: "column",
@@ -116,9 +154,6 @@ const SettingsPane = ({
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : undefined,
         overflow: "hidden"
       }}
-      // draggable
-      // onDragStart={() => onDragStart("settings")}
-      // onDragOver={(e) => onDragOver(e, "settings")}
     >
       <Group
         align="apart"
