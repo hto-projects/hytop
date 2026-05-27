@@ -15,10 +15,6 @@ const App = () => {
   const projectName = match ? decodeURIComponent(match[2]) : undefined;
   const getProject = useGetProjectQuery(projectName);
 
-  const [currentProjectName, setCurrentProjectName] = useState(
-    projectName || ""
-  );
-
   return (
     <>
       <ToastContainer

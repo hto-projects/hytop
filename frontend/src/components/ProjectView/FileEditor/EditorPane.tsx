@@ -18,86 +18,18 @@ import {
 import MonacoEditor from "@monaco-editor/react";
 import React from "react";
 import { useSelector } from "react-redux";
-import { initVimMode } from "monaco-vim";
 import { DEFAULT_PANE_WIDTHS, MIN_PANE_WIDTH } from "../constants";
-
-function setupMonacoModels({
-  monaco,
-  editorRef,
-  modelsRef,
-  projectFiles,
-  activeTab,
-  getMonacoLang
-}) {
-  if (!monaco || !editorRef.current || !activeTab) return;
-  projectFiles.forEach((file) => {
-    const uri = monaco.Uri.parse(`file:///${file.fileName}`);
-    let model = modelsRef.current[file.fileName];
-    if (
-      !model ||
-      (typeof model.isDisposed === "function" && model.isDisposed())
-    ) {
-      model = monaco.editor.getModel(uri);
-      if (model) {
-        modelsRef.current[file.fileName] = model;
-      } else {
-        model = monaco.editor.createModel(
-          file.fileContent || "",
-          getMonacoLang(file.fileName),
-          uri
-        );
-        modelsRef.current[file.fileName] = model;
-      }
-    } else if (
-      model.getValue() !== file.fileContent &&
-      file.fileContent !== ""
-    ) {
-      model.setValue(file.fileContent);
-    }
-  });
-
-  const filey = projectFiles.find((f) => f.fileName === activeTab);
-  const fileContent = filey ? filey.fileContent || "" : "";
-  const uri = monaco.Uri.parse(`file:///${activeTab}`);
-  let model = modelsRef.current[activeTab];
-
-  if (
-    !model ||
-    (typeof model.isDisposed === "function" && model.isDisposed())
-  ) {
-    model = monaco.editor.getModel(uri);
-    if (model) {
-      modelsRef.current[activeTab] = model;
-    } else {
-      model = monaco.editor.createModel(
-        fileContent,
-        getMonacoLang(activeTab),
-        uri
-      );
-      modelsRef.current[activeTab] = model;
-    }
-  } else if (model.getValue() !== fileContent && fileContent !== "") {
-    model.setValue(fileContent);
-  }
-
-  if (typeof model.isDisposed !== "function" || !model.isDisposed()) {
-    if (editorRef.current.getModel() !== model) {
-      editorRef.current.setModel(model);
-    }
-  }
-}
+import { getMonacoLang } from "../util";
+import TabBar from "./TabBar";
 
 const EditorPane = ({
-  renderTabBar,
+  tabs,
   unsavedFiles,
   activeTab,
   saveCurrentFile,
   editorRef,
   monaco,
-  modelsRef,
-  getMonacoLang,
-  userIsOwner,
-  projectFiles = []
+  userIsOwner
 }) => {
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const monacoTheme = useSelector((state: any) => state.editor.monacoTheme);
@@ -108,11 +40,7 @@ const EditorPane = ({
   const monacoWordWrap = useSelector(
     (state: any) => state.editor.monacoWordWrap
   );
-  const vimModeEnabled = useSelector((state: any) => state.editor.vimMode);
   const theColorScheme = useComputedColorScheme("light");
-
-  const vimStatusRef = React.useRef<HTMLDivElement>(null);
-  const vimModeRef = React.useRef<any>(null);
 
   const handleEditorMount = (editor) => {
     if (editorRef.current && typeof editorRef.current.dispose === "function") {
@@ -121,56 +49,7 @@ const EditorPane = ({
       } catch {}
     }
     editorRef.current = editor;
-    setupMonacoModels({
-      monaco,
-      editorRef,
-      modelsRef,
-      projectFiles,
-      activeTab,
-      getMonacoLang
-    });
-
-    if (vimModeRef.current) {
-      vimModeRef.current.dispose();
-      vimModeRef.current = null;
-    }
-    if (vimModeEnabled && editor && vimStatusRef.current) {
-      vimModeRef.current = initVimMode(editor, vimStatusRef.current);
-    }
   };
-
-  React.useEffect(() => {
-    if (!editorRef.current) return;
-    if (vimModeRef.current) {
-      vimModeRef.current.dispose();
-      vimModeRef.current = null;
-    }
-    if (vimModeEnabled && vimStatusRef.current) {
-      vimModeRef.current = initVimMode(editorRef.current, vimStatusRef.current);
-    }
-    return () => {
-      if (vimModeRef.current) {
-        vimModeRef.current.dispose();
-        vimModeRef.current = null;
-      }
-    };
-  }, [vimModeEnabled, editorRef.current]);
-
-  React.useEffect(() => {
-    setupMonacoModels({
-      monaco,
-      editorRef,
-      modelsRef,
-      projectFiles,
-      activeTab,
-      getMonacoLang
-    });
-  }, [
-    monaco,
-    activeTab,
-    projectFiles.map((meow) => meow.fileName).join(","),
-    projectFiles.map((meow) => meow.fileContent).join("||")
-  ]);
 
   React.useEffect(() => {
     return () => {
@@ -185,25 +64,6 @@ const EditorPane = ({
       }
     };
   }, [monaco]);
-
-  // incredible fix
-  React.useEffect(() => {
-    if (!monaco || !editorRef.current) return;
-    const isComicMono =
-      monacoFont &&
-      (monacoFont.includes("Comic Mono") ||
-        monacoFont.includes("'Comic Mono'"));
-    if (isComicMono && document.fonts) {
-      document.fonts.load('16px "Comic Mono"').then(() => {
-        if (monaco && monaco.editor && monaco.editor.remeasureFonts) {
-          monaco.editor.remeasureFonts();
-        }
-        if (editorRef.current && editorRef.current.layout) {
-          editorRef.current.layout();
-        }
-      });
-    }
-  }, [monaco, monacoFont, editorRef.current]);
 
   return (
     <Paper
@@ -222,7 +82,11 @@ const EditorPane = ({
         background: theColorScheme === "dark" ? "#181A1B" : "#f3f4f8"
       }}
     >
-      {renderTabBar(primaryColor)}
+      <TabBar
+        tabs={tabs}
+        activeTab={activeTab}
+        unsavedFiles={unsavedFiles}
+      />
       <Group
         align="apart"
         px="sm"
@@ -303,7 +167,7 @@ const EditorPane = ({
       >
         <Box
           style={{
-            flex: vimModeEnabled ? "1 1 calc(100% - 24px)" : "1 1 100%",
+            flex: "1 1 100%",
             minHeight: 0
           }}
         >
@@ -325,24 +189,6 @@ const EditorPane = ({
             onMount={handleEditorMount}
           />
         </Box>
-        {vimModeEnabled && (
-          <div
-            ref={vimStatusRef}
-            style={{
-              height: 24,
-              minHeight: 24,
-              maxHeight: 24,
-              boxSizing: "border-box",
-              background: theColorScheme === "dark" ? "#23272A" : "#f3f4f8",
-              color: theColorScheme === "dark" ? "#fff" : "#222",
-              fontFamily: "monospace",
-              fontSize: 13,
-              padding: "2px 8px",
-              overflow: "hidden",
-              flex: "0 0 24px"
-            }}
-          />
-        )}
       </Box>
     </Paper>
   );

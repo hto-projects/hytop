@@ -28,7 +28,7 @@ import {
 import { Select, TextInput, NumberInput } from "@mantine/core";
 import DarkModeToggle from "./DarkModeToggle";
 import { useComputedColorScheme } from "@mantine/core";
-import { SIDEBAR_WIDTH } from "../../ProjectView/constants";
+import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../ProjectView/constants";
 
 const PreferencesPane = ({
   closePane
@@ -104,7 +104,7 @@ const PreferencesPane = ({
         }}
       >
         <Group gap={4}>
-          <PiPencilBold />
+          {SIDEBAR_ICON_MAP["Preferences"]}
           <Text size="sm">Preferences</Text>
         </Group>
         <ActionIcon

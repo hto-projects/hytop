@@ -1,10 +1,9 @@
 import { Box } from "@mantine/core";
-import ExplorerPane from "../Panes/FileSelectorPane";
-import SettingsPane from "../Panes/ProjectSettingsPane";
+import FileSelectorPane from "../FileSelector/FileSelectorPane";
+import SettingsPane from "../ProjectSettings/ProjectSettingsPane";
 import PreferencesPane from "../../../User/Preferences/PreferencesPane";
 
 const SideBarPane = ({
-  modelsRef,
   selectedPane,
   setSelectedPane,
   userIsOwner
@@ -13,9 +12,8 @@ const SideBarPane = ({
   switch (selectedPane) {
     case "Files":
       pane = (
-        <ExplorerPane
+        <FileSelectorPane
           closePane={() => setSelectedPane(null)}
-          modelsRef={modelsRef}
           userIsOwner={userIsOwner}
         />
       );

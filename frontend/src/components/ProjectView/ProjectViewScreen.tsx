@@ -15,11 +15,12 @@ import {
   setTabs,
   setActiveTab,
   openTab,
-  closeTab,
   syncTabsWithFiles,
   setEditorIsLoading,
   setUserIsOwner,
-  setCurrentProjectName
+  setUnsavedFiles,
+  setProjectName,
+  setProjectDescription
 } from "../../slices/editorSlice";
 
 import { RootState } from "../../store";
@@ -52,21 +53,18 @@ const ProjectViewScreen = () => {
     projectVersion,
     tabs,
     activeTab,
-    lastClosedTab
+    lastClosedTab,
+    unsavedFiles
   } = useSelector((state: RootState) => state.editor);
 
   const userIsOwner = ownership.data?.isOwner || false;
-
-  const [unsavedFiles, setUnsavedFiles] = React.useState<{
-    [filename: string]: boolean;
-  }>({});
 
   useEffect(() => {
     const initialUnsaved: { [filename: string]: boolean } = {};
     projectFiles.forEach((f) => {
       initialUnsaved[f.fileName] = false;
     });
-    setUnsavedFiles(initialUnsaved);
+    dispatch(setUnsavedFiles(initialUnsaved));
     dispatch(syncTabsWithFiles());
   }, [projectFiles.length, projectFiles.map((f) => f.fileName).join(",")]);
 
@@ -91,7 +89,7 @@ const ProjectViewScreen = () => {
     try {
       await updateProject({ projectFiles, projectName }).unwrap();
       dispatch(setProjectVersion(projectVersion + 1));
-      setUnsavedFiles({});
+      dispatch(setUnsavedFiles({}));
     } catch (err) {}
   };
 
@@ -167,7 +165,7 @@ const ProjectViewScreen = () => {
         projectName
       }).unwrap();
       dispatch(setProjectVersion(projectVersion + 1));
-      setUnsavedFiles({});
+      dispatch(setUnsavedFiles({}));
     } catch (err) {
       console.error(err);
     }
@@ -271,8 +269,8 @@ const ProjectViewScreen = () => {
               f.fileName === fname ? { ...f, fileContent: content } : f
             );
             dispatch(setProjectFiles(updatedFiles));
-            setUnsavedFiles((prev) => ({
-              ...prev,
+            dispatch(setUnsavedFiles({
+              ...unsavedFiles,
               [fname]: true
             }));
           }
@@ -301,8 +299,8 @@ const ProjectViewScreen = () => {
     try {
       await updateProject({ projectFiles: updatedFiles, projectName }).unwrap();
       dispatch(setProjectVersion(projectVersion + 1));
-      setUnsavedFiles((prev) => ({
-        ...prev,
+      dispatch(setUnsavedFiles({
+        ...unsavedFiles,
         [activeTab]: false
       }));
     } catch (err) {
@@ -355,7 +353,7 @@ const ProjectViewScreen = () => {
       const currentReduxFiles = projectFiles;
       const serverFiles = projectData.data.projectFiles;
 
-      if (currentReduxFiles.length === 0) {
+      if (currentReduxFiles.length === 0 || projectData.data.projectId !== projectName) {
         dispatch(setProjectFiles(serverFiles));
       } else {
         const mergedFiles = serverFiles.map((serverFile) => {
@@ -367,16 +365,16 @@ const ProjectViewScreen = () => {
             if (model && typeof model.getValue === "function") {
               const modelContent = model.getValue();
               if (modelContent && modelContent !== serverFile.fileContent) {
-                setUnsavedFiles((prev) => ({
-                  ...prev,
+                dispatch(setUnsavedFiles({
+                  ...unsavedFiles,
                   [serverFile.fileName]: true
                 }));
                 return { ...serverFile, fileContent: modelContent };
               }
             }
             if (existingFile.fileContent !== serverFile.fileContent) {
-              setUnsavedFiles((prev) => ({
-                ...prev,
+              dispatch(setUnsavedFiles({
+                ...unsavedFiles,
                 [serverFile.fileName]: true
               }));
               return existingFile;
@@ -393,7 +391,8 @@ const ProjectViewScreen = () => {
         dispatch(setProjectFiles([...mergedFiles, ...reduxOnlyFlies]));
       }
 
-      dispatch(setCurrentProjectName(projectData.data.projectName));
+      dispatch(setProjectName(projectData.data.projectName));
+      dispatch(setProjectDescription(projectData.data.projectDescription));
     }
   }, [projectData?.data]);
 
@@ -454,102 +453,6 @@ const ProjectViewScreen = () => {
   }, [tabs, localStorageTabs]); // is it?
 
   useEffect(() => {
-    if (!monaco) return;
-    const editor = editorRef.current;
-    if (!editor) return;
-    if ((editor as any).hipleasework) return;
-    (editor as any).hipleasework = true; // truly what
-
-    editor.onKeyDown((event) => {
-      if (event.browserEvent.key !== ">") return;
-      const model = editor.getModel();
-      if (!model) return;
-      const enabledLanguages = ["html"];
-      if (!enabledLanguages.includes(model.getLanguageId())) return;
-      const isSelfClosing = (tag: string) => true;
-      // [
-      //   "area",
-      //   "base",
-      //   "br",
-      //   "col",
-      //   "command",
-      //   "embed",
-      //   "hr",
-      //   "img",
-      //   "input",
-      //   "keygen",
-      //   "link",
-      //   "meta",
-      //   "param",
-      //   "source",
-      //   "track",
-      //   "wbr",
-      //   "circle",
-      //   "ellipse",
-      //   "line",
-      //   "path",
-      //   "polygon",
-      //   "polyline",
-      //   "rect",
-      //   "stop",
-      //   "use"
-      // ].includes(tag); // should not do this by default but what are we gonna do
-
-      const selections = editor.getSelections();
-      if (!selections) return;
-      const edits: any[] = [];
-      const newSelections: any[] = [];
-      for (const selection of selections) {
-        newSelections.push(
-          new monaco.Selection(
-            selection.selectionStartLineNumber,
-            selection.selectionStartColumn + 1,
-            selection.endLineNumber,
-            selection.endColumn + 1
-          )
-        );
-        const contentBefore = model.getValueInRange({
-          startLineNumber: 1,
-          startColumn: 1,
-          endLineNumber: selection.endLineNumber,
-          endColumn: selection.endColumn
-        });
-        const matchytwo = contentBefore.match(/<([\w-]+)(?![^>]*\/>)[^>]*$/);
-        if (!matchytwo) continue;
-        const [fullMatch, tag] = matchytwo;
-        if (isSelfClosing(tag) || fullMatch.trim().endsWith("/")) continue;
-
-        const positionMeow = selection.getEndPosition();
-        const totalLines = model.getLineCount();
-        const afterRange = {
-          startLineNumber: positionMeow.lineNumber,
-          startColumn: positionMeow.column + 1,
-          endLineNumber: totalLines,
-          endColumn: model.getLineMaxColumn(totalLines)
-        };
-        const afterText = model.getValueInRange(afterRange);
-        const letsClose = `</${tag}>`;
-        if (afterText.includes(letsClose)) continue;
-
-        edits.push({
-          range: {
-            startLineNumber: selection.endLineNumber,
-            startColumn: selection.endColumn + 1,
-            endLineNumber: selection.endLineNumber,
-            endColumn: selection.endColumn + 1
-          },
-          text: letsClose
-        });
-      }
-      if (edits.length > 0) {
-        setTimeout(() => {
-          editor.executeEdits(model.getValue(), edits, newSelections);
-        }, 0);
-      }
-    });
-  }, [monaco, editorRef.current]);
-
-  useEffect(() => {
     if (
       paneState.open.editor &&
       (!activeTab || !tabs.length) &&
@@ -569,7 +472,7 @@ const ProjectViewScreen = () => {
 
   return (
     <ProjectViewContainer>
-      <SideBarComponent modelsRef={modelsRef} userIsOwner={userIsOwner} />
+      <SideBarComponent userIsOwner={userIsOwner} />
       {paneState.open.editor && (
         <FileEditorComponent
           unsavedFiles={unsavedFiles}

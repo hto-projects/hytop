@@ -1,12 +1,6 @@
 import { ActionIcon } from "@mantine/core";
 import { Tooltip } from "@mantine/core";
-import { PiFilesBold, PiGearBold, PiPencilBold } from "react-icons/pi";
-
-const iconMap = {
-  "Files": <PiFilesBold />,
-  "Settings": <PiGearBold />,
-  "Preferences": <PiPencilBold />
-}
+import { SIDEBAR_ICON_MAP } from "../../constants";
 
 const SideBarButton = ({name, isOn, onClick}) => {
   return (
@@ -17,7 +11,7 @@ const SideBarButton = ({name, isOn, onClick}) => {
         size="lg"
         onClick={onClick}
       >
-        {iconMap[name]}
+        {SIDEBAR_ICON_MAP[name]}
       </ActionIcon>
     </Tooltip>
   )

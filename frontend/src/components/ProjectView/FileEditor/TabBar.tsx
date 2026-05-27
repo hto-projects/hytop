@@ -6,15 +6,24 @@ import {
   PiDotOutlineFill,
   PiXBold
 } from "react-icons/pi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { closeTab, setActiveTab } from "../../../slices/editorSlice";
 
 const TabBar = ({
   tabs,
   activeTab,
-  unsavedFiles,
-  handleTabClick,
-  handleTabClose,
+  unsavedFiles
 }) => {
+  const dispatch = useDispatch();
+  const handleTabClick = (fileName: string) => {
+    dispatch(setActiveTab(fileName));
+  };
+
+  const handleTabClose = (fileName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(closeTab(fileName));
+  };
+
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
   return (

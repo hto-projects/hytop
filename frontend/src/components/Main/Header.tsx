@@ -35,8 +35,8 @@ const Header = () => {
     isEditor ? state.editor.isLoading : false
   );
 
-  const currentProjectName = useSelector((state: any) =>
-    isEditor ? state.editor.currentProjectName : ""
+  const projectName = useSelector((state: any) =>
+    isEditor ? state.editor.projectName : ""
   );
 
   const saveAllFiles = () => {
@@ -92,7 +92,7 @@ const Header = () => {
                 alignItems: "center"
               }}
             >
-              {currentProjectName || "HyTOP"}
+              {projectName || "HyTOP"}
               {userIsOwner}
             </Text>
           </Menu.Target>

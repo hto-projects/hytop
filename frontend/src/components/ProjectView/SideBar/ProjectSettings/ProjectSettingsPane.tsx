@@ -1,18 +1,19 @@
-import { PiGearBold, PiXBold } from "react-icons/pi";
+import {PiXBold } from "react-icons/pi";
 
 import { Paper, Group, Text, Box, Button, ActionIcon } from "@mantine/core";
 import React from "react";
 import { useSelector } from "react-redux";
 import { TextInput } from "@mantine/core";
 import { useComputedColorScheme } from "@mantine/core";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setCurrentProjectName, setProjectDescription, setProjectName } from "../../../../slices/editorSlice";
-import { SIDEBAR_WIDTH } from "../../constants";
-import { useChangeProjectNameMutation, useGetProjectDescriptionQuery, useGetProjectIdQuery, useChangeProjectDescriptionMutation } from "../../../../slices/projectsApiSlice";
+import { setProjectDescription, setProjectName } from "../../../../slices/editorSlice";
+import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
+import { useChangeProjectNameMutation, useGetProjectIdQuery, useChangeProjectDescriptionMutation } from "../../../../slices/projectsApiSlice";
 import { toast } from "react-toastify";
+import { RootState } from "../../../../store";
 
 const SettingsPane = ({
   closePane
@@ -20,32 +21,31 @@ const SettingsPane = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { projectName } = useParams();
+  const {
+    projectName,
+    projectDescription
+  } = useSelector((state: RootState) => state.editor);
+
   const projectID = useGetProjectIdQuery(projectName, {
     skip: !projectName
   });
-  const projectId = projectID.data?.projectId;
-  const projectDescriptionData = useGetProjectDescriptionQuery(projectId, {
-    skip: !projectId
-  });
 
-  const projectDescription = projectDescriptionData?.data?.projectDescription;
+  const projectId = projectID.data?.projectId;
+
   const theColorScheme = useComputedColorScheme("light");
-  const location = useLocation();
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
   const [changeProjectName] = useChangeProjectNameMutation();
   const [changeProjectDescription] = useChangeProjectDescriptionMutation();
 
   const handleProjectNameChange = async (newName: string) => {
-    if (!projectId || !newName || newName === currentProjectName) return;
+    if (!projectId || !newName || newName === projectName) return;
 
     try {
       const res = await changeProjectName({
         projectId,
         newProjectName: newName
       }).unwrap();
-      setCurrentProjectNamem(res.projectName);
       dispatch(setProjectName(res.projectName));
 
       if (res.projectName !== projectName) {
@@ -62,14 +62,13 @@ const SettingsPane = ({
     }
   };
 
-  const handleChangeProjDescFromTop = async (newDesc: string) => { // SettingsPane
-      if (!projectId || !newDesc) return;
+  const handleChangeProjectDescription = async (newDesc: string) => {
+      if (!projectId) return;
       try {
         const res = await changeProjectDescription({
           projectId,
           newProjectDescription: newDesc
         }).unwrap();
-        setCurrentProjectDescription(res.projectDescription);
         dispatch(setProjectDescription(res.projectDescription));
         toast.success("Successfully updated project description");
       } catch (err) {
@@ -77,66 +76,30 @@ const SettingsPane = ({
       }
     };
 
-  const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
+  const [nameInput, setNameInput] = useState(projectName);
+  const [descInput, setDescInput] = useState(projectDescription);
 
-  const [currentProjectName, setCurrentProjectNamem] = useState(
-    projectName || ""
-  );
-  const [currentProjectDescription, setCurrentProjectDescription] =
-    useState("");
-
-  useEffect(() => {
-    if (projectName) {
-      setCurrentProjectNamem(projectName);
-    }
+  React.useEffect(() => {
+    setNameInput(projectName);
   }, [projectName]);
 
-  useEffect(() => {
-    if (projectDescription !== undefined) {
-      setCurrentProjectDescription(projectDescription);
-    }
+  React.useEffect(() => {
+    setDescInput(projectDescription);
   }, [projectDescription]);
 
-  let routeProjectName = match ? match[2] : "";
-  routeProjectName = decodeURIComponent(routeProjectName);
-
-  const editorState = useSelector((state: any) => state.editor);
-  const effectiveProjectName =
-    projectName || editorState.projectName || routeProjectName;
-  const effectiveProjectDescription =
-    projectDescription || editorState.projectDescription || "";
-
-  const [editing, setEditing] = useState(false);
-  const [nameInput, setNameInput] = useState(effectiveProjectName);
-  const [descInput, setDescInput] = useState(effectiveProjectDescription);
-  React.useEffect(() => {
-    setNameInput(effectiveProjectName);
-  }, [effectiveProjectName]);
-  React.useEffect(() => {
-    setDescInput(effectiveProjectDescription);
-  }, [effectiveProjectDescription]);
-
   const handleSave = async () => {
-    let didChange = false;
-    if (handleProjectNameChange && nameInput && nameInput !== effectiveProjectName) {
+    if (nameInput !== projectName) {
       try {
         const result = await handleProjectNameChange(nameInput);
         if (result) {
-          didChange = true;
-          dispatch(setCurrentProjectName(nameInput));
+          dispatch(setProjectName(nameInput));
         }
       } catch (error) {
         console.error("Error changing project name:", error);
-        didChange = false;
       }
     }
-    if (handleChangeProjDescFromTop && descInput !== effectiveProjectDescription) {
-      await handleChangeProjDescFromTop(descInput);
-      didChange = true;
-    }
-    setEditing(false);
-    if (didChange) {
-      setDescInput(descInput);
+    if (descInput !== projectDescription) {
+      await handleChangeProjectDescription(descInput);
     }
   };
 
@@ -166,7 +129,7 @@ const SettingsPane = ({
         }}
       >
         <Group gap={4}>
-          <PiGearBold />
+          {SIDEBAR_ICON_MAP["Settings"]}
           <Text size="sm">Settings</Text>
         </Group>
         <ActionIcon
@@ -244,9 +207,8 @@ const SettingsPane = ({
               size="xs"
               variant="light"
               onClick={() => {
-                setNameInput(projectName || routeProjectName);
+                setNameInput(projectName);
                 setDescInput(projectDescription || "");
-                setEditing(false);
               }}
             >
               Cancel

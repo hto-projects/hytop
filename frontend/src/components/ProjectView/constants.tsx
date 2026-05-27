@@ -1,3 +1,5 @@
+import { PiFilesBold, PiGearBold, PiPencilBold } from "react-icons/pi";
+
 const DEFAULT_PANE_WIDTHS = {
   explorer: 260,
   editor: 600,
@@ -10,8 +12,15 @@ const MIN_PANE_WIDTH = 60;
 
 const SIDEBAR_WIDTH = 280;
 
+const SIDEBAR_ICON_MAP = {
+  "Files": <PiFilesBold />,
+  "Settings": <PiPencilBold />,
+  "Preferences": <PiGearBold />
+}
+
 export {
   DEFAULT_PANE_WIDTHS,
   MIN_PANE_WIDTH,
-  SIDEBAR_WIDTH
+  SIDEBAR_WIDTH,
+  SIDEBAR_ICON_MAP
 };

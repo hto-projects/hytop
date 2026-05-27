@@ -11,8 +11,6 @@ interface EditorState {
   selectedFile: string | null;
   projectFiles: IProjectFile[];
   projectVersion: number;
-  renamingFile: string | null;
-  renameValue: string;
   tabs: string[];
   activeTab: string | null;
   monacoTheme: string;
@@ -25,7 +23,7 @@ interface EditorState {
   lastClosedTab?: string | null;
   projectName?: string;
   projectDescription?: string;
-  currentProjectName?: string;
+  unsavedFiles: { [filename: string]: boolean };
 }
 
 const getInitialMonacoSettings = () => {
@@ -54,8 +52,6 @@ const initialState: EditorState = {
   selectedFile: null,
   projectFiles: [],
   projectVersion: 0,
-  renamingFile: null,
-  renameValue: "",
   tabs: [],
   activeTab: null,
   ...getInitialMonacoSettings(),
@@ -64,7 +60,7 @@ const initialState: EditorState = {
   lastClosedTab: null,
   projectName: "",
   projectDescription: "",
-  currentProjectName: undefined
+  unsavedFiles: {}
 };
 
 const editorSlice = createSlice({
@@ -83,36 +79,15 @@ const editorSlice = createSlice({
     setProjectVersion(state, action: PayloadAction<number>) {
       state.projectVersion = action.payload;
     },
-    setRenameFile(
-      state,
-      action: PayloadAction<{ oldName: string; newName: string }>
-    ) {
-      const { oldName, newName } = action.payload;
-      const file = state.projectFiles.find((file) => file.fileName === oldName);
-      if (file) {
-        file.fileName = newName;
-      }
-      state.tabs = state.tabs.map((tab) => (tab === oldName ? newName : tab));
-      if (state.activeTab === oldName) {
-        state.activeTab = newName;
-        state.selectedFile = newName;
-      }
-      if (state.selectedFile === oldName) {
-        state.selectedFile = newName;
-      }
-    },
-    setRenamingFile(state, action: PayloadAction<string | null>) {
-      state.renamingFile = action.payload;
-    },
-    setRenameValue(state, action: PayloadAction<string>) {
-      state.renameValue = action.payload;
-    },
     setTabs(state, action: PayloadAction<string[]>) {
       state.tabs = action.payload;
     },
     setActiveTab(state, action: PayloadAction<string | null>) {
       state.activeTab = action.payload;
       state.selectedFile = action.payload;
+    },
+    setUnsavedFiles(state, action: PayloadAction<{ [filename: string]: boolean }>) {
+      state.unsavedFiles = action.payload;
     },
     openTab(state, action: PayloadAction<string>) {
       const fileName = action.payload;
@@ -209,9 +184,6 @@ const editorSlice = createSlice({
     setProjectDescription(state, action: PayloadAction<string>) {
       state.projectDescription = action.payload;
     },
-    setCurrentProjectName(state, action: PayloadAction<string>) {
-      state.currentProjectName = action.payload;
-    }
   }
 });
 
@@ -220,9 +192,6 @@ export const {
   setSelectedFile,
   setProjectFiles,
   setProjectVersion,
-  setRenameFile,
-  setRenamingFile,
-  setRenameValue,
   setTabs,
   setActiveTab,
   openTab,
@@ -238,6 +207,6 @@ export const {
   deleteFile,
   setProjectName,
   setProjectDescription,
-  setCurrentProjectName
+  setUnsavedFiles
 } = editorSlice.actions;
 export default editorSlice.reducer;

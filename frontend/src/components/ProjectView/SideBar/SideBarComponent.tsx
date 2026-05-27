@@ -4,7 +4,6 @@ import SideBarPane from "./Interface/SideBarPane";
 import { Box } from "@mantine/core";
 
 const SideBarComponent = ({
-  modelsRef,
   userIsOwner
 }) => {
   const [selectedPane, setSelectedPane] = React.useState<
@@ -20,7 +19,6 @@ const SideBarComponent = ({
       <SideBarPane
         selectedPane={selectedPane}
         setSelectedPane={setSelectedPane}
-        modelsRef={modelsRef}
         userIsOwner={userIsOwner}
       />
     </Box>
