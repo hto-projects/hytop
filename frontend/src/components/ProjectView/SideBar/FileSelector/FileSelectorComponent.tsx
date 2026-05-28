@@ -2,7 +2,6 @@ import { Box, useComputedColorScheme } from "@mantine/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useUpdateProjectMutation } from "../../../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
-import { SIDEBAR_WIDTH } from "../../constants";
 import { RootState } from "../../../../store";
 import {
   setActiveTab,
@@ -12,21 +11,14 @@ import {
   setTabs,
   setUnsavedFiles
 } from "../../../../slices/editorSlice";
-import FileNameComponent from "./FileNameComponent";
-import FilesHeaderComponent from "./FilesHeaderComponent";
+import FileName from "./FileName";
+import FilesHeader from "./FilesHeader";
 
-const FileSelectorPane = ({ closePane, userIsOwner }) => {
+const FileSelectorComponent = ({ closePane, userIsOwner }) => {
   const dispatch = useDispatch();
   const { projectName } = useParams();
 
-  const isDuplicateRename = (renameValue, ignore = "") => {
-    return projectFiles.some(
-      (p) =>
-        p.fileName.toLowerCase() === renameValue.trim().toLowerCase() &&
-        p.fileName !== ignore
-    );
-  };
-
+  // Load from Store
   const {
     selectedFile,
     projectFiles,
@@ -35,9 +27,17 @@ const FileSelectorPane = ({ closePane, userIsOwner }) => {
     activeTab,
     unsavedFiles
   } = useSelector((state: RootState) => state.editor);
-
+ 
   const theColorScheme = useComputedColorScheme("light");
   const [updateProject] = useUpdateProjectMutation();
+
+  const isDuplicateRename = (renameValue, ignore = "") => {
+    return projectFiles.some(
+      (p) =>
+        p.fileName.toLowerCase() === renameValue.trim().toLowerCase() &&
+        p.fileName !== ignore
+    );
+  };
 
   const handleUpdateFileName = async (renameValue, renamingFile) => {
     if (
@@ -109,8 +109,8 @@ const FileSelectorPane = ({ closePane, userIsOwner }) => {
     <Box
       p={0}
       style={{
-        width: SIDEBAR_WIDTH,
         height: "100%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         transition: "width 0.1s",
@@ -118,7 +118,7 @@ const FileSelectorPane = ({ closePane, userIsOwner }) => {
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : "white"
       }}
     >
-      <FilesHeaderComponent
+      <FilesHeader
         enableAddFile={userIsOwner}
         isDuplicateRename={isDuplicateRename}
         closePane={closePane}
@@ -126,7 +126,7 @@ const FileSelectorPane = ({ closePane, userIsOwner }) => {
       />
       <Box style={{ flex: 1, overflowY: "auto" }}>
         {projectFiles.map((file) => (
-          <FileNameComponent
+          <FileName
             key={file.fileName}
             fileName={file.fileName}
             selected={selectedFile === file.fileName}
@@ -135,11 +135,11 @@ const FileSelectorPane = ({ closePane, userIsOwner }) => {
             contextMenuEnabled={userIsOwner}
             updateFileName={handleUpdateFileName}
             handleDeleteFile={handleDeleteFile}
-          ></FileNameComponent>
+          ></FileName>
         ))}
       </Box>
     </Box>
   );
 };
 
-export default FileSelectorPane;
+export default FileSelectorComponent;

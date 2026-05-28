@@ -22,8 +22,7 @@ import {
   setMonacoFont,
   setMonacoFontSize,
   setMonacoWordWrap,
-  setPaneState,
-  setVimMode
+  setPaneState
 } from "../../../slices/editorSlice";
 import { Select, TextInput, NumberInput } from "@mantine/core";
 import DarkModeToggle from "./DarkModeToggle";
@@ -43,7 +42,6 @@ const PreferencesPane = ({
   const monacoWordWrap = useSelector(
     (state: any) => state.editor.monacoWordWrap
   );
-  const vimMode = useSelector((state: any) => state.editor.vimMode);
   const paneState = useSelector((state: any) => state.editor.paneState);
   const dispatch = useDispatch();
 
@@ -212,17 +210,6 @@ const PreferencesPane = ({
         <Text fw={700} mt="md" mb="xs">
           Editor
         </Text>
-        <Box mb="sm">
-          <Text size="sm" mb={4}>
-            Vim Mode
-          </Text>
-          <Switch
-            checked={vimMode}
-            onChange={(e) => dispatch(setVimMode(e.currentTarget.checked))}
-            label={vimMode ? "Enabled" : "Disabled"}
-            size="sm"
-          />
-        </Box>
         <Box mb="sm">
           <Text size="sm" mb={4}>
             Theme

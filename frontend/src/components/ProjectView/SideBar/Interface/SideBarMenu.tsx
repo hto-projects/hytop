@@ -1,16 +1,19 @@
 import { Box } from "@mantine/core";
 import SideBarButton from "./SideBarButton";
+import { useComputedColorScheme } from "@mantine/core";
 
 const SideBarMenu = ({ selectedPane, setSelectedPane, userIsOwner }) => {
+  const theColorScheme: string = useComputedColorScheme("light");
+  const darkMode: boolean = theColorScheme === "dark";
+
   return (
     <Box
       style={{
-        width: 48,
         minWidth: 48,
         maxWidth: 48,
         height: "100%",
-        background: "#181A1B",
-        borderRight: "1px solid #333",
+        background: darkMode ? "#181A1B" : "#fff",
+        borderRight: darkMode ? "1px solid #333" : "1px solid #ccc",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

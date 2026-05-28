@@ -9,12 +9,11 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { closeTab, setActiveTab } from "../../../slices/editorSlice";
 
-const TabBar = ({
-  tabs,
-  activeTab,
-  unsavedFiles
-}) => {
+const TabBar = ({ tabs, activeTab, unsavedFiles }) => {
   const dispatch = useDispatch();
+  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
+  const theColorScheme = useComputedColorScheme("light");
+  
   const handleTabClick = (fileName: string) => {
     dispatch(setActiveTab(fileName));
   };
@@ -24,8 +23,6 @@ const TabBar = ({
     dispatch(closeTab(fileName));
   };
 
-  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
-  const theColorScheme = useComputedColorScheme("light");
   return (
     <Box
       style={{
@@ -66,8 +63,8 @@ const TabBar = ({
                   ? "#fff"
                   : "#191f5e"
                 : theColorScheme === "dark"
-                ? "#bbb"
-                : "#444"
+                  ? "#bbb"
+                  : "#444"
           }}
           onClick={() => handleTabClick(fileName)}
         >

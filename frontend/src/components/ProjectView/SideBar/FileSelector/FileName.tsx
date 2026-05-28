@@ -1,11 +1,11 @@
 import { Box, TextInput, useComputedColorScheme } from "@mantine/core";
 import { PiDotOutlineFill, PiPencilBold, PiTrashBold } from "react-icons/pi";
-import React from "react";
+import { useState } from "react";
 import { useContextMenu } from "mantine-contextmenu";
 import { useDispatch } from "react-redux";
 import { openTab, setSelectedFile } from "../../../../slices/editorSlice";
 
-const FileNameComponent = ({
+const FileName = ({
   fileName,
   selected,
   unsaved,
@@ -15,6 +15,12 @@ const FileNameComponent = ({
   contextMenuEnabled
 }) => {
   const dispatch = useDispatch();
+  
+  const theColorScheme = useComputedColorScheme("light");
+  const { showContextMenu } = useContextMenu();
+
+  const [renaming, setRenaming] = useState<boolean>(false);
+  const [renameValue, setRenameValue] = useState<string>(fileName);
 
   const submitRename = () => {
     if (isDuplicateRename(renameValue, fileName) || !renameValue.trim()) {
@@ -49,10 +55,6 @@ const FileNameComponent = ({
     }
   };
 
-  const theColorScheme = useComputedColorScheme("light");
-  const { showContextMenu } = useContextMenu();
-  const [renaming, setRenaming] = React.useState(false);
-  const [renameValue, setRenameValue] = React.useState(fileName);
 
   return (
     <Box
@@ -78,22 +80,23 @@ const FileNameComponent = ({
         }
       }}
       onContextMenu={
-        contextMenuEnabled &&
-        showContextMenu([
-          {
-            key: "rename",
-            icon: <PiPencilBold size={14} />,
-            title: "Rename",
-            onClick: () => setRenaming(true)
-          },
-          {
-            key: "delete",
-            icon: <PiTrashBold size={14} />,
-            title: "Delete",
-            color: "red",
-            onClick: () => handleDeleteFile(fileName)
-          }
-        ])
+        contextMenuEnabled
+          ? showContextMenu([
+              {
+                key: "rename",
+                icon: <PiPencilBold size={14} />,
+                title: "Rename",
+                onClick: () => setRenaming(true)
+              },
+              {
+                key: "delete",
+                icon: <PiTrashBold size={14} />,
+                title: "Delete",
+                color: "red",
+                onClick: () => handleDeleteFile(fileName)
+              }
+            ])
+          : undefined
       }
     >
       {unsaved && (
@@ -143,4 +146,4 @@ const FileNameComponent = ({
   );
 };
 
-export default FileNameComponent;
+export default FileName;

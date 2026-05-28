@@ -3,9 +3,7 @@ import SideBarMenu from "./Interface/SideBarMenu";
 import SideBarPane from "./Interface/SideBarPane";
 import { Box } from "@mantine/core";
 
-const SideBarComponent = ({
-  userIsOwner
-}) => {
+const SideBarComponent = ({ userIsOwner }) => {
   const [selectedPane, setSelectedPane] = React.useState<
     "Files" | "Preferences" | "Settings" | null
   >("Files");

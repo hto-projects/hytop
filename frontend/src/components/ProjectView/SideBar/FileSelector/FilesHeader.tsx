@@ -9,7 +9,7 @@ import { SIDEBAR_ICON_MAP } from "../../constants";
 import { PiCheckBold, PiFilePlusBold, PiXBold } from "react-icons/pi";
 import { useState } from "react";
 
-const FilesHeaderComponent = ({
+const FilesHeader = ({
   enableAddFile,
   isDuplicateRename,
   closePane,
@@ -102,4 +102,4 @@ const FilesHeaderComponent = ({
   );
 };
 
-export default FilesHeaderComponent;
+export default FilesHeader;

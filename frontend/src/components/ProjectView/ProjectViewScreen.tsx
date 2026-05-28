@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import {
   useCheckOwnershipQuery,
   useGetProjectQuery,
   useUpdateProjectMutation
 } from "../../slices/projectsApiSlice";
-
 import { useDispatch, useSelector } from "react-redux";
 import { useMonaco } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
 import {
   setSelectedFile,
   setProjectFiles,
@@ -15,14 +15,12 @@ import {
   setTabs,
   setActiveTab,
   openTab,
-  syncTabsWithFiles,
   setEditorIsLoading,
   setUserIsOwner,
   setUnsavedFiles,
   setProjectName,
   setProjectDescription
 } from "../../slices/editorSlice";
-
 import { RootState } from "../../store";
 import SideBarComponent from "./SideBar/SideBarComponent";
 import prettier from "prettier/standalone";
@@ -30,25 +28,39 @@ import parserHtml from "prettier/plugins/html";
 import parserBabel from "prettier/plugins/babel";
 import parserEstree from "prettier/plugins/estree";
 import parserCss from "prettier/plugins/postcss";
-import { getMonacoLang } from "./util";
 import ProjectViewContainer from "./Interface/ProjectViewContainer";
 import PreviewComponent from "./Preview/PreviewComponent";
 import FileEditorComponent from "./FileEditor/FileEditorComponent";
+import { IProjectFile } from "../../../../shared/types";
 
-const ProjectViewScreen = () => {
+const ProjectViewScreen: React.FC = () => {
   const monaco = useMonaco();
+  const location = useLocation();
 
   const { projectName } = useParams();
   const dispatch = useDispatch();
 
-  const ownership: any = useCheckOwnershipQuery(projectName);
-  const projectData: any = useGetProjectQuery(projectName);
-
+  const ownership: { data?: { isOwner: boolean } } =
+    useCheckOwnershipQuery(projectName);
+  const projectData: {
+    data?: {
+      projectId: string;
+      projectName: string;
+      projectDescription: string;
+      projectFiles: IProjectFile[];
+    };
+  } = useGetProjectQuery(projectName);
   const [updateProject, { isLoading }] = useUpdateProjectMutation();
 
+  // Reference to the Monaco Editor instance, persists across re-renders, set in FileEditorComponent
+  const editorRef = useRef<editor.IStandaloneCodeEditor>(null);
+
+  // An array of filenames mapped to Monaco Models, persists across re-renders, created/updated in FileEditorComponent
+  const modelsRef = useRef<{ [filename: string]: editor.ITextModel }>({});
+
+  // Load from state
   const {
     paneState,
-    selectedFile,
     projectFiles,
     projectVersion,
     tabs,
@@ -57,44 +69,49 @@ const ProjectViewScreen = () => {
     unsavedFiles
   } = useSelector((state: RootState) => state.editor);
 
-  const userIsOwner = ownership.data?.isOwner || false;
+  // User owns this project
+  const userIsOwner: boolean = ownership.data?.isOwner || false;
 
-  useEffect(() => {
-    const initialUnsaved: { [filename: string]: boolean } = {};
-    projectFiles.forEach((f) => {
-      initialUnsaved[f.fileName] = false;
-    });
-    dispatch(setUnsavedFiles(initialUnsaved));
-    dispatch(syncTabsWithFiles());
-  }, [projectFiles.length, projectFiles.map((f) => f.fileName).join(",")]);
+  // State
+  const [readyToSetTab, setReadyToSetTab] = React.useState<Boolean>(false);
 
-  useEffect(() => {
-    if (!monaco || !editorRef.current) return;
-    if (activeTab && modelsRef.current[activeTab]) {
-      const model = modelsRef.current[activeTab];
-      if (editorRef.current.getModel() !== model) {
-        editorRef.current.setModel(model);
-        if (viewStatesRef.current[activeTab]) {
-          editorRef.current.restoreViewState(viewStatesRef.current[activeTab]);
+  // Sets the projectFiles in Store based on the Monaco Models
+  const setProjectFilesStoreFromMonacoModels: () => IProjectFile[] = () => {
+    const newProjectFiles: IProjectFile[] = projectFiles.map(
+      (file: IProjectFile) => {
+        const model: editor.ITextModel | undefined =
+          modelsRef.current[file.fileName];
+        if (model) {
+          const modelContent: string = model.getValue();
+          if (modelContent !== file.fileContent) {
+            return { ...file, fileContent: modelContent };
+          }
         }
-        editorRef.current.focus();
-        editorRef.current.__lastFile = activeTab;
-        const language = getMonacoLang(activeTab);
-        monaco.editor.setModelLanguage(model, language);
+        return file;
       }
-    }
-  }, [activeTab, selectedFile, monaco]);
+    );
 
-  const saveAllFiles = async () => {
+    return newProjectFiles;
+  };
+
+  // Saves all files, sends to DB
+  const saveAllFiles: () => Promise<void> = async () => {
+    if (!userIsOwner) return;
     try {
-      await updateProject({ projectFiles, projectName }).unwrap();
+      const syncedProjectFiles = setProjectFilesStoreFromMonacoModels();
+      await updateProject({
+        projectFiles: syncedProjectFiles,
+        projectName
+      }).unwrap();
+      dispatch(setProjectFiles(syncedProjectFiles));
       dispatch(setProjectVersion(projectVersion + 1));
       dispatch(setUnsavedFiles({}));
     } catch (err) {}
   };
 
-  const formatAndSaveAllFiles = async () => {
-    // maybe encapsulate this somewhere else
+  // Formats and then saves all files
+  const formatAndSaveAllFiles: () => Promise<void> = async () => {
+    if (!userIsOwner) return;
     const parserByFileExtension = new Map<
       string,
       { parser: string; plugins: any[] }
@@ -105,10 +122,11 @@ const ProjectViewScreen = () => {
     ]);
 
     try {
-      const formattedFiles = [];
+      const formattedFiles: IProjectFile[] = [];
       for (const file of projectFiles) {
-        const fileExtension = file.fileName.split(".").pop() || "";
-        const config = parserByFileExtension.get(fileExtension);
+        const fileExtension: string = file.fileName.split(".").pop() || "";
+        const config: { parser: string; plugins: any[] } | undefined =
+          parserByFileExtension.get(fileExtension);
         if (config) {
           const formatted = await prettier.format(file.fileContent, {
             parser: config.parser,
@@ -131,34 +149,6 @@ const ProjectViewScreen = () => {
 
       dispatch(setProjectFiles(formattedFiles));
 
-      // Update Monaco Editor models with formatted content
-      if (monaco) {
-        formattedFiles.forEach((file) => {
-          const model = modelsRef.current[file.fileName];
-          if (model && model.getValue() !== file.fileContent) {
-            // Save current view state before updating
-            if (activeTab === file.fileName && editorRef.current) {
-              viewStatesRef.current[file.fileName] =
-                editorRef.current.saveViewState();
-            }
-
-            // Update model content
-            model.setValue(file.fileContent);
-
-            // Restore view state if this is the active tab
-            if (
-              activeTab === file.fileName &&
-              editorRef.current &&
-              viewStatesRef.current[file.fileName]
-            ) {
-              editorRef.current.restoreViewState(
-                viewStatesRef.current[file.fileName]
-              );
-            }
-          }
-        });
-      }
-
       // Save to backend
       await updateProject({
         projectFiles: formattedFiles,
@@ -170,156 +160,33 @@ const ProjectViewScreen = () => {
       console.error(err);
     }
   };
-  const editorRef = useRef<any>(null);
-  const modelsRef = useRef<{ [filename: string]: any }>({});
-  const viewStatesRef = useRef<{ [filename: string]: any }>({});
 
+  // Dispose Monaco Models on unmount
   useEffect(() => {
     return () => {
       if (monaco) {
-        Object.values(modelsRef.current).forEach((model: any) => {
-          if (model && typeof model.dispose === "function") {
-            try {
-              model.dispose();
-            } catch (e) {}
-          }
-        });
+        monaco.editor.getModels().forEach(model => model.dispose());
         modelsRef.current = {};
-        viewStatesRef.current = {};
       }
     };
-  }, [monaco]); // idk what this is doing
+  }, [monaco, location]);
 
+  // Setup Ctrl+S to save all
   useEffect(() => {
-    if (!monaco) return;
-    Object.keys(modelsRef.current).forEach((fname) => {
-      if (!projectFiles.find((f) => f.fileName === fname)) {
-        modelsRef.current[fname]?.dispose();
-        delete modelsRef.current[fname];
-        delete viewStatesRef.current[fname];
-      }
-    }); // idk what this is doing
-    projectFiles.forEach((file) => {
-      if (!modelsRef.current[file.fileName]) {
-        const uri = monaco.Uri.parse(`file:///${file.fileName}`);
-        let model = monaco.editor.getModel(uri);
-        if (model) {
-          modelsRef.current[file.fileName] = model;
-        } else {
-          model = monaco.editor.createModel(
-            file.fileContent,
-            getMonacoLang(file.fileName),
-            uri
-          );
-          modelsRef.current[file.fileName] = model;
-        }
-        viewStatesRef.current[file.fileName] = null;
-      } else {
-        const model = modelsRef.current[file.fileName];
-        if (model && model.getValue() !== file.fileContent) {
-          model.setValue(file.fileContent);
-        }
-      }
-    });
-  }, [
-    monaco,
-    projectFiles.map((f) => f.fileName).join(","),
-    projectFiles.map((f) => f.fileContent).join("||")
-  ]); // idk
-
-  useEffect(() => {
-    if (!monaco || !editorRef.current) return;
-
-    const prev = editorRef.current.__lastFile;
-    if (prev && modelsRef.current[prev]) {
-      viewStatesRef.current[prev] = editorRef.current.saveViewState();
-    }
-
-    if (activeTab && modelsRef.current[activeTab]) {
-      const model = modelsRef.current[activeTab];
-      editorRef.current.setModel(model);
-      if (viewStatesRef.current[activeTab]) {
-        editorRef.current.restoreViewState(viewStatesRef.current[activeTab]);
-      }
-      editorRef.current.focus();
-      editorRef.current.__lastFile = activeTab;
-
-      const language = getMonacoLang(activeTab);
-      monaco.editor.setModelLanguage(model, language);
-    }
-  }, [activeTab, monaco]); // idk
-
-  useEffect(() => {
-    if (!monaco) return;
-
-    Object.values(modelsRef.current).forEach((model: any) => {
-      if (model.__listener) {
-        model.__listener.dispose();
-        model.__listener = null;
-      }
-    });
-
-    Object.entries(modelsRef.current).forEach(([fname, model]) => {
-      model.__listener = model.onDidChangeContent(() => {
-        const content = model.getValue();
-        const reduxFile = projectFiles.find((f) => f.fileName === fname);
-        if (reduxFile && reduxFile.fileContent !== content) {
-          if (fname === activeTab) {
-            const updatedFiles = projectFiles.map((f) =>
-              f.fileName === fname ? { ...f, fileContent: content } : f
-            );
-            dispatch(setProjectFiles(updatedFiles));
-            dispatch(setUnsavedFiles({
-              ...unsavedFiles,
-              [fname]: true
-            }));
-          }
-        }
-      });
-    }); // idk
-
-    return () => {
-      Object.values(modelsRef.current).forEach((model: any) => {
-        if (model.__listener) {
-          model.__listener.dispose();
-          model.__listener = null;
-        }
-      });
-    };
-  }, [monaco, activeTab, projectFiles.map((f) => f.fileName).join(",")]); // idk
-
-  const saveCurrentFile = async () => {
-    if (!activeTab) return;
-    const model = modelsRef.current[activeTab];
-    if (!model) return;
-    const content = model.getValue();
-    const updatedFiles = projectFiles.map((f) =>
-      f.fileName === activeTab ? { ...f, fileContent: content } : f
-    );
-    try {
-      await updateProject({ projectFiles: updatedFiles, projectName }).unwrap();
-      dispatch(setProjectVersion(projectVersion + 1));
-      dispatch(setUnsavedFiles({
-        ...unsavedFiles,
-        [activeTab]: false
-      }));
-    } catch (err) {
-      alert(err?.data?.message || err.error);
-    }
-  };
-
-  React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key.toLowerCase() === "s") {
+      if (userIsOwner && e.ctrlKey && e.key.toLowerCase() === "s") {
         e.preventDefault();
-        saveCurrentFile();
+        saveAllFiles();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
+
+    // remove listener on dismount
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [userIsOwner, projectFiles, projectName, projectVersion]);
 
-  React.useEffect(() => {
+  // Setup event to save all files at the window level (this is triggered from Header)
+  useEffect(() => {
     const handler = () => {
       if (userIsOwner) saveAllFiles();
     };
@@ -327,7 +194,8 @@ const ProjectViewScreen = () => {
     return () => window.removeEventListener("saveAllFiles", handler);
   }, [userIsOwner, projectFiles, projectName, projectVersion]);
 
-  React.useEffect(() => {
+  // Setup event to format and save at the window level (this is triggered from Header)
+  useEffect(() => {
     const handler = () => {
       formatAndSaveAllFiles();
     };
@@ -335,123 +203,83 @@ const ProjectViewScreen = () => {
     return () => window.removeEventListener("formatAndSaveAllFiles", handler);
   });
 
-  React.useEffect(() => {
+  // Update Store when userIsOwner changes
+  useEffect(() => {
     dispatch(setUserIsOwner(userIsOwner));
   }, [userIsOwner, dispatch]);
 
-  React.useEffect(() => {
+  // Update Store when isLoading changes
+  useEffect(() => {
     dispatch(setEditorIsLoading(isLoading));
   }, [isLoading, dispatch]);
 
-  const localStorageSelectedFile = `hytop_selectedFile_${projectName}`;
-  const localStorageTabs = `hytop_tabs_${projectName}`;
+  // localStorage keys for tab config
+  const localStorageSelectedFile: string = `hytop_selectedFile_${projectName}`;
+  const localStorageTabs: string = `hytop_tabs_${projectName}`;
 
-  const [readyToSetTab, setReadyToSetTab] = React.useState(false);
-
+  // This runs initially when new projectData is loaded from the query
   useEffect(() => {
-    if (projectData?.data) {
-      const currentReduxFiles = projectFiles;
-      const serverFiles = projectData.data.projectFiles;
-
-      if (currentReduxFiles.length === 0 || projectData.data.projectId !== projectName) {
-        dispatch(setProjectFiles(serverFiles));
-      } else {
-        const mergedFiles = serverFiles.map((serverFile) => {
-          const existingFile = currentReduxFiles.find(
-            (f) => f.fileName === serverFile.fileName
-          );
-          if (existingFile) {
-            const model = modelsRef.current[serverFile.fileName];
-            if (model && typeof model.getValue === "function") {
-              const modelContent = model.getValue();
-              if (modelContent && modelContent !== serverFile.fileContent) {
-                dispatch(setUnsavedFiles({
-                  ...unsavedFiles,
-                  [serverFile.fileName]: true
-                }));
-                return { ...serverFile, fileContent: modelContent };
-              }
-            }
-            if (existingFile.fileContent !== serverFile.fileContent) {
-              dispatch(setUnsavedFiles({
-                ...unsavedFiles,
-                [serverFile.fileName]: true
-              }));
-              return existingFile;
-            }
-          }
-          return serverFile;
-        });
-
-        const reduxOnlyFlies = currentReduxFiles.filter(
-          (reduxFile) =>
-            !serverFiles.find((sf) => sf.fileName === reduxFile.fileName)
-        );
-
-        dispatch(setProjectFiles([...mergedFiles, ...reduxOnlyFlies]));
-      }
-
-      dispatch(setProjectName(projectData.data.projectName));
-      dispatch(setProjectDescription(projectData.data.projectDescription));
+    if (!projectData.data) {
+      return;
     }
+
+    modelsRef.current = {};
+    dispatch(setProjectFiles(projectData.data.projectFiles));
+    setReadyToSetTab(true);
+    dispatch(setProjectName(projectData.data.projectName));
+    dispatch(setProjectDescription(projectData.data.projectDescription));
   }, [projectData?.data]);
 
-  useEffect(() => {
-    if (!monaco) return;
-    if (
-      projectFiles.length > 0 &&
-      projectFiles.every((f) => modelsRef.current[f.fileName])
-    ) {
-      setReadyToSetTab(true);
-    }
-  }, [
-    monaco,
-    projectFiles.map((f) => f.fileName).join(","),
-    Object.keys(modelsRef.current).join(",")
-  ]);
-
+  // Load Initial Tab Configuration from localStorage
   useEffect(() => {
     if (!readyToSetTab) return;
-    const savedTabs = (() => {
-      try {
-        return JSON.parse(localStorage.getItem(localStorageTabs) || "[]");
-      } catch {
-        return [];
-      }
-    })();
-    const savedSelectedFile = localStorage.getItem(localStorageSelectedFile);
-    const fileNames = projectFiles.map((f) => f.fileName);
-    const validTabs = savedTabs.filter((tab) => fileNames.includes(tab));
-    const validSelectedFile =
-      savedSelectedFile && fileNames.includes(savedSelectedFile)
-        ? savedSelectedFile
-        : validTabs.length > 0
-          ? validTabs[0]
-          : fileNames[0];
 
+    let savedTabs: string[] = [];
+    const locallyStoredTabs: string | null =
+      localStorage.getItem(localStorageTabs);
+    if (locallyStoredTabs) {
+      savedTabs = JSON.parse(locallyStoredTabs);
+    }
+
+    let selectedTab: string | null = localStorage.getItem(
+      localStorageSelectedFile
+    );
+    const fileNames: string[] = projectFiles.map((f) => f.fileName);
+    if (!fileNames.length) return;
+
+    if (!fileNames.includes(selectedTab)) {
+      selectedTab = fileNames[0];
+    }
+
+    const validTabs: string[] = savedTabs.filter((tab) =>
+      fileNames.includes(tab)
+    );
     if (validTabs.length > 0) {
       dispatch(setTabs(validTabs));
-      dispatch(setActiveTab(validSelectedFile));
-      dispatch(setSelectedFile(validSelectedFile));
-    } else if (fileNames.length > 0) {
+    } else {
       dispatch(setTabs([fileNames[0]]));
-      dispatch(setActiveTab(fileNames[0]));
-      dispatch(setSelectedFile(fileNames[0]));
     }
-    setReadyToSetTab(false);
-  }, [readyToSetTab]); // is this worth it?
 
+    dispatch(setActiveTab(selectedTab));
+    dispatch(setSelectedFile(selectedTab));
+    setReadyToSetTab(false);
+  }, [readyToSetTab]);
+
+  // active tab changed, persist to localStorage
   useEffect(() => {
     if (activeTab) {
       localStorage.setItem(localStorageSelectedFile, activeTab);
     }
-  }, [activeTab, localStorageSelectedFile]); // is this worth it?
+  }, [activeTab]);
+
+  // tabs changed, persist to localStorage
   useEffect(() => {
     if (tabs && tabs.length) {
       localStorage.setItem(localStorageTabs, JSON.stringify(tabs));
     }
-  }, [tabs, localStorageTabs]); // is it?
+  }, [tabs]);
 
+  // Handle situation where editor is open but no tab is selected
   useEffect(() => {
     if (
       paneState.open.editor &&
@@ -470,23 +298,21 @@ const ProjectViewScreen = () => {
     dispatch
   ]);
 
+  // Component
   return (
     <ProjectViewContainer>
       <SideBarComponent userIsOwner={userIsOwner} />
-      {paneState.open.editor && (
-        <FileEditorComponent
-          unsavedFiles={unsavedFiles}
-          setUnsavedFiles={setUnsavedFiles}
-          editorRef={editorRef}
-          modelsRef={modelsRef}
-          userIsOwner={userIsOwner} />
-      )}
-      {paneState.open.preview && (
-        <PreviewComponent
-          projectName={projectName}
-          projectVersion={projectVersion}
-        />
-      )}
+      <FileEditorComponent
+        showing={paneState.open.editor}
+        unsavedFiles={unsavedFiles}
+        editorRef={editorRef}
+        modelsRef={modelsRef}
+        userIsOwner={userIsOwner}
+      />
+      <PreviewComponent
+        projectName={projectName}
+        projectVersion={projectVersion}
+      />
     </ProjectViewContainer>
   );
 };

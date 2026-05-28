@@ -15,7 +15,8 @@ export const projectsApiSlice = apiSlice.injectEndpoints({
         url: `${PROJECTS_URL}/update`,
         method: "POST",
         body: data
-      })
+      }),
+      invalidatesTags: ["Project"]
     }),
     findProjectById: builder.query({
       query: (projectId) => ({
@@ -28,7 +29,8 @@ export const projectsApiSlice = apiSlice.injectEndpoints({
         url: `${PROJECTS_URL}/change-name/${data.projectId}`,
         method: "POST",
         body: data
-      })
+      }),
+      invalidatesTags: ["Project"]
     }),
     getProjectDescription: builder.query({
       query: (projectId) => ({
@@ -51,10 +53,13 @@ export const projectsApiSlice = apiSlice.injectEndpoints({
       })
     }),
     getProject: builder.query({
-      query: (projectName) => ({
-        url: `${PROJECTS_URL}/get/${projectName}`,
-        method: "GET"
-      })
+      query: (projectName) => {
+        return {
+          url: `${PROJECTS_URL}/get/${projectName}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Project"]
     }),
     getProjectId: builder.query({
       query: (projectId) => ({

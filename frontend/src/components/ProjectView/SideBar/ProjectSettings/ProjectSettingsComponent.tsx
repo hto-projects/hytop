@@ -1,5 +1,4 @@
-import {PiXBold } from "react-icons/pi";
-
+import { PiXBold } from "react-icons/pi";
 import { Paper, Group, Text, Box, Button, ActionIcon } from "@mantine/core";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -9,22 +8,26 @@ import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setProjectDescription, setProjectName } from "../../../../slices/editorSlice";
+import {
+  setProjectDescription,
+  setProjectName
+} from "../../../../slices/editorSlice";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
-import { useChangeProjectNameMutation, useGetProjectIdQuery, useChangeProjectDescriptionMutation } from "../../../../slices/projectsApiSlice";
+import {
+  useChangeProjectNameMutation,
+  useGetProjectIdQuery,
+  useChangeProjectDescriptionMutation
+} from "../../../../slices/projectsApiSlice";
 import { toast } from "react-toastify";
 import { RootState } from "../../../../store";
 
-const SettingsPane = ({
-  closePane
-}) => {
+const ProjectSettingsComponent = ({ closePane }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {
-    projectName,
-    projectDescription
-  } = useSelector((state: RootState) => state.editor);
+  const { projectName, projectDescription } = useSelector(
+    (state: RootState) => state.editor
+  );
 
   const projectID = useGetProjectIdQuery(projectName, {
     skip: !projectName
@@ -63,18 +66,18 @@ const SettingsPane = ({
   };
 
   const handleChangeProjectDescription = async (newDesc: string) => {
-      if (!projectId) return;
-      try {
-        const res = await changeProjectDescription({
-          projectId,
-          newProjectDescription: newDesc
-        }).unwrap();
-        dispatch(setProjectDescription(res.projectDescription));
-        toast.success("Successfully updated project description");
-      } catch (err) {
-        toast.error(err?.data?.message || "Failed to update project description");
-      }
-    };
+    if (!projectId) return;
+    try {
+      const res = await changeProjectDescription({
+        projectId,
+        newProjectDescription: newDesc
+      }).unwrap();
+      dispatch(setProjectDescription(res.projectDescription));
+      toast.success("Successfully updated project description");
+    } catch (err) {
+      toast.error(err?.data?.message || "Failed to update project description");
+    }
+  };
 
   const [nameInput, setNameInput] = useState(projectName);
   const [descInput, setDescInput] = useState(projectDescription);
@@ -219,4 +222,5 @@ const SettingsPane = ({
     </Paper>
   );
 };
-export default SettingsPane;
+
+export default ProjectSettingsComponent;
