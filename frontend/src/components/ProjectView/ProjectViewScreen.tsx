@@ -19,7 +19,8 @@ import {
   setUserIsOwner,
   setUnsavedFiles,
   setProjectName,
-  setProjectDescription
+  setProjectDescription,
+  setProjectOwnerUserName
 } from "../../slices/editorSlice";
 import { RootState } from "../../store";
 import SideBarComponent from "./SideBar/SideBarComponent";
@@ -48,6 +49,7 @@ const ProjectViewScreen: React.FC = () => {
       projectName: string;
       projectDescription: string;
       projectFiles: IProjectFile[];
+      ownerUsername: string;
     };
   } = useGetProjectQuery(projectName);
   const [updateProject, { isLoading }] = useUpdateProjectMutation();
@@ -225,6 +227,7 @@ const ProjectViewScreen: React.FC = () => {
 
     modelsRef.current = {};
     dispatch(setProjectFiles(projectData.data.projectFiles));
+    dispatch(setProjectOwnerUserName(projectData.data.ownerUsername));
     setReadyToSetTab(true);
     dispatch(setProjectName(projectData.data.projectName));
     dispatch(setProjectDescription(projectData.data.projectDescription));

@@ -21,6 +21,7 @@ interface EditorState {
   isLoading?: boolean;
   lastClosedTab?: string | null;
   projectName?: string;
+  projectOwnerUserName?: string;
   projectDescription?: string;
   unsavedFiles: { [filename: string]: boolean };
 }
@@ -57,6 +58,7 @@ const initialState: EditorState = {
   isLoading: false,
   lastClosedTab: null,
   projectName: "",
+  projectOwnerUserName: "",
   projectDescription: "",
   unsavedFiles: {}
 };
@@ -178,6 +180,9 @@ const editorSlice = createSlice({
     setProjectDescription(state, action: PayloadAction<string>) {
       state.projectDescription = action.payload;
     },
+    setProjectOwnerUserName(state, action: PayloadAction<string>) {
+      state.projectOwnerUserName = action.payload;
+    },
   }
 });
 
@@ -199,6 +204,7 @@ export const {
   setEditorIsLoading,
   deleteFile,
   setProjectName,
+  setProjectOwnerUserName,
   setProjectDescription,
   setUnsavedFiles
 } = editorSlice.actions;

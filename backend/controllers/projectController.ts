@@ -5,6 +5,7 @@ import generateToken from "../utils/generateToken";
 import fs from "fs";
 import { IProject, IProjectFile } from "../../shared/types";
 import slugify from "slugify";
+import User from "../models/userModel";
 
 const slugifyProjectName = (unsluggedName: string): string => {
   return slugify(unsluggedName, {
@@ -471,7 +472,8 @@ const getLatest = asyncHandler(async (req: any, res) => {
 // @access  Public
 const getProject = asyncHandler(async (req: any, res) => {
   const projectName: string = req.params.projectName;
-  let project: IProject;
+  let project: IProject & { ownerUsername?: string };
+  let ownerUsername: string;
 
   try {
     project = await findProject(projectName);
@@ -480,7 +482,19 @@ const getProject = asyncHandler(async (req: any, res) => {
     throw new Error(":( project not found :(");
   }
 
-  res.send(project);
+  try {
+    const owner = await User.findById(project.projectOwnerId);
+    ownerUsername = owner ? owner.username : "Anonymous User";
+  } catch (e) {
+    ownerUsername = "Anonymous User";
+  }
+
+  res.send({
+    projectName: project.projectName,
+    projectDescription: project.projectDescription,
+    projectFiles: project.projectFiles,
+    ownerUsername: ownerUsername
+  });
 });
 
 const getProjectId = asyncHandler(async (req: any, res) => {
