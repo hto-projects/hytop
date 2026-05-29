@@ -286,6 +286,7 @@ const findProjectById = async (projectId: string): Promise<IProject> => {
           fileContent: fileContent
         });
       }
+
       const starterProject: IProject = {
         projectName: projectId,
         projectDescription: "Starter project",
@@ -294,7 +295,6 @@ const findProjectById = async (projectId: string): Promise<IProject> => {
         projectStatus: "frozen",
         projectOwnerId: "0"
       };
-      console.log("Starter project created:", starterProject);
 
       return starterProject;
     } catch (e) {
@@ -409,7 +409,6 @@ const changeProjectDescription = asyncHandler(async (req: any, res) => {
 // @route   POST /api/projects/update
 // @access  NOT Public
 const updateProject = asyncHandler(async (req: any, res) => {
-  console.log("here");
   const user = req.user;
   const projectName: string = req.body.projectName;
   const projectFiles: IProjectFile[] = req.body.projectFiles;
@@ -453,9 +452,6 @@ const getProjectDescription = asyncHandler(async (req: any, res) => {
     res.status(404);
     throw new Error(":( project not found :(");
   }
-  console.log("Project ID:", projectId);
-  console.log("Project name:", project.projectName);
-  console.log("Project description:", project.projectDescription);
 
   res.json({
     projectDescription: project.projectDescription
