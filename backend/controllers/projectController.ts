@@ -104,7 +104,7 @@ const getUserId = (req, res) => {
 const createProject = asyncHandler(async (req: any, res) => {
   const userId = getUserId(req, res);
 
-  const { projectName, projectDescription } = req.body;
+  const { projectName, projectDescription, copyingProjectName } = req.body;
   const slugifiedProjectName = slugifyProjectName(projectName);
 
   const foundProject: IProject = await findProject(slugifiedProjectName);
@@ -115,6 +115,8 @@ const createProject = asyncHandler(async (req: any, res) => {
     );
   }
 
+  let existingProject: IProject = await findProject(copyingProjectName);
+
   const newProjectId: string = uuidv4();
 
   const starterProjectFiles: IProjectFile[] = [
@@ -124,10 +126,12 @@ const createProject = asyncHandler(async (req: any, res) => {
     }
   ];
 
+  const copyProjectFiles: IProjectFile[] | undefined = existingProject && existingProject.projectFiles;
+
   const projectToCreate: IProject = {
     projectName: slugifiedProjectName,
     projectDescription,
-    projectFiles: starterProjectFiles,
+    projectFiles: copyProjectFiles || starterProjectFiles,
     projectId: newProjectId,
     projectOwnerId: userId,
     projectStatus: "public"
