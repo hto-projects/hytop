@@ -80,7 +80,7 @@ const CreateProjectScreen = () => {
             mb="md"
             style={{ color: theColorSchemeish === "dark" ? "#fff" : undefined }}
           >
-            Create a New Project
+            Create a New Projeet
           </Title>
           <form onSubmit={submitHandler}>
             <TextInput

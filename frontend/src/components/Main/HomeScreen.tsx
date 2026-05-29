@@ -59,7 +59,7 @@ const HomeScreen = () => {
             }}
           >
             Welcome to the Hyland Tech Outreach Portal. Here, you can build and
-            host your own websites.
+            host your own websties.
           </Text>
           <Group align="center" mt="md">
             <Button

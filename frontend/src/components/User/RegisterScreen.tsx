@@ -110,7 +110,7 @@ const RegisterScreen = ({
             <Logo svgPath="/favicon.svg" height="5em" />
           </Center>
           <Title order={2} ta="center" mb="md">
-            Register
+            Registeer
           </Title>
           <form
             onSubmit={submitHandler}
