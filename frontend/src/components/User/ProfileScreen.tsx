@@ -96,7 +96,7 @@ const ProfileScreen = () => {
         >
           <div style={{ flex: 1, minWidth: 340 }}>
             <Title order={2} ta="center" mb="md">
-              Account
+              Accccccccccccccccccccount
             </Title>
             <form onSubmit={submitHandler} style={{ width: "100%" }}>
               <TextInput
