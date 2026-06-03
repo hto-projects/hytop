@@ -459,7 +459,7 @@ const getProjectDescription = asyncHandler(async (req: any, res) => {
 });
 
 const getLatest = asyncHandler(async (req: any, res) => {
-  const projects = await Project.find({}).sort({ updatedAt: -1 }).limit(40);
+  const projects = await Project.find({}).sort({ updatedAt: -1 }).limit(100);
   res.json(projects);
 });
 
