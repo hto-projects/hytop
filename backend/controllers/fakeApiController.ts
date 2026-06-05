@@ -97,11 +97,8 @@ const getBirds = asyncHandler(async (req: any, res) => {
 // @route   GET /hackyformer/high-scores
 // @access  Public
 const getHackyformerHighScores = asyncHandler(async (req: any, res) => {
-  console.log("hey");
   const { sessionName } = req.query || "";
-  console.log(sessionName);
   const highScores = await HfHighScore.find({ sessionName }).sort({ score: -1 });
-  console.log(highScores);
 
   res.send(highScores);
 });
@@ -110,9 +107,7 @@ const getHackyformerHighScores = asyncHandler(async (req: any, res) => {
 // @route   POST /hackyformer/high-scores
 // @access  Public
 const sendHackyformerHighScore = asyncHandler(async (req: any, res) => {
-  console.log("yo");
   const { initials, score, sessionName } = req.body;
-  console.log(initials, score, sessionName);
 
   const existingWithInitials = await HfHighScore.findOne({ initials, sessionName });
   if (existingWithInitials) {
