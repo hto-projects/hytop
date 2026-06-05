@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
+import path from "path";
 import connectDB from "./config/db";
 import cookieParser from "cookie-parser";
 import { notFound, errorHandler } from "./middleware/errorMiddleware";
@@ -30,6 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
+app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);

@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import HfHighScore from "../models/hfHighScoreModel";
 
 function shuffle(array) {
   let currentIndex = array.length;
@@ -92,4 +93,41 @@ const getBirds = asyncHandler(async (req: any, res) => {
   res.send(birds.slice(0, count));
 });
 
-export { getDogs, getCats, getBirds };
+// @desc    Access Hackyformer High Scores
+// @route   GET /hackyformer/high-scores
+// @access  Public
+const getHackyformerHighScores = asyncHandler(async (req: any, res) => {
+  console.log("hey");
+  const { sessionName } = req.query || "";
+  console.log(sessionName);
+  const highScores = await HfHighScore.find({ sessionName }).sort({ score: -1 });
+  console.log(highScores);
+
+  res.send(highScores);
+});
+
+// @desc    Send Hackyformer High Score
+// @route   POST /hackyformer/high-scores
+// @access  Public
+const sendHackyformerHighScore = asyncHandler(async (req: any, res) => {
+  console.log("yo");
+  const { initials, score, sessionName } = req.body;
+  console.log(initials, score, sessionName);
+
+  const existingWithInitials = await HfHighScore.findOne({ initials, sessionName });
+  if (existingWithInitials) {
+    if (score > existingWithInitials.score) {
+      existingWithInitials.score = score;
+      await existingWithInitials.save();
+    }
+
+    res.send(existingWithInitials);
+    return;
+  }
+
+  const newHighScore = new HfHighScore({ initials, score, sessionName });
+  await newHighScore.save();
+  res.send(newHighScore);
+});
+
+export { getDogs, getCats, getBirds, getHackyformerHighScores, sendHackyformerHighScore };
