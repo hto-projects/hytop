@@ -210,7 +210,7 @@ LoadingState.preload = function () {
 };
 
 LoadingState.create = function () {
-    this.game.state.start('play', true, false, {level: 2});
+    this.game.state.start('play', true, false, {level: 0});
 };
 
 

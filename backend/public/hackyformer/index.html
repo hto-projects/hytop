@@ -71,7 +71,7 @@
     <button onclick="sendVars()">Send Variables</button>
     <button onclick="setVarCom()" style="display: none">Set VarCom</button>
     <div id="hs-box">
-      <h1>High Scores</h1>
+      <h1>High Scores (Session: <a id="session-name"></a>)</h1>
       <div id="hs-table-box">
         <table id="hs-table"></table>
       </div>
@@ -79,4 +79,9 @@
   </div>
   <script src="varcontroller.js"></script>
   <script src="highscorecontroller.js"></script>
+  <script>
+    const sessionLink = document.getElementById('session-name');
+    sessionLink.textContent = window.sessionName;
+    sessionLink.href = window.location.origin + window.location.pathname + `?sessionName=${window.sessionName}`;
+  </script>
 </body>
