@@ -78,7 +78,7 @@ const AboutScreen = () => {
               Meet the Team...
             </Title>
             <Text>
-              Seen below (from left to right) is Layla, Fernando, and Morgan!
+              Seen below (from left to right) is Sathvik, Vinny, Brian, Sophie, and Rebecca!
             </Text>
           </Paper>
           <Image src={teamimage} width={600} height={400} radius="md"></Image>
