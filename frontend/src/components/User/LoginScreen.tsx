@@ -108,7 +108,7 @@ const LoginScreen = ({
               }}
             />
             <PasswordInput
-              label="Passworld"
+              label="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
