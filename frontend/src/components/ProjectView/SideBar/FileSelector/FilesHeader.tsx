@@ -50,7 +50,7 @@ const FilesHeader = ({
     >
       <Group gap={4}>
         {SIDEBAR_ICON_MAP["Files"]}
-        <Text size="sm">Flies</Text>
+        <Text size="sm">Files</Text>
       </Group>
       {enableAddFile && (
         <ActionIcon variant="subtle" onClick={toggleAddNewFile} size="sm">
