@@ -27,7 +27,7 @@ const HomeScreen = () => {
         my={80}
         style={{
           background: "transparent",
-          color: "#fff"
+          color: "#fff",
         }}
       >
         <Paper
@@ -40,7 +40,7 @@ const HomeScreen = () => {
             flexDirection: "column",
             alignItems: "center",
             background: "#23272A",
-            color: "#fff"
+            color: "#fff",
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
@@ -61,7 +61,7 @@ const HomeScreen = () => {
             Welcome to the Hyland Tech Outreach Portal. Here, you can build and
             host your own websites.
           </Text>
-          <Group align="center" mt="md">
+          <Group align="center" mt="md" wrap="nowrap">
             <Button
               size="md"
               radius="md"
