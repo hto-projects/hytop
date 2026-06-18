@@ -21,8 +21,11 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPaneState, setProjectVersion } from "../../../slices/editorSlice";
 import { RootState } from "../../../store";
+import { useForceUpdate } from "@mantine/hooks";
 
 const PreviewComponent = ({ projectName, projectVersion }) => {
+  const forceUpdate = useForceUpdate();
+
   const previewUrl = `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/`;
   const dispatch = useDispatch();
 
