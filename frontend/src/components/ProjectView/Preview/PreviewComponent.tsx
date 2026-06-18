@@ -14,14 +14,18 @@ import {
   PiLinkBold,
   PiArrowSquareOutBold,
   PiArrowsOutLineHorizontal,
-  PiArrowsInLineHorizontal
+  PiArrowsInLineHorizontal,
+  PiArrowsClockwiseBold
 } from "react-icons/pi";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPaneState } from "../../../slices/editorSlice";
+import { setPaneState, setProjectVersion } from "../../../slices/editorSlice";
 import { RootState } from "../../../store";
+import { useForceUpdate } from "@mantine/hooks";
 
 const PreviewComponent = ({ projectName, projectVersion }) => {
+  const forceUpdate = useForceUpdate();
+
   const previewUrl = `${import.meta.env.VITE_BACKEND_URL}/pf/${projectName}/`;
   const dispatch = useDispatch();
 
@@ -140,6 +144,16 @@ const PreviewComponent = ({ projectName, projectVersion }) => {
             >
               {previewUrl}
             </Text>
+            <Tooltip label="Refresh">
+              <ActionIcon
+                size="sm"
+                color={primaryColor}
+                onClick={() => dispatch(setProjectVersion(projectVersion + 1))}
+                variant="transparent"
+              >
+                <PiArrowsClockwiseBold />
+              </ActionIcon>
+            </Tooltip>
             <CopyButton value={previewUrl}>
               {({ copied, copy }) => (
                 <Tooltip label={copied ? "Copied" : "Copy URL"} position="top">
