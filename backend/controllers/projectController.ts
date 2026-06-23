@@ -121,7 +121,6 @@ const createProject = asyncHandler(async (req: any, res) => {
   }
 
   let existingProject: IProject = await findProject(copyingProjectName);
-  //rebecca
   const newProjectId: string = uuidv4();
 
   const starterProjectFiles: IProjectFile[] = [
