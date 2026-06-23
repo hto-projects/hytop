@@ -127,7 +127,8 @@ const createProject = asyncHandler(async (req: any, res) => {
     }
   ];
 
-  const copyProjectFiles: IProjectFile[] | undefined = existingProject && existingProject.projectFiles;
+  const copyProjectFiles: IProjectFile[] | undefined =
+    existingProject && existingProject.projectFiles;
 
   const projectToCreate: IProject = {
     projectName: slugifiedProjectName,

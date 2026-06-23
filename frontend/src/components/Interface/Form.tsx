@@ -21,8 +21,11 @@ interface FormProps {
 interface MantineFormProps {
   label: string;
   value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  validation?: (input: string) => Array<Condition>;
+  setValue: React.Dispatch<React.SetStateAction<string>>; // input field hook
+  validation?: (input: string) => Array<Condition>; // a function for conditions
+  required?: boolean;
+  showAfter?: boolean; // displays conditions onBlur
+  hideFulfilled?: boolean; // only shows errors
 }
 
 interface Condition {
@@ -30,12 +33,12 @@ interface Condition {
   fulfilled: boolean;
 }
 
-function emptyValidation(input: string): Array<Condition> {
+export function emptyValidation(input: string): Array<Condition> {
   return [];
 }
 
 // there are definitely better ways to make this, write a hashmap if you're upset
-function passwordValidation(input: string): Array<Condition> {
+export function passwordValidation(input: string): Array<Condition> {
   const conditions: Array<Condition> = [
     "Password must contain 8 characters",
     "Password must have a capital letter",
@@ -53,9 +56,9 @@ function passwordValidation(input: string): Array<Condition> {
   return conditions;
 }
 
-function usernameValidation(input: string): Array<Condition> {
+export function usernameValidation(input: string): Array<Condition> {
   const conditions: Array<Condition> = [
-    "Username may not start with a number",
+    "Username must start with a letter",
     "Username must only contain letters and numbers"
   ].map((description) => {
     return {
@@ -64,23 +67,56 @@ function usernameValidation(input: string): Array<Condition> {
     };
   });
 
-  if (input.length < 8) conditions[0]["fulfilled"] = true;
-  if (!/[A-Z]/.test(input)) conditions[1]["fulfilled"] = true;
-  if (!/[0-9]/.test(input)) conditions[2]["fulfilled"] = true;
+  if (!/^[a-z]/i.test(input)) conditions[0]["fulfilled"] = true;
+  if (!/^[a-z0-9]+$/i.test(input)) conditions[1]["fulfilled"] = true;
   return conditions;
+}
+
+export function emailValidation(input: string): Array<Condition> {
+  const conditions: Array<Condition> = ["Email is not valid"].map(
+    (description) => {
+      return {
+        description: description,
+        fulfilled: false
+      };
+    }
+  );
+
+  if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(input))
+    conditions[0]["fulfilled"] = true;
+  return conditions;
+}
+
+function showConditionals(
+  conditions: Array<Condition>,
+  hideFulfilled: boolean
+): Array<React.ReactNode> {
+  if (hideFulfilled) {
+    conditions = conditions.filter((condition) => condition.fulfilled);
+  }
+
+  return conditions.map(({ description, fulfilled }, i) => {
+    return (
+      <Text key={i} c={fulfilled ? "red" : "green"}>
+        {description}
+      </Text>
+    );
+  });
 }
 
 export function PasswordFormElement({
   label,
   value,
   setValue,
-  validation = emptyValidation
+  validation = emptyValidation,
+  required = false,
+  showAfter = false,
+  hideFulfilled = false
 }: MantineFormProps) {
   let [focused, setFocused] = useState(false);
-  let conditions: Array<React.ReactNode> = validation(value).map(
-    ({ description, fulfilled }) => {
-      return <Text c={fulfilled ? "red" : "green"}>{description}</Text>;
-    }
+  let conditions: Array<React.ReactNode> = showConditionals(
+    validation(value),
+    hideFulfilled
   );
 
   let colorScheme = React.useContext(ColorSchemeContext);
@@ -92,6 +128,7 @@ export function PasswordFormElement({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onChange={(e) => setValue(e.target.value)}
+        required={required}
         mb="md"
         size="md"
         style={{ width: "100%" }}
@@ -105,35 +142,38 @@ export function PasswordFormElement({
           }
         }}
       />
-      {focused && conditions}
+      {value !== "" && !(focused && showAfter) && conditions}
     </>
   );
 }
 
 // INPUT FORM
 
-export function InputFormElement({
+export function TextInputForm({
   label,
   value,
   setValue,
-  validation = emptyValidation
+  validation = emptyValidation,
+  required = false,
+  showAfter = false,
+  hideFulfilled = false
 }: MantineFormProps) {
   let [focused, setFocused] = useState(false);
-  let conditions: Array<React.ReactNode> = validation(value).map(
-    ({ description, fulfilled }) => {
-      return <Text c={fulfilled ? "red" : "green"}>{description}</Text>;
-    }
+  let conditions: Array<React.ReactNode> = showConditionals(
+    validation(value),
+    hideFulfilled
   );
 
   let colorScheme = React.useContext(ColorSchemeContext);
   return (
     <>
-      <PasswordInput
+      <TextInput
         label={label}
         value={value}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onChange={(e) => setValue(e.target.value)}
+        required={required}
         mb="md"
         size="md"
         style={{ width: "100%" }}
@@ -147,7 +187,7 @@ export function InputFormElement({
           }
         }}
       />
-      {focused && conditions}
+      {value !== "" && !(focused && showAfter) && conditions}
     </>
   );
 }

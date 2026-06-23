@@ -63,18 +63,18 @@ const RegisterScreen = ({
 
     // username validation (must be alphanumeric)
     // [a-z0-9] is the range of allowed values, + is for repetition, $ is for end, /i is for case insensitive
-    const regexFilter = /^[a-z0-9]+$/i;
-    if (!regexFilter.test(username)) {
-      toast.error("Username may only contain letters and numbers");
-      return;
-    }
-
-    // must start with a letter
-    const regexFirstLetter = /^[a-z]/i;
-    if (!regexFirstLetter.test(username)) {
-      toast.error("Username may not start with a number");
-      return;
-    }
+    // const regexFilter = /^[a-z0-9]+$/i;
+    // if (!regexFilter.test(username)) {
+    //   toast.error("Username may only contain letters and numbers");
+    //   return;
+    // }
+    //
+    // // must start with a letter
+    // const regexFirstLetter = /^[a-z]/i;
+    // if (!regexFirstLetter.test(username)) {
+    //   toast.error("Username may not start with a number");
+    //   return;
+    // }
 
     // MOVING TO FORM COMPONENTS
     // if (password.length < 8) {
