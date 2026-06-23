@@ -48,10 +48,6 @@ const RegisterScreen = ({
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    // TODO: this should be moved out of submit handler and instead validated on
-    // change so the user gets immediate feedback on their input
-    // it may also make sense to create a validation function, and pass that as a prop into each field instead of this, cuase this sucks
-
     const nameFilter = /^[a-z]+$/i;
     if (!nameFilter.test(name)) {
       toast.error("Name may only contain letters");
@@ -80,36 +76,38 @@ const RegisterScreen = ({
       return;
     }
 
-    if (password.length < 8) {
-      toast.error("Password needs to be 8 characters");
-      return;
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      toast.error("Password needs to have a capital letter");
-      return;
-    } //capital letter
-
-    if (!/[0-9]/.test(password)) {
-      toast.error("Password needs to conatin atleast 1 number");
-      return;
-    } //must contain number
+    // MOVING TO FORM COMPONENTS
+    // if (password.length < 8) {
+    //   toast.error("Password needs to be 8 characters");
+    //   return;
+    // }
+    //
+    // if (!/[A-Z]/.test(password)) {
+    //   toast.error("Password needs to have a capital letter");
+    //   return;
+    // } //capital letter
+    //
+    // if (!/[0-9]/.test(password)) {
+    //   toast.error("Password needs to conatin atleast 1 number");
+    //   return;
+    // } //must contain number
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
-    } else {
-      try {
-        const res = await register({
-          name,
-          email,
-          username,
-          password
-        }).unwrap();
-        dispatch(setCredentials({ ...res }));
-        navigate("/");
-      } catch (err) {
-        toast.error(err?.data?.message || err.error);
-      }
+      return;
+    }
+
+    try {
+      const res = await register({
+        name,
+        email,
+        username,
+        password
+      }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate("/");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
     }
   };
 
