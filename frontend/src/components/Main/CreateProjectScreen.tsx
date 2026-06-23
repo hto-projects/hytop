@@ -20,6 +20,8 @@ import Logo from "../Interface/Logo";
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
+  //rebecca 
+  const [copyingProjectName, setCopyingProjectName] = useState("");
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
 
@@ -30,7 +32,10 @@ const CreateProjectScreen = () => {
     try {
       const res = await createProject({
         projectName,
-        projectDescription
+        projectDescription,
+        //rebecca
+        copyingProjectName
+
       }).unwrap();
       toast.success(res.message);
       window.open(`/e/${res.projectName}`, "_blank");
@@ -101,6 +106,33 @@ const CreateProjectScreen = () => {
                 }
               }}
             />
+            
+             <TextInput
+             //// beginning work
+            /*
+            It should be stored with a new state, copyingProjectName. 
+            It should not be required. When the form is submit, 
+            it should send along copyingProjectName to the 
+            createProject call along with projectName and 
+            projectDescription.
+            */
+              label="Copying Project"
+              description="Enter the name of an existing project to copy"
+              value={copyingProjectName}
+              onChange={(e) => setCopyingProjectName(e.target.value)}
+              mb="md"
+              size="md"
+              autoFocus
+              styles={{
+                input: {
+                  color: theColorSchemeish === "dark" ? "#fff" : undefined
+                },
+                label: {
+                  color: theColorSchemeish === "dark" ? "#fff" : undefined
+                }
+              }}
+            />
+            
             <Textarea
               label="Project Description"
               value={projectDescription}
