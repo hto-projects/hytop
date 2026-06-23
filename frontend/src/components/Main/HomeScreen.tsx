@@ -19,7 +19,7 @@ const HomeScreen = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        
+        overflow: "auto"
       }}
     >
       <Container
