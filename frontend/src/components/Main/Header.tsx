@@ -48,7 +48,6 @@ const Header = () => {
   const forkProject = () => {
     window.location.href = `/c/${routeProjectName}`;
   };
-
   return (
     <Group
       gap="xs"
@@ -92,7 +91,7 @@ const Header = () => {
                 alignItems: "center"
               }}
             >
-              {projectName || "HyTOP"}
+              {projectName || "HyTOP"} by {userInfo ? userInfo.username: "Guest"}
               {userIsOwner}
             </Text>
           </Menu.Target>
