@@ -48,7 +48,6 @@ const Header = () => {
   const forkProject = () => {
     window.location.href = `/c/${routeProjectName}`;
   };
-console.log(userInfo)
   return (
     <Group
       gap="xs"
