@@ -8,6 +8,7 @@ import {
   setProjectFiles,
   setProjectVersion,
   setSelectedFile,
+  openTab,
   setTabs,
   setUnsavedFiles
 } from "../../../../slices/editorSlice";
@@ -101,8 +102,7 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
       dispatch(setUnsavedFiles({}));
       dispatch(setProjectFiles(updatedFiles));
     } catch (err) {}
-    dispatch(setSelectedFile(newFileName));
-    dispatch(setActiveTab(newFileName));
+    dispatch(openTab(newFileName))
   };
 
   return (
