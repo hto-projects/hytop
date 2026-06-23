@@ -48,6 +48,7 @@ export default function Debug() {
             value={password}
             setValue={setPassword}
             validation={passwordValidation}
+            hideCompleted
           />
           <PasswordFormElement
             label="Confirm Password"
