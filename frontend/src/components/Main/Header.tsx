@@ -6,7 +6,7 @@ import {
   Loader,
   useComputedColorScheme,
   Button,
-  Menu,
+  Menu
 } from "@mantine/core";
 import {
   PiFloppyDiskBold,
@@ -48,7 +48,6 @@ const Header = () => {
   const forkProject = () => {
     window.location.href = `/c/${routeProjectName}`;
   };
-
   return (
     <Group
       gap="xs"
@@ -92,7 +91,7 @@ const Header = () => {
                 alignItems: "center"
               }}
             >
-              {projectName || "HyTOP"}
+              {projectName || "HyTOP"} by {userInfo ? userInfo.username: "Guest"}
               {userIsOwner}
             </Text>
           </Menu.Target>
@@ -104,54 +103,53 @@ const Header = () => {
         </Text>
       )}
       {isEditor && (
-        <Group gap={0}>
-          {userIsOwner ? (
-            <Tooltip label="Save All">
-              <ActionIcon
-                onClick={saveAllFiles}
-                color={primaryColor}
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiFloppyDiskBold />
-              </ActionIcon>
-            </Tooltip>
-          ) : (
-            <Tooltip label="Fork Project">
-              <ActionIcon
-                onClick={forkProject}
-                color="green"
-                variant="light"
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiGitForkBold />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
-      )}
-      {isEditor && (
-        <Group gap={0}>
-          {userIsOwner ? (
-            <Tooltip label="Format with Prettier and Save All">
-              <ActionIcon
-                onClick={formatAndSaveAllFiles}
-                color={primaryColor}
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiMagicWandBold />
-              </ActionIcon>
-            </Tooltip>
-          ) : null}
-        </Group>
+        <>
+          <Group gap={0}>
+            {userIsOwner && (
+              <Tooltip label="Save All">
+                <ActionIcon
+                  onClick={saveAllFiles}
+                  color={primaryColor}
+                  size="md"
+                  style={{
+                    color: theColorScheme === "dark" ? "#fff" : undefined
+                  }}
+                >
+                  <PiFloppyDiskBold />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
+          <Group gap={0}>
+            {userIsOwner ? (
+              <Tooltip label="Format with Prettier and Save All">
+                <ActionIcon
+                  onClick={formatAndSaveAllFiles}
+                  color={primaryColor}
+                  size="md"
+                  style={{
+                    color: theColorScheme === "dark" ? "#fff" : undefined
+                  }}
+                >
+                  <PiMagicWandBold />
+                </ActionIcon>
+              </Tooltip>
+            ) : null}
+          </Group>
+          <Tooltip label="Fork Project">
+            <ActionIcon
+              onClick={forkProject}
+              color="green"
+              variant="light"
+              size="md"
+              style={{
+                color: theColorScheme === "dark" ? "#fff" : undefined
+              }}
+            >
+              <PiGitForkBold />
+            </ActionIcon>
+          </Tooltip>
+        </>
       )}
       <Group gap={0} ml="auto">
         {userInfo ? (
