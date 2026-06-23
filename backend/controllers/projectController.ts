@@ -23,6 +23,10 @@ const findProject = async (projectName: string): Promise<IProject> => {
       fs.constants.R_OK
     );
     starterExists = true;
+
+    if (projectName === "") {
+      starterExists = false;
+    }
   } catch (e) {
     starterExists = false;
   }
@@ -117,7 +121,6 @@ const createProject = asyncHandler(async (req: any, res) => {
   }
 
   let existingProject: IProject = await findProject(copyingProjectName);
-
   const newProjectId: string = uuidv4();
 
   const starterProjectFiles: IProjectFile[] = [
@@ -127,7 +130,8 @@ const createProject = asyncHandler(async (req: any, res) => {
     }
   ];
 
-  const copyProjectFiles: IProjectFile[] | undefined = existingProject && existingProject.projectFiles;
+  const copyProjectFiles: IProjectFile[] | undefined =
+    existingProject && existingProject.projectFiles;
 
   const projectToCreate: IProject = {
     projectName: slugifiedProjectName,
