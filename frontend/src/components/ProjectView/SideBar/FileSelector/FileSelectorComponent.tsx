@@ -73,15 +73,20 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
   };
 
   const handleDeleteFile = async (fileName) => {
-    dispatch({
-      type: "editor/deleteFile",
-      payload: fileName
-    });
     const updatedFiles = projectFiles.filter((f) => f.fileName !== fileName);
-    await updateProject({
-      projectFiles: updatedFiles,
-      projectName
-    }).unwrap();
+
+    try {
+      await updateProject({
+        projectFiles: updatedFiles,
+        projectName
+      }).unwrap();
+
+      dispatch(setProjectVersion(projectVersion + 1));
+      dispatch(setUnsavedFiles({}));
+      dispatch(setProjectFiles(updatedFiles));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const submitNewFile = async (newFileName) => {
