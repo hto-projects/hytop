@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useUpdateProjectMutation } from "../../../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../../../store";
+import {toast} from "react-toastify";
 import {
   setActiveTab,
   setProjectFiles,
@@ -85,7 +86,7 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
       dispatch(setUnsavedFiles({}));
       dispatch(setProjectFiles(updatedFiles));
     } catch (err) {
-      console.error(err);
+      toast.error("Error saving project, please manually save.")
     }
   };
 
