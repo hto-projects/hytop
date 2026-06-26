@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useUpdateProjectMutation } from "../../../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../../../store";
+import {toast} from "react-toastify";
 import {
   setActiveTab,
   setProjectFiles,
@@ -73,15 +74,20 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
   };
 
   const handleDeleteFile = async (fileName) => {
-    dispatch({
-      type: "editor/deleteFile",
-      payload: fileName
-    });
     const updatedFiles = projectFiles.filter((f) => f.fileName !== fileName);
-    await updateProject({
-      projectFiles: updatedFiles,
-      projectName
-    }).unwrap();
+
+    try {
+      await updateProject({
+        projectFiles: updatedFiles,
+        projectName
+      }).unwrap();
+
+      dispatch(setProjectVersion(projectVersion + 1));
+      dispatch(setUnsavedFiles({}));
+      dispatch(setProjectFiles(updatedFiles));
+    } catch (err) {
+      toast.error("Error saving project, please manually save.")
+    }
   };
 
   const submitNewFile = async (newFileName) => {
