@@ -6,6 +6,7 @@ interface ProjectListProps {
   projects: IProject[];
   loading?: boolean;
   error?: any;
+  refetch?: () => void;
 }
 
 const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
@@ -48,6 +49,7 @@ const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
             withBorder
             component={Link}
             to={`/e/${encodeURIComponent(proj.projectName)}`}
+            onClick={() => refetch?.()}
             style={{
               minWidth: 200,
               maxWidth: 260,

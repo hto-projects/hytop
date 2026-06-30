@@ -29,7 +29,8 @@ const ProfileScreen = () => {
   const {
     data: userProjects = [],
     isLoading: projectsLoading,
-    error: projectsError
+    error: projectsError,
+    refetch,
   } = useGetUserProjectsQuery(userId, { skip: !userId });
 
   const [email, setEmail] = useState(userInfo ? userInfo.email : "");
@@ -206,6 +207,7 @@ const ProfileScreen = () => {
               projects={userProjects}
               loading={projectsLoading}
               error={projectsError}
+              refetch={refetch}
             />
           </div>
 
