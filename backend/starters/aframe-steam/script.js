@@ -28,15 +28,6 @@ function setEnvVar(scene, envVarString) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const a = document.createElement("a");
-    a.href = "https://hytop.onrender.com/forks-of/aframe-steam";
-    a.textContent = "View All";
-    a.style.position = "absolute";
-    a.style.top = "0";
-    a.style.right = "0";
-    a.style.zIndex = "1";
-    document.body.appendChild(a);
-
     const scene = document.querySelector('a-scene');
     if (!scene) {
         return;
