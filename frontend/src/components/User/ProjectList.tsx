@@ -48,6 +48,7 @@ const ProjectList = ({ projects, loading, error, edit = true }: ProjectListProps
             p="md"
             component={Link}
             to={`${startUrl}${encodeURIComponent(proj.projectName)}/`}
+            target="_blank"
             style={{
               minWidth: 200,
               maxWidth: 260,
