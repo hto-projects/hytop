@@ -1,4 +1,4 @@
-import { Paper, Text, useComputedColorScheme } from "@mantine/core";
+import { Paper, Text } from "@mantine/core";
 import { IProject } from "../../../../shared/types";
 import { Link } from "react-router-dom";
 
@@ -6,10 +6,11 @@ interface ProjectListProps {
   projects: IProject[];
   loading?: boolean;
   error?: any;
+  edit?: boolean;
 }
 
-const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
-  const theColorScheme = useComputedColorScheme("light");
+const ProjectList = ({ projects, loading, error, edit = true }: ProjectListProps) => {
+  const startUrl = edit ? "/e/" : `${import.meta.env.VITE_BACKEND_URL}/pf/`;
 
   if (loading) {
     return <div>Loading projects...</div>;
@@ -34,7 +35,7 @@ const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
         display: "flex",
         flexWrap: "wrap",
         gap: 16,
-        overflowY: "scroll",
+        overflowY: "auto",
         maxHeight: "50vh"
       }}
     >
@@ -45,27 +46,14 @@ const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
             key={proj.projectId}
             shadow="xs"
             p="md"
-            withBorder
             component={Link}
-            to={`/e/${encodeURIComponent(proj.projectName)}`}
+            to={`${startUrl}${encodeURIComponent(proj.projectName)}`}
             style={{
               minWidth: 200,
               maxWidth: 260,
               cursor: "pointer",
               textDecoration: "none",
-              background: theColorScheme === "dark" ? "#2E2E2E" : "#fff",
               transition: "all 0.2s ease"
-            }}
-            styles={{
-              root: {
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                  boxShadow:
-                    theColorScheme === "dark"
-                      ? "0 4px 12px rgba(0,0,0,0.3)"
-                      : "0 4px 12px rgba(0,0,0,0.1)"
-                }
-              }
             }}
           >
             <Text
@@ -73,7 +61,7 @@ const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
               fw={700}
               mb={4}
               style={{
-                color: theColorScheme === "dark" ? "#fff" : "#000"
+                color: "#fff"
               }}
             >
               {proj.projectName}
@@ -82,7 +70,7 @@ const ProjectList = ({ projects, loading, error }: ProjectListProps) => {
               <Text
                 size="sm"
                 style={{
-                  color: theColorScheme === "dark" ? "#bbb" : "#666"
+                  color: "#bbb"
                 }}
               >
                 {proj.projectDescription}

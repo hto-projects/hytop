@@ -225,7 +225,8 @@ const copyProject = asyncHandler(async (req: any, res) => {
       projectDescription: existingProject.projectDescription,
       projectFiles: existingProject.projectFiles,
       projectStatus: "public",
-      projectId: newProjectId
+      projectId: newProjectId,
+      copiedFromId: existingProject.projectId
     };
 
     const createdProject = await Project.create(newProjectToCreate);
@@ -239,6 +240,30 @@ const copyProject = asyncHandler(async (req: any, res) => {
   } catch (error) {
     res.status(400);
     throw new Error(`Error creating project: ${error}`);
+  }
+});
+
+export const getForksOfProject = asyncHandler(async (req: any, res) => {
+  const projectName: string = req.params.projectName;
+  let projectId: string;
+
+  try {
+    const existingProject: IProject = await findProject(projectName);
+    if (!existingProject) {
+      res.status(400);
+      throw new Error(":( project not found :(");
+    }
+
+    projectId = existingProject.projectId;
+
+    const forks: IProject[] = await Project.find({
+      copiedFromId: projectId
+    });
+
+    res.json(forks);
+  } catch (error) {
+    res.status(400);
+    throw new Error(`Error fetching forks: ${error}`);
   }
 });
 

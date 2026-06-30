@@ -11,7 +11,8 @@ import {
   getProjectId,
   getLatest,
   getProjectDescription,
-  allProjects
+  allProjects,
+  getForksOfProject
 } from "../controllers/projectController";
 import { protectAllowAnon } from "../middleware/authMiddleware";
 
@@ -33,5 +34,6 @@ router.get("/get-description/:projectId", getProjectDescription);
 router.get("/get/:projectName", getProject);
 router.get("/check-ownership/:projectName", protectAllowAnon, checkOwnership);
 router.get("/all", allProjects);
+router.get("/forks-of/:projectName", getForksOfProject);
 
 export default router;
