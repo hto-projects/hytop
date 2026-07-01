@@ -7,8 +7,10 @@ import {
   Box
 } from "@mantine/core";
 import Logo from "../Interface/Logo";
+import { useSelector } from "react-redux";
 
 const HomeScreen = () => {
+  const { userInfo } = useSelector((state: any) => state.auth);
   return (
     <Box
       style={{
@@ -23,7 +25,7 @@ const HomeScreen = () => {
       }}
     >
       <Container
-        size={600}
+        size={900}
         my={80}
         style={{
           background: "transparent",
@@ -39,7 +41,7 @@ const HomeScreen = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: "#23272A",
+            background: "#23272a",
             color: "#fff",
           }}
         >
@@ -76,7 +78,7 @@ const HomeScreen = () => {
             >
               Create Project
             </Button>
-            <Button
+            {!userInfo&&<Button
               size="md"
               radius="md"
               component="a"
@@ -89,7 +91,7 @@ const HomeScreen = () => {
               }}
             >
               Sign up
-            </Button>
+            </Button>}
             <Button
               size="md"
               radius="md"
@@ -102,7 +104,23 @@ const HomeScreen = () => {
                 paddingRight: 32
               }}
             >
+
               About Page
+            </Button>
+            <Button
+              size="md"
+              radius="md"
+              component="a"
+              href="/latest-updates"
+              style={{
+                fontWeight: 600,
+                fontSize: 18,
+                paddingLeft: 32,
+                paddingRight: 32
+              }}
+            >
+              
+              Latest Update Page
             </Button>
           </Group>
         </Paper>

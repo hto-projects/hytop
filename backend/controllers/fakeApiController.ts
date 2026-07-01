@@ -69,7 +69,7 @@ const cats = [
 // @desc    Get dogs
 // @route   GET /dogs?count=1
 // @access  Public
-const getDogs = asyncHandler(async (req: any, res) => {
+export const getDogs = asyncHandler(async (req: any, res) => {
   const count = parseInt(req.query.count) || 1;
   shuffle(dogs);
   res.send(dogs.slice(0, count));
@@ -78,7 +78,7 @@ const getDogs = asyncHandler(async (req: any, res) => {
 // @desc    Get cats
 // @route   GET /cats?count=1
 // @access  Public
-const getCats = asyncHandler(async (req: any, res) => {
+export const getCats = asyncHandler(async (req: any, res) => {
   const count = parseInt(req.query.count) || 1;
   shuffle(cats);
   res.send(cats.slice(0, count));
@@ -87,7 +87,7 @@ const getCats = asyncHandler(async (req: any, res) => {
 // @desc    Get birds
 // @route   GET /birds?count=1
 // @access  Public
-const getBirds = asyncHandler(async (req: any, res) => {
+export const getBirds = asyncHandler(async (req: any, res) => {
   const count = parseInt(req.query.count) || 1;
   shuffle(birds);
   res.send(birds.slice(0, count));
@@ -96,7 +96,7 @@ const getBirds = asyncHandler(async (req: any, res) => {
 // @desc    Access Hackyformer High Scores
 // @route   GET /hackyformer/high-scores
 // @access  Public
-const getHackyformerHighScores = asyncHandler(async (req: any, res) => {
+export const getHackyformerHighScores = asyncHandler(async (req: any, res) => {
   const { sessionName } = req.query || "";
   const highScores = await HfHighScore.find({ sessionName }).sort({ score: -1 });
 
@@ -106,7 +106,7 @@ const getHackyformerHighScores = asyncHandler(async (req: any, res) => {
 // @desc    Send Hackyformer High Score
 // @route   POST /hackyformer/high-scores
 // @access  Public
-const sendHackyformerHighScore = asyncHandler(async (req: any, res) => {
+export const sendHackyformerHighScore = asyncHandler(async (req: any, res) => {
   const { initials, score, sessionName } = req.body;
 
   const existingWithInitials = await HfHighScore.findOne({ initials, sessionName });
@@ -124,5 +124,3 @@ const sendHackyformerHighScore = asyncHandler(async (req: any, res) => {
   await newHighScore.save();
   res.send(newHighScore);
 });
-
-export { getDogs, getCats, getBirds, getHackyformerHighScores, sendHackyformerHighScore };

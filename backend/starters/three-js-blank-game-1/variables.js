@@ -1,33 +1,33 @@
-let SKY_COLOR = "white";
+let SKY_COLOR = "skyblue";
 
-let PLAYER_COLOR = "white";
-let ENEMY_COLOR = "white";
-let GROUND_BASE_COLOR = "white";
-let OCEAN_COLOR = "white";
-let PLATFORM_COLOR = "white";
-let WIN_BOX_COLOR = "white";
+let PLAYER_COLOR = "limegreen";
+let ENEMY_COLOR = "red";
+let GROUND_BASE_COLOR = "green";
+let OCEAN_COLOR = "blue";
+let PLATFORM_COLOR = "tan";
+let WIN_BOX_COLOR = "gold";
 
-let COIN_COLOR = "white";
-let COIN_VALUE = 0;
-let COIN_SPIN = 0;
-
-let JUMP_SPEED = 1;
-let ALLOW_REJUMP = false;
-let PLAYER_SPEED = 1;
-let ENEMY_SPEED = 1;
-let GRAVITY = 1;
+let COIN_COLOR = "orange";
+let COIN_VALUE = 100;
+let COIN_SPIN = 1;
 
 let TIME_LIMIT = 100;
+
+let JUMP_SPEED = 10;
+let ALLOW_REJUMP = false;
+let PLAYER_SPEED = 10;
+let ENEMY_SPEED = 5;
+let GRAVITY = 10;
 
 let SUN_COLOR = "white";
 let SUN_BRIGHTNESS = 20;
 
 let GROUND_SPOT_R_START = 0;
-let GROUND_SPOT_R_VARIANCE = 255;
-let GROUND_SPOT_G_START = 0;
-let GROUND_SPOT_G_VARIANCE = 255;
+let GROUND_SPOT_R_VARIANCE = 0;
+let GROUND_SPOT_G_START = 120;
+let GROUND_SPOT_G_VARIANCE = 120;
 let GROUND_SPOT_B_START = 0;
-let GROUND_SPOT_B_VARIANCE = 255;
+let GROUND_SPOT_B_VARIANCE = 0;
 
 let GROUND_SIZE = 100;
 

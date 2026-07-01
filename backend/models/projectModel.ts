@@ -26,6 +26,10 @@ const projectSchema = new mongoose.Schema(
       enum: ["public", "private", "deleted", "frozen"],
       default: "public"
     },
+    copiedFromId: {
+      type: String,
+      required: false
+    },
     projectFiles: [
       {
         fileName: {

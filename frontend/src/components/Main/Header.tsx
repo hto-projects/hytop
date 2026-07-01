@@ -6,7 +6,7 @@ import {
   Loader,
   useComputedColorScheme,
   Button,
-  Menu,
+  Menu
 } from "@mantine/core";
 import {
   PiFloppyDiskBold,
@@ -23,9 +23,8 @@ const Header = () => {
   const theColorScheme = useComputedColorScheme("light");
   const { userInfo } = useSelector((state: any) => state.auth);
 
-  const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
-  const isEditor = !!match;
-  let routeProjectName = match ? match[2] : "";
+  const isEditor = location.pathname.startsWith("/e/");
+  let routeProjectName = isEditor ? location.pathname.substring(3) : "";
   routeProjectName = decodeURIComponent(routeProjectName);
 
   const userIsOwner = useSelector((state: any) =>
@@ -48,7 +47,6 @@ const Header = () => {
   const forkProject = () => {
     window.location.href = `/c/${routeProjectName}`;
   };
-
   return (
     <Group
       gap="xs"
@@ -93,7 +91,6 @@ const Header = () => {
               }}
             >
               {projectName || "HyTOP"}
-              {userIsOwner}
             </Text>
           </Menu.Target>
         </Menu>
@@ -104,54 +101,53 @@ const Header = () => {
         </Text>
       )}
       {isEditor && (
-        <Group gap={0}>
-          {userIsOwner ? (
-            <Tooltip label="Save All">
-              <ActionIcon
-                onClick={saveAllFiles}
-                color={primaryColor}
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiFloppyDiskBold />
-              </ActionIcon>
-            </Tooltip>
-          ) : (
-            <Tooltip label="Fork Project">
-              <ActionIcon
-                onClick={forkProject}
-                color="green"
-                variant="light"
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiGitForkBold />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
-      )}
-      {isEditor && (
-        <Group gap={0}>
-          {userIsOwner ? (
-            <Tooltip label="Format with Prettier and Save All">
-              <ActionIcon
-                onClick={formatAndSaveAllFiles}
-                color={primaryColor}
-                size="md"
-                style={{
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }}
-              >
-                <PiMagicWandBold />
-              </ActionIcon>
-            </Tooltip>
-          ) : null}
-        </Group>
+        <>
+          <Group gap={0}>
+            {userIsOwner && (
+              <Tooltip label="Save All">
+                <ActionIcon
+                  onClick={saveAllFiles}
+                  color={primaryColor}
+                  size="md"
+                  style={{
+                    color: theColorScheme === "dark" ? "#fff" : undefined
+                  }}
+                >
+                  <PiFloppyDiskBold />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
+          <Group gap={0}>
+            {userIsOwner ? (
+              <Tooltip label="Format with Prettier and Save All">
+                <ActionIcon
+                  onClick={formatAndSaveAllFiles}
+                  color={primaryColor}
+                  size="md"
+                  style={{
+                    color: theColorScheme === "dark" ? "#fff" : undefined
+                  }}
+                >
+                  <PiMagicWandBold />
+                </ActionIcon>
+              </Tooltip>
+            ) : null}
+          </Group>
+          <Tooltip label="Fork Project">
+            <ActionIcon
+              onClick={forkProject}
+              color="green"
+              variant="light"
+              size="md"
+              style={{
+                color: theColorScheme === "dark" ? "#fff" : undefined
+              }}
+            >
+              <PiGitForkBold />
+            </ActionIcon>
+          </Tooltip>
+        </>
       )}
       <Group gap={0} ml="auto">
         {userInfo ? (
