@@ -7,7 +7,6 @@ interface ProjectListProps {
   loading?: boolean;
   error?: any;
   edit?: boolean;
-  refetch?: () => void;
 }
 
 const ProjectList = ({ projects, loading, error, edit = true }: ProjectListProps) => {
@@ -50,13 +49,14 @@ const ProjectList = ({ projects, loading, error, edit = true }: ProjectListProps
             component={Link}
             to={`${startUrl}${encodeURIComponent(proj.projectName)}/`}
             target="_blank"
-            onClick={() => refetch?.()}
             style={{
               minWidth: 200,
               maxWidth: 260,
               cursor: "pointer",
               textDecoration: "none",
-              transition: "all 0.2s ease"
+              transition: "all 0.2s ease",
+              background: "#2f2f2f",
+              border: "1px solid white"
             }}
           >
             <Text
