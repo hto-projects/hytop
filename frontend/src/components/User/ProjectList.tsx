@@ -54,7 +54,9 @@ const ProjectList = ({ projects, loading, error, edit = true }: ProjectListProps
               maxWidth: 260,
               cursor: "pointer",
               textDecoration: "none",
-              transition: "all 0.2s ease"
+              transition: "all 0.2s ease",
+              background: "#2f2f2f",
+              border: "1px solid white"
             }}
           >
             <Text
