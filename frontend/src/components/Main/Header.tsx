@@ -23,9 +23,8 @@ const Header = () => {
   const theColorScheme = useComputedColorScheme("light");
   const { userInfo } = useSelector((state: any) => state.auth);
 
-  const match = location.pathname.match(/^\/([ec])\/([^/]+)$/);
-  const isEditor = !!match;
-  let routeProjectName = match ? match[2] : "";
+  const isEditor = location.pathname.startsWith("/e/");
+  let routeProjectName = isEditor ? location.pathname.substring(3) : "";
   routeProjectName = decodeURIComponent(routeProjectName);
 
   const userIsOwner = useSelector((state: any) =>
@@ -91,8 +90,7 @@ const Header = () => {
                 alignItems: "center"
               }}
             >
-              {projectName || "HyTOP"} by {userInfo ? userInfo.username: "Guest"}
-              {userIsOwner}
+              {projectName || "HyTOP"}
             </Text>
           </Menu.Target>
         </Menu>

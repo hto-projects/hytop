@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Main/Header";
 import { useComputedColorScheme } from "@mantine/core";
+import "./App.css";
 
 const App = () => {
   const theColorScheme = useComputedColorScheme("light");
