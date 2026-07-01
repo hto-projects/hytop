@@ -13,7 +13,22 @@ const environmentProps = [
     "dressing",
     "dressingScale",
     "dressingAmount",
-    "dressingColor",
+    "dressingColor",,
+    "dressingVariance",
+    "dressingUniformScale",
+    "grid",
+    "gridColor",
+    "groundFrequency",
+    "groundDensity",
+    "stageSize",
+    "flatShading",
+    "lightPosition",
+    "shadow",
+    "shadowBias",
+    "shadowSize",
+    "lighting",
+    "horizonColor",
+    "preset"
 ];
 
 function setEnvVar(scene, envVarString) {
