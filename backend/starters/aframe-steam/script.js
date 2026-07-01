@@ -21,7 +21,7 @@ function setEnvVar(scene, envVarString) {
     try {
         varVal = eval(envVarString);
     } catch {
-        varVal = "";
+        return;
     }
 
     scene.setAttribute('environment', envVarString, varVal);
