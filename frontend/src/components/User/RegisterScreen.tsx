@@ -47,51 +47,6 @@ const RegisterScreen = ({
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
-    const nameFilter = /^[a-z]+$/i;
-    if (!nameFilter.test(name)) {
-      toast.error("Name may only contain letters");
-      return;
-    }
-
-    // the stuff before the @ can be alphanumeric or a few symbols, there must be an @, there must be a .
-    const validEmail = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-    if (!validEmail.test(email)) {
-      toast.error("Email is not valid");
-      return;
-    }
-
-    // username validation (must be alphanumeric)
-    // [a-z0-9] is the range of allowed values, + is for repetition, $ is for end, /i is for case insensitive
-    // const regexFilter = /^[a-z0-9]+$/i;
-    // if (!regexFilter.test(username)) {
-    //   toast.error("Username may only contain letters and numbers");
-    //   return;
-    // }
-    //
-    // // must start with a letter
-    // const regexFirstLetter = /^[a-z]/i;
-    // if (!regexFirstLetter.test(username)) {
-    //   toast.error("Username may not start with a number");
-    //   return;
-    // }
-
-    // MOVING TO FORM COMPONENTS
-    // if (password.length < 8) {
-    //   toast.error("Password needs to be 8 characters");
-    //   return;
-    // }
-    //
-    // if (!/[A-Z]/.test(password)) {
-    //   toast.error("Password needs to have a capital letter");
-    //   return;
-    // } //capital letter
-    //
-    // if (!/[0-9]/.test(password)) {
-    //   toast.error("Password needs to conatin atleast 1 number");
-    //   return;
-    // } //must contain number
-
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;

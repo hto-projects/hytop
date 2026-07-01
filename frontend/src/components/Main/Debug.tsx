@@ -1,13 +1,21 @@
 import {
   Form,
-  PasswordFormElement,
+  PasswordInputForm,
   TextInputForm,
   passwordValidation,
   usernameValidation,
   emailValidation
 } from "../Interface/Form";
 import { useState } from "react";
-import { Box, Container } from "@mantine/core";
+import { Box, Container, Button, Paper } from "@mantine/core";
+
+function confirmPasswordHandler(
+  password: string,
+  confirmPassword: string
+): boolean {
+  if (password === confirmPassword) return true;
+  return false;
+}
 
 export default function Debug() {
   let [username, setUsername] = useState("");
@@ -27,35 +35,62 @@ export default function Debug() {
       }}
     >
       <Container size={600} my={40}>
-        <Form colorScheme="dark">
-          <TextInputForm
-            label="Username"
-            value={username}
-            setValue={setUsername}
-            validation={usernameValidation}
-            hideFulfilled
-          />
-          <TextInputForm
-            label="Email"
-            value={email}
-            setValue={setEmail}
-            validation={emailValidation}
-            showAfter
-            hideFulfilled
-          />
-          <PasswordFormElement
-            label="Password"
-            value={password}
-            setValue={setPassword}
-            validation={passwordValidation}
-            hideCompleted
-          />
-          <PasswordFormElement
-            label="Confirm Password"
-            value={confirmPassword}
-            setValue={setConfirmPassword}
-          />
-        </Form>
+        <Paper
+          shadow="md"
+          p={48}
+          radius="md"
+          withBorder
+          style={{
+            maxWidth: 520,
+            margin: "0 auto",
+            background: "auto",
+            color: "auto"
+          }}
+        >
+          <Form
+            colorScheme="dark"
+            customConditions={() =>
+              confirmPasswordHandler(password, confirmPassword)
+            }
+            onSubmit={(fulfilled, e) => {
+              console.log(fulfilled);
+            }}
+          >
+            <TextInputForm
+              label="Username"
+              value={username}
+              setValue={setUsername}
+              validation={usernameValidation}
+              required
+              hideFulfilled
+            />
+            <TextInputForm
+              label="Email"
+              value={email}
+              setValue={setEmail}
+              validation={emailValidation}
+              required
+              showAfter
+              hideFulfilled
+            />
+            <PasswordInputForm
+              label="Password"
+              value={password}
+              setValue={setPassword}
+              validation={passwordValidation}
+              required
+              showAfter
+              hideCompleted
+            />
+            <PasswordInputForm
+              label="Confirm Password"
+              value={confirmPassword}
+              setValue={setConfirmPassword}
+              required
+            />
+            <Button type="submit" size="md" style={{ width: "100%" }}></Button>
+          </Form>
+        </Paper>
       </Container>
     </Box>
   );

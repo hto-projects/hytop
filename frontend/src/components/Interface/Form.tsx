@@ -1,21 +1,37 @@
+// this is a Generic Form Component which exposes `Form` and many form elements
+// basic usage:
+// Form expects a colorsScheme and a submitHandler (and an optional set of custom conditions)
+// Form takes more react componenets as children, each of which require a lavel, value, and setValue hook
+// you can define custom validation functions for each field or use the defaults provided in this file
+
 import {
-  Container,
-  Paper,
-  Title,
   TextInput,
   PasswordInput,
-  Center,
-  Box,
-  useComputedColorScheme,
   Text,
   MantineColorScheme
 } from "@mantine/core";
-import React, { ReactElement, useState, useContext } from "react";
-let ColorSchemeContext = React.createContext("auto");
+import React, { useState, useEffect, useCallback } from "react";
+const ColorSchemeContext = React.createContext("auto");
+
+// for error checking internally
+interface FormValidationContextType {
+  registerError: () => void;
+  unregisterError: () => void;
+}
+const FormValidationContext =
+  React.createContext<FormValidationContextType | null>(null);
+
+// takes any set of inputs, must return true or false
+type customConditionsType = (...inputs: any[]) => boolean;
 
 interface FormProps {
   children: React.ReactNode;
   colorScheme: MantineColorScheme;
+  customConditions?: customConditionsType;
+  onSubmit: (
+    fulfilled: boolean,
+    event: React.FormEvent<HTMLFormElement>
+  ) => void; // handles your logic after form submit
 }
 
 interface MantineFormProps {
@@ -29,11 +45,18 @@ interface MantineFormProps {
   hideCompleted?: boolean; // removes the conditions onBlur if everything is done
 }
 
+interface BaseFormInputProps extends MantineFormProps {
+  type: typeof TextInput | typeof PasswordInput;
+  showConditionsOn: "always" | "focus_or_blur_with_value";
+}
+
+// internal for displaying conditions
 interface Condition {
   description: string;
   fulfilled: boolean;
 }
 
+// default empty validation, do nothing
 export function emptyValidation(input: string): Array<Condition> {
   return [];
 }
@@ -88,6 +111,20 @@ export function emailValidation(input: string): Array<Condition> {
   return conditions;
 }
 
+export function nameValidation(input: string): Array<Condition> {
+  const conditions: Array<Condition> = ["Name may only contain letters"].map(
+    (description) => {
+      return {
+        description: description,
+        fulfilled: false
+      };
+    }
+  );
+
+  if (/^[a-z]+$/i.test(input)) conditions[0]["fulfilled"] = true;
+  return conditions;
+}
+
 function showConditionals(
   conditions: Array<Condition>,
   hideFulfilled: boolean
@@ -105,7 +142,10 @@ function showConditionals(
   });
 }
 
-export function PasswordFormElement({
+// base component which password and text inherit from
+function BaseFormInput({
+  type: InputComponent,
+  showConditionsOn,
   label,
   value,
   setValue,
@@ -114,7 +154,7 @@ export function PasswordFormElement({
   showAfter = false,
   hideFulfilled = false,
   hideCompleted = false
-}: MantineFormProps) {
+}: BaseFormInputProps) {
   let [focused, setFocused] = useState(false);
 
   let valid = validation(value);
@@ -123,16 +163,33 @@ export function PasswordFormElement({
     hideFulfilled
   );
 
+  let notFulfilled =
+    required && value === "" ? true : !valid.every((entry) => entry.fulfilled);
+
+  const context = React.useContext(FormValidationContext);
+  useEffect(() => {
+    if (!context) return;
+    if (notFulfilled) {
+      context.registerError();
+      return () => context.unregisterError();
+    }
+  }, [notFulfilled, context]);
+
   if (hideCompleted && !focused) {
     if (valid.every((entry) => entry.fulfilled)) {
       conditions = [];
     }
   }
 
+  const conditionVisibilityRule =
+    showConditionsOn === "always"
+      ? (value !== "" && showAfter) || focused
+      : value !== "" && !(focused && showAfter);
+
   let colorScheme = React.useContext(ColorSchemeContext);
   return (
     <>
-      <PasswordInput
+      <InputComponent
         label={label}
         value={value}
         onFocus={() => setFocused(true)}
@@ -152,82 +209,68 @@ export function PasswordFormElement({
           }
         }}
       />
-      {value !== "" && !(focused && showAfter) && conditions}
+      {conditionVisibilityRule && conditions}
     </>
   );
 }
 
-// INPUT FORM
+export function PasswordInputForm(props: MantineFormProps) {
+  return (
+    <BaseFormInput {...props} type={PasswordInput} showConditionsOn="always" />
+  );
+}
 
-export function TextInputForm({
-  label,
-  value,
-  setValue,
-  validation = emptyValidation,
-  required = false,
-  showAfter = false,
-  hideFulfilled = false,
-  hideCompleted = false
-}: MantineFormProps) {
-  let [focused, setFocused] = useState(false);
+export function TextInputForm(props: MantineFormProps) {
+  return (
+    <BaseFormInput
+      {...props}
+      type={TextInput}
+      showConditionsOn="focus_or_blur_with_value"
+    />
+  );
+}
 
-  let valid = validation(value);
-  let conditions: Array<React.ReactNode> = showConditionals(
-    valid,
-    hideFulfilled
+// form wrapper, handles form validation
+export function Form({
+  children,
+  colorScheme,
+  customConditions,
+  onSubmit
+}: FormProps) {
+  const [errorCount, setErrorCount] = useState(0);
+  const registerError = useCallback(() => setErrorCount((c) => c + 1), []);
+  const unregisterError = useCallback(
+    () => setErrorCount((c) => Math.max(0, c - 1)),
+    []
   );
 
-  if (hideCompleted && !focused) {
-    if (valid.every((entry) => entry.fulfilled)) {
-      conditions = [];
+  function submitHandler(event: React.FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    let fulfilled = true;
+
+    if (errorCount > 0) {
+      fulfilled = false;
     }
+
+    if (customConditions && !customConditions()) {
+      fulfilled = false;
+    }
+
+    onSubmit(fulfilled, event);
   }
 
-  let colorScheme = React.useContext(ColorSchemeContext);
   return (
-    <>
-      <TextInput
-        label={label}
-        value={value}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onChange={(e) => setValue(e.target.value)}
-        required={required}
-        mb="md"
-        size="md"
-        style={{ width: "100%" }}
-        styles={{
-          input: {
-            color: colorScheme === "dark" ? "#fff" : undefined,
-            width: "100%"
-          },
-          label: {
-            color: colorScheme === "dark" ? "#fff" : undefined
-          }
-        }}
-      />
-      {value !== "" && !(focused && showAfter) && conditions}
-    </>
-  );
-}
-
-export function Form({ children, colorScheme }: FormProps) {
-  return (
-    <Paper
-      shadow="md"
-      p={48}
-      radius="md"
-      withBorder
-      style={{
-        maxWidth: 520,
-        margin: "0 auto",
-        background: colorScheme === "dark" ? "#23272A" : undefined,
-        color: colorScheme === "dark" ? "#fff" : undefined
-      }}
+    <form
+      onSubmit={submitHandler}
+      style={{ maxWidth: 440, width: "100%", margin: "0 auto" }}
     >
-      <ColorSchemeContext.Provider value={colorScheme}>
-        {children}
-      </ColorSchemeContext.Provider>
-    </Paper>
+      <FormValidationContext.Provider
+        value={{ registerError, unregisterError }}
+      >
+        <ColorSchemeContext.Provider value={colorScheme}>
+          {children}
+        </ColorSchemeContext.Provider>
+      </FormValidationContext.Provider>
+    </form>
   );
 }
