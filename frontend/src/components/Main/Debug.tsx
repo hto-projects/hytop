@@ -52,7 +52,7 @@ export default function Debug() {
             customConditions={() =>
               confirmPasswordHandler(password, confirmPassword)
             }
-            onSubmit={(fulfilled, e) => {
+            onSubmit={async (fulfilled, e) => {
               console.log(fulfilled);
             }}
           >

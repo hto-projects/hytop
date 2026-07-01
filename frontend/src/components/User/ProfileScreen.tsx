@@ -3,14 +3,19 @@ import {
   Container,
   Paper,
   Title,
-  TextInput,
   Button,
   Group,
-  PasswordInput,
   Box,
-  Text,
   useComputedColorScheme
 } from "@mantine/core";
+import {
+  Form,
+  PasswordInputForm,
+  TextInputForm,
+  passwordValidation,
+  emailValidation,
+  nameValidation
+} from "../Interface/Form";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Loader from "../Interface/Loader";
@@ -44,24 +49,35 @@ const ProfileScreen = () => {
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
   const theColorScheme = useComputedColorScheme("light");
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-    } else {
-      try {
-        const updateData: any = { id: userId, name, email };
-        if (password) updateData.password = password;
-        const res = await updateProfile(updateData).unwrap();
-        dispatch(setCredentials(res));
-        toast.success("Profile updated successfully");
-      } catch (err: any) {
-        toast.error(
-          err?.data?.message || err.error || "Failed to update profile"
-        );
-      }
+  function confirmPasswordHandler(
+    password: string,
+    confirmPassword: string
+  ): boolean {
+    if (password === confirmPassword) return true;
+    toast.error("Passwords do not match");
+    return false;
+  }
+
+  async function onSubmit(
+    fulfilled: boolean,
+    e: React.FormEvent<HTMLFormElement>
+  ) {
+    if (!fulfilled) {
+      return;
     }
-  };
+
+    try {
+      const updateData: any = { id: userId, name, email };
+      if (password) updateData.password = password;
+      const res = await updateProfile(updateData).unwrap();
+      dispatch(setCredentials(res));
+      toast.success("Profile updated successfully");
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message || err.error || "Failed to update profile"
+      );
+    }
+  }
 
   const handleLogout = () => {
     dispatch(logout(null));
@@ -98,76 +114,45 @@ const ProfileScreen = () => {
             <Title order={2} ta="center" mb="md">
               Account
             </Title>
-            <form onSubmit={submitHandler} style={{ width: "100%" }}>
-              <TextInput
+
+            <Form
+              colorScheme={theColorScheme}
+              customConditions={() => {
+                return confirmPasswordHandler(password, confirmPassword);
+              }}
+              onSubmit={onSubmit}
+            >
+              <TextInputForm
                 label="Name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                setValue={setName}
+                validation={nameValidation}
                 required
-                mb="md"
-                size="md"
-                style={{ width: "100%" }}
-                styles={{
-                  input: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    width: "100%"
-                  },
-                  label: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined
-                  }
-                }}
-              />
-              <TextInput
-                label="Email Address"
+                hideFulfilled
+              ></TextInputForm>
+              <TextInputForm
+                label="Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                setValue={setEmail}
+                validation={emailValidation}
                 required
-                mb="md"
-                size="md"
-                style={{ width: "100%" }}
-                styles={{
-                  input: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    width: "100%"
-                  },
-                  label: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined
-                  }
-                }}
+                showAfter
+                hideFulfilled
               />
-              <PasswordInput
+              <PasswordInputForm
                 label="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                mb="md"
-                size="md"
-                style={{ width: "100%" }}
-                styles={{
-                  input: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    width: "100%"
-                  },
-                  label: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined
-                  }
-                }}
+                setValue={setPassword}
+                validation={passwordValidation}
+                required
+                showAfter
+                hideCompleted
               />
-              <PasswordInput
+              <PasswordInputForm
                 label="Confirm Password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                mb="md"
-                size="md"
-                style={{ width: "100%" }}
-                styles={{
-                  input: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    width: "100%"
-                  },
-                  label: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined
-                  }
-                }}
+                setValue={setConfirmPassword}
+                required
               />
               <Group mt="md" justify="space-between">
                 <Button type="submit" size="md" loading={isLoading}>
@@ -187,7 +172,7 @@ const ProfileScreen = () => {
                   <Loader />
                 </Box>
               )}
-            </form>
+            </Form>
           </div>
 
           <div

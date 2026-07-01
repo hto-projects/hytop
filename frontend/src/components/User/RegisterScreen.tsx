@@ -3,13 +3,20 @@ import {
   Container,
   Paper,
   Title,
-  TextInput,
-  PasswordInput,
   Center,
   Box,
   useComputedColorScheme,
   Text
 } from "@mantine/core";
+import {
+  Form,
+  PasswordInputForm,
+  TextInputForm,
+  passwordValidation,
+  usernameValidation,
+  emailValidation,
+  nameValidation
+} from "../Interface/Form";
 import Button from "../Interface/Button";
 import Loader from "../Interface/Loader";
 import { useNavigate, Link } from "react-router-dom";
@@ -26,7 +33,7 @@ const RegisterScreen = ({
 }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [username, setUserName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -45,10 +52,20 @@ const RegisterScreen = ({
     }
   }, [navigate, userInfo]);
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+  function confirmPasswordHandler(
+    password: string,
+    confirmPassword: string
+  ): boolean {
+    if (password === confirmPassword) return true;
+    toast.error("Passwords do not match");
+    return false;
+  }
+
+  async function onSubmit(
+    fulfilled: boolean,
+    e: React.FormEvent<HTMLFormElement>
+  ) {
+    if (!fulfilled) {
       return;
     }
 
@@ -64,7 +81,7 @@ const RegisterScreen = ({
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
-  };
+  }
 
   return (
     <Box
@@ -97,108 +114,55 @@ const RegisterScreen = ({
           <Title order={2} ta="center" mb="md">
             Register
           </Title>
-          <form
-            onSubmit={submitHandler}
-            style={{ maxWidth: 440, width: "100%", margin: "0 auto" }}
+          <Form
+            colorScheme={theColorScheme}
+            customConditions={() => {
+              return confirmPasswordHandler(password, confirmPassword);
+            }}
+            onSubmit={onSubmit}
           >
-            <TextInput
+            <TextInputForm
               label="Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              setValue={setName}
+              validation={nameValidation}
               required
-              mb="md"
-              size="md"
-              autoFocus
-              style={{ width: "100%" }}
-              styles={{
-                input: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined,
-                  width: "100%"
-                },
-                label: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }
-              }}
-            />
-            <TextInput
-              label="Email Address"
+              hideFulfilled
+            ></TextInputForm>
+            <TextInputForm
+              label="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              setValue={setEmail}
+              validation={emailValidation}
               required
-              mb="md"
-              size="md"
-              style={{ width: "100%" }}
-              styles={{
-                input: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined,
-                  width: "100%"
-                },
-                label: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }
-              }}
+              showAfter
+              hideFulfilled
             />
-            <TextInput
+            <TextInputForm
               label="Username"
               value={username}
-              onChange={(e) => setUserName(e.target.value)}
+              setValue={setUsername}
+              validation={usernameValidation}
               required
-              mb="md"
-              size="md"
-              style={{ width: "100%" }}
-              styles={{
-                input: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined,
-                  width: "100%"
-                },
-                label: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }
-              }}
-            />
-            <PasswordInput
+              hideFulfilled
+            ></TextInputForm>
+            <PasswordInputForm
               label="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              setValue={setPassword}
+              validation={passwordValidation}
               required
-              mb="md"
-              size="md"
-              style={{ width: "100%" }}
-              styles={{
-                input: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined,
-                  width: "100%"
-                },
-                label: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }
-              }}
+              showAfter
+              hideCompleted
             />
-            <PasswordInput
+            <PasswordInputForm
               label="Confirm Password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              setValue={setConfirmPassword}
               required
-              mb="md"
-              size="md"
-              style={{ width: "100%" }}
-              styles={{
-                input: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined,
-                  width: "100%"
-                },
-                label: {
-                  color: theColorScheme === "dark" ? "#fff" : undefined
-                }
-              }}
             />
             <Center mt="md">
-              <Button
-                type="submit"
-                size="md"
-                disabled={isLoading}
-                style={{ width: "100%" }}
-              >
+              <Button type="submit" size="md" style={{ width: "100%" }}>
                 {isLoading ? "Registering..." : "Register"}
               </Button>
             </Center>
@@ -207,7 +171,7 @@ const RegisterScreen = ({
                 <Loader />
               </Center>
             )}
-          </form>
+          </Form>
           <Text ta="center" mt="md">
             Already have an account?{" "}
             <Button
