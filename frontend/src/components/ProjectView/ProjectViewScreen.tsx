@@ -33,6 +33,7 @@ import ProjectViewContainer from "./Interface/ProjectViewContainer";
 import PreviewComponent from "./Preview/PreviewComponent";
 import FileEditorComponent from "./FileEditor/FileEditorComponent";
 import { IProjectFile } from "../../../../shared/types";
+import Sk from "Skulpt";
 
 const ProjectViewScreen: React.FC = () => {
   const monaco = useMonaco();
@@ -83,8 +84,14 @@ const ProjectViewScreen: React.FC = () => {
       (file: IProjectFile) => {
         const model: editor.ITextModel | undefined =
           modelsRef.current[file.fileName];
-        if (model) {
+          let pythonToRun = "";
+          if (model) {
           const modelContent: string = model.getValue();
+          if (file.fileName.endsWith('.py'))
+          {
+            console.log("yes we did it!!");
+            pythonToRun = modelContent;
+          }
           if (modelContent !== file.fileContent) {
             return { ...file, fileContent: modelContent };
           }
@@ -163,11 +170,33 @@ const ProjectViewScreen: React.FC = () => {
     }
   };
 
+  //team
+  //const Sk = window.Sk; //imported into root html window but we have to let react know it does exist
+  function builtInRead(x) {
+    return Sk.builtinFiles["files"][x];
+  }
+
+  function asyncReturn(pythonToRun) {
+    return Sk.importMainWithBody("<stdin>", false, pythonToRun, true);
+  }
+
+  useEffect(() => {
+    const load = async () => {
+      Sk.configure({ read: builtInRead });
+      Sk.TurtleGraphics = { target: "python-turtle-canvas" };
+      try {
+        await Sk.misceval.asyncToPromise(asyncReturn);
+      } catch (e) {
+        alert(e);
+      }
+    };
+  }, []);
+
   // Dispose Monaco Models on unmount
   useEffect(() => {
     return () => {
       if (monaco) {
-        monaco.editor.getModels().forEach(model => model.dispose());
+        monaco.editor.getModels().forEach((model) => model.dispose());
         modelsRef.current = {};
       }
     };
