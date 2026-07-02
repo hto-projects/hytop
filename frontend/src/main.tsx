@@ -23,6 +23,7 @@ import ProjectViewScreen from "./components/ProjectView/ProjectViewScreen";
 import CopyProjectScreen from "./components/Main/CopyProjectScreen";
 import AboutScreen from "./components/Main/AboutScreen";
 import LatestUpdatesScreen from "./components/Main/LatestUpdatesScreen";
+import Debug from "./components/Main/Debug";
 import ForksOfProject from "./components/Main/ForksOfProject";
 import { setMonacoTheme } from "./slices/editorSlice";
 import { setColorScheme } from "./slices/themeSlice";
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
       <Route path="/latest-updates" element={<LatestUpdatesScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
+      <Route path="/debug" element={<Debug />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />
