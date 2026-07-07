@@ -109,6 +109,7 @@ const getUserId = (req, res) => {
 const createProject = asyncHandler(async (req: any, res) => {
   const userId = getUserId(req, res);
 
+  //possibly add projectType here
   const { projectName, projectDescription, copyingProjectName } = req.body;
   const slugifiedProjectName = slugifyProjectName(projectName);
 
@@ -123,6 +124,7 @@ const createProject = asyncHandler(async (req: any, res) => {
   let existingProject: IProject = await findProject(copyingProjectName);
   const newProjectId: string = uuidv4();
 
+  //we add if statement for if projectType is python or html
   const starterProjectFiles: IProjectFile[] = [
     {
       fileName: "index.html",

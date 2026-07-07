@@ -177,10 +177,12 @@ const ProjectViewScreen: React.FC = () => {
   }
 
   function asyncReturn(pythonToRun) {
+    console.log("hihi we got the async return");
     return Sk.importMainWithBody("<stdin>", false, pythonToRun, true);
   }
 
   useEffect(() => {
+    console.log("we got into the use effect");
     const load = async () => {
       Sk.configure({ read: builtInRead });
       Sk.TurtleGraphics = { target: "python-turtle-canvas" };
