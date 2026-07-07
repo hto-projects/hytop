@@ -8,6 +8,7 @@ import {
 import { SIDEBAR_ICON_MAP } from "../../constants";
 import { PiCheckBold, PiFilePlusBold, PiXBold } from "react-icons/pi";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const FilesHeader = ({
   enableAddFile,
@@ -29,7 +30,19 @@ const FilesHeader = ({
   };
 
   const handleSubmitNewFile = () => {
+    // TODO: this honestly should hold more validation before submitting
     if (isDuplicateRename(newFileName)) {
+      toast.error("File already exists");
+      return;
+    }
+
+    if (newFileName.length == 0) {
+      toast.error("File must have a name");
+      return;
+    }
+
+    if (newFileName.includes("/")) {
+      toast.error("File name may not contain a '/'");
       return;
     }
 
@@ -37,7 +50,7 @@ const FilesHeader = ({
     setNewFileName("");
     setAddingNewFile(false);
   };
-  
+
   return (
     <Group
       align="apart"
