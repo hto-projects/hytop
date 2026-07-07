@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Paper,
@@ -22,20 +22,38 @@ import Loader from "../Interface/Loader";
 import AdminPanel from "./AdminPanel";
 import {
   useUpdateUserMutation,
-  useGetUserProjectsQuery
+  useGetUserProjectsQuery,
+  useLogoutMutation
 } from "../../slices/usersApiSlice";
 import { setCredentials, logout } from "../../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import ProjectList from "./ProjectList";
 
+
 const ProfileScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userId = userInfo?._id || userInfo?.userId;
-  const {
+
+
+  const [logoutApiCall] = useLogoutMutation();
+  const [updateProfile, { isLoading }] = useUpdateUserMutation();
+
+    const {
     data: userProjects = [],
     isLoading: projectsLoading,
     error: projectsError
   } = useGetUserProjectsQuery(userId, { skip: !userId });
+
+
+  useEffect(() => {
+    if (projectsError?.status === 401) {
+      logoutApiCall();
+      dispatch(logout());
+      navigate("/login");
+    }
+  }, [projectsError, logoutApiCall, dispatch, navigate]);
 
   const [email, setEmail] = useState(userInfo ? userInfo.email : "");
   const [name, setName] = useState(userInfo ? userInfo.name : "");
@@ -44,9 +62,6 @@ const ProfileScreen = () => {
 
   const userIsAdmin = userInfo?.admin || false;
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [updateProfile, { isLoading }] = useUpdateUserMutation();
   const theColorScheme = useComputedColorScheme("light");
 
   function confirmPasswordHandler(
