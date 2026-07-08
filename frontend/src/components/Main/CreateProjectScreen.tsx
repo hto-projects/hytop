@@ -32,7 +32,8 @@ const CreateProjectScreen = () => {
     e.preventDefault();
     try {
       const formData = new FormData(e.currentTarget);
-      console.log("Radio value:", formData.get("language"));
+      // console.log("Radio value:", formData.get("language"));
+      console.log(projectType);
       const res = await createProject({
         projectName,
         projectDescription,
