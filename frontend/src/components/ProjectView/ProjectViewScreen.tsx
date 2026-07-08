@@ -84,23 +84,41 @@ const ProjectViewScreen: React.FC = () => {
       (file: IProjectFile) => {
         const model: editor.ITextModel | undefined =
           modelsRef.current[file.fileName];
-          let pythonToRun = "";
-          if (model) {
+
+        if (model) {
           const modelContent: string = model.getValue();
-          if (file.fileName.endsWith('.py'))
-          {
-            console.log("yes we did it!!");
-            pythonToRun = modelContent;
-          }
           if (modelContent !== file.fileContent) {
             return { ...file, fileContent: modelContent };
+          }
+        }
+
+        return file;
+      }
+    );
+
+    return newProjectFiles;
+  };
+
+  const getPythonToRun: () => string = () => {
+    let pythonToRun = "";
+
+    const newProjectFiles: IProjectFile[] = projectFiles.map(
+      (file: IProjectFile) => {
+        const model: editor.ITextModel | undefined =
+          modelsRef.current[file.fileName];
+
+        if (model) {
+          const modelContent: string = model.getValue();
+          if (file.fileName.endsWith('.py')) {
+            console.log("yes we did it!!");
+            pythonToRun = modelContent;
           }
         }
         return file;
       }
     );
 
-    return newProjectFiles;
+    return pythonToRun;
   };
 
   // Saves all files, sends to DB
@@ -179,7 +197,7 @@ const ProjectViewScreen: React.FC = () => {
   function asyncReturn(pythonToRun) {
     console.log("hihi we got the async return");
     return Sk.importMainWithBody("<stdin>", false, pythonToRun, true);
-  }
+  }                                                                                                                       
 
   useEffect(() => {
     console.log("we got into the use effect");
