@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useUpdateProjectMutation } from "../../../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../../../store";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import {
   setActiveTab,
   setProjectFiles,
@@ -29,7 +29,7 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
     activeTab,
     unsavedFiles
   } = useSelector((state: RootState) => state.editor);
- 
+
   const theColorScheme = useComputedColorScheme("light");
   const [updateProject] = useUpdateProjectMutation();
 
@@ -86,7 +86,7 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
       dispatch(setUnsavedFiles({}));
       dispatch(setProjectFiles(updatedFiles));
     } catch (err) {
-      toast.error("Error saving project, please manually save.")
+      toast.error("Error saving project, please manually save.");
     }
   };
 
@@ -108,7 +108,7 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
       dispatch(setUnsavedFiles({}));
       dispatch(setProjectFiles(updatedFiles));
     } catch (err) {}
-    dispatch(openTab(newFileName))
+    dispatch(openTab(newFileName));
   };
 
   return (
