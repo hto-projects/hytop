@@ -83,7 +83,8 @@ export function passwordValidation(input: string): Array<Condition> {
 export function usernameValidation(input: string): Array<Condition> {
   const conditions: Array<Condition> = [
     "Username must start with a letter",
-    "Username must only contain letters and numbers"
+    "Username must only contain letters and numbers",
+    "Username must be between 3 and 20 characters"
   ].map((description) => {
     return {
       description: description,
@@ -93,6 +94,7 @@ export function usernameValidation(input: string): Array<Condition> {
 
   if (/^[a-z]/i.test(input)) conditions[0]["fulfilled"] = true;
   if (/^[a-z0-9]+$/i.test(input)) conditions[1]["fulfilled"] = true;
+  if (input.length >= 3 && input.length <= 20) conditions[2]["fulfilled"] = true;
   return conditions;
 }
 
@@ -121,7 +123,7 @@ export function nameValidation(input: string): Array<Condition> {
     }
   );
 
-  if (/^[a-z]+$/i.test(input)) conditions[0]["fulfilled"] = true;
+  if (/^[a-z ]+$/i.test(input)) conditions[0]["fulfilled"] = true;
   return conditions;
 }
 
