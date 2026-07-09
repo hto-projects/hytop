@@ -167,7 +167,7 @@ const ProjectViewScreen: React.FC = () => {
   useEffect(() => {
     return () => {
       if (monaco) {
-        monaco.editor.getModels().forEach(model => model.dispose());
+        monaco.editor.getModels().forEach((model) => model.dispose());
         modelsRef.current = {};
       }
     };

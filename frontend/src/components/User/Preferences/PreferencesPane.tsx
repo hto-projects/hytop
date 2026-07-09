@@ -22,6 +22,7 @@ import {
   setMonacoFont,
   setMonacoFontSize,
   setMonacoWordWrap,
+  setMonacoAutocomplete,
   setPaneState
 } from "../../../slices/editorSlice";
 import { Select, TextInput, NumberInput } from "@mantine/core";
@@ -29,9 +30,7 @@ import DarkModeToggle from "./DarkModeToggle";
 import { useComputedColorScheme } from "@mantine/core";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../ProjectView/constants";
 
-const PreferencesPane = ({
-  closePane
-}) => {
+const PreferencesPane = ({ closePane }) => {
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const monacoTheme = useSelector((state: any) => state.editor.monacoTheme);
@@ -42,6 +41,9 @@ const PreferencesPane = ({
   const monacoWordWrap = useSelector(
     (state: any) => state.editor.monacoWordWrap
   );
+  const monacoAutocomplete: boolean = useSelector((state: any) => {
+    return state.editor.monacoAutocomplete;
+  });
   const paneState = useSelector((state: any) => state.editor.paneState);
   const dispatch = useDispatch();
 
@@ -301,6 +303,21 @@ const PreferencesPane = ({
               )
             }
             label={monacoWordWrap === "on" ? "Enabled" : "Disabled"}
+            size="sm"
+          />
+        </Box>
+        <Box mb="sm">
+          <Text size="sm" mb={4}>
+            Autocomplete
+          </Text>
+          <Switch
+            checked={monacoAutocomplete === true}
+            onChange={(e) =>
+              dispatch(
+                setMonacoAutocomplete(e.currentTarget.checked ? true : false)
+              )
+            }
+            label={monacoAutocomplete ? "Enabled" : "Disabled"}
             size="sm"
           />
         </Box>

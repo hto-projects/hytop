@@ -6,6 +6,7 @@ import fs from "fs";
 import { IProject, IProjectFile } from "../../shared/types";
 import slugify from "slugify";
 import User from "../models/userModel";
+import { readdirSync } from "node:fs";
 
 const slugifyProjectName = (unsluggedName: string): string => {
   return slugify(unsluggedName, {
@@ -18,17 +19,12 @@ const slugifyProjectName = (unsluggedName: string): string => {
 const findProject = async (projectName: string): Promise<IProject> => {
   let starterExists: boolean = false;
   try {
-    await fs.promises.access(
-      `./backend/starters/${projectName}`,
-      fs.constants.R_OK
-    );
-    starterExists = true;
-
-    if (projectName === "") {
-      starterExists = false;
+    let starters = readdirSync("./backend/starters");
+    if (starters.includes(projectName)) {
+      starterExists = true;
     }
   } catch (e) {
-    starterExists = false;
+    throw new Error(e);
   }
 
   if (starterExists) {
@@ -536,7 +532,7 @@ const getProjectId = asyncHandler(async (req: any, res) => {
   res.json({ projectId: project.projectId });
 });
 
-// @desc    Render a project file
+// @desc    Render a project file, shows code for when you click on the file
 // @route   GET /pf/:projectName/:filename
 // @access  Public
 const renderFile = asyncHandler(async (req: any, res) => {

@@ -17,6 +17,7 @@ interface EditorState {
   monacoFont: string;
   monacoFontSize: number;
   monacoWordWrap: "on" | "off";
+  monacoAutocomplete: boolean;
   userIsOwner?: boolean;
   isLoading?: boolean;
   lastClosedTab?: string | null;
@@ -40,6 +41,8 @@ const getInitialMonacoSettings = () => {
     monacoFontSize: Number(localStorage.getItem("monacoFontSize")) || 14,
     monacoWordWrap:
       (localStorage.getItem("monacoWordWrap") as "on" | "off") || "off",
+    monacoAutocomplete:
+      JSON.parse(localStorage.getItem("monacoAutocomplete")) || false
   };
 };
 
@@ -86,7 +89,10 @@ const editorSlice = createSlice({
       state.activeTab = action.payload;
       state.selectedFile = action.payload;
     },
-    setUnsavedFiles(state, action: PayloadAction<{ [filename: string]: boolean }>) {
+    setUnsavedFiles(
+      state,
+      action: PayloadAction<{ [filename: string]: boolean }>
+    ) {
       state.unsavedFiles = action.payload;
     },
     openTab(state, action: PayloadAction<string>) {
@@ -154,6 +160,13 @@ const editorSlice = createSlice({
       state.monacoWordWrap = action.payload;
       localStorage.setItem("monacoWordWrap", action.payload);
     },
+    setMonacoAutocomplete(state, action: PayloadAction<boolean>) {
+      state.monacoAutocomplete = action.payload;
+      localStorage.setItem(
+        "monacoAutocomplete",
+        JSON.stringify(action.payload)
+      );
+    },
     setUserIsOwner(state, action: PayloadAction<boolean>) {
       state.userIsOwner = action.payload;
     },
@@ -182,7 +195,7 @@ const editorSlice = createSlice({
     },
     setProjectOwnerUserName(state, action: PayloadAction<string>) {
       state.projectOwnerUserName = action.payload;
-    },
+    }
   }
 });
 
@@ -200,6 +213,7 @@ export const {
   setMonacoFont,
   setMonacoFontSize,
   setMonacoWordWrap,
+  setMonacoAutocomplete,
   setUserIsOwner,
   setEditorIsLoading,
   deleteFile,
