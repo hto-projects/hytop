@@ -19,7 +19,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Loader from "../Interface/Loader";
-import AdminPanel from "./AdminPanel";
 import {
   useUpdateUserMutation,
   useGetUserProjectsQuery,
@@ -57,8 +56,6 @@ const ProfileScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const userIsAdmin = userInfo?.admin || false;
-
   const theColorScheme = useComputedColorScheme("light");
 
   function confirmPasswordHandler(
@@ -70,10 +67,8 @@ const ProfileScreen = () => {
     return false;
   }
 
-  async function onSubmit(
-    fulfilled: boolean,
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+  async function onSubmit({ fulfilled, event }) {
+    event.preventDefault();
     if (!fulfilled) {
       return;
     }
@@ -205,8 +200,6 @@ const ProfileScreen = () => {
               error={projectsError}
             />
           </div>
-
-          {userIsAdmin && <AdminPanel />}
         </Paper>
       </Container>
     </Box>

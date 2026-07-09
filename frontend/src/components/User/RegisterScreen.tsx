@@ -61,10 +61,8 @@ const RegisterScreen = ({
     return false;
   }
 
-  async function onSubmit(
-    fulfilled: boolean,
-    e: React.FormEvent<HTMLFormElement>
-  ) {
+  async function onSubmit({ fulfilled, event }) {
+    event.preventDefault();
     if (!fulfilled) {
       return;
     }

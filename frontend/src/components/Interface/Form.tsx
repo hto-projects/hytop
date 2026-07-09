@@ -28,10 +28,13 @@ interface FormProps {
   children: React.ReactNode;
   colorScheme: MantineColorScheme;
   customConditions?: customConditionsType;
-  onSubmit: (
-    fulfilled: boolean,
-    event: React.FormEvent<HTMLFormElement>
-  ) => void; // handles your logic after form submit
+  onSubmit: ({
+    fulfilled,
+    event
+  }: {
+    fulfilled: boolean;
+    event: React.FormEvent<HTMLFormElement>;
+  }) => void; // handles your logic after form submit
 }
 
 interface MantineFormProps {
@@ -51,7 +54,7 @@ interface BaseFormInputProps extends MantineFormProps {
 }
 
 // internal for displaying conditions
-interface Condition {
+export interface Condition {
   description: string;
   fulfilled: boolean;
 }
@@ -94,7 +97,8 @@ export function usernameValidation(input: string): Array<Condition> {
 
   if (/^[a-z]/i.test(input)) conditions[0]["fulfilled"] = true;
   if (/^[a-z0-9]+$/i.test(input)) conditions[1]["fulfilled"] = true;
-  if (input.length >= 3 && input.length <= 20) conditions[2]["fulfilled"] = true;
+  if (input.length >= 3 && input.length <= 20)
+    conditions[2]["fulfilled"] = true;
   return conditions;
 }
 
@@ -247,7 +251,6 @@ export function Form({
   );
 
   function submitHandler(event: React.FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
     let fulfilled = true;
 
     if (errorCount > 0) {
@@ -258,7 +261,7 @@ export function Form({
       fulfilled = false;
     }
 
-    onSubmit(fulfilled, event);
+    onSubmit({ fulfilled, event });
   }
 
   return (
