@@ -39,9 +39,19 @@ const FileEditorComponent = ({
     monacoFont,
     monacoFontSize,
     monacoWordWrap,
+    monacoAutocomplete,
     projectFiles,
     activeTab,
     tabs
+  }: {
+    monacoTheme: string;
+    monacoFont: string;
+    monacoFontSize: number;
+    monacoWordWrap: "on" | "off";
+    monacoAutocomplete: boolean;
+    projectFiles: any;
+    activeTab: any;
+    tabs: any;
   } = useSelector((state: any) => state.editor);
 
   // Component State
@@ -144,7 +154,6 @@ const FileEditorComponent = ({
     }
   }, [activeTab, editorMounted, projectFiles]);
 
-  // Component
   return (
     <Paper
       shadow="xs"
@@ -233,6 +242,23 @@ const FileEditorComponent = ({
               fontSize: monacoFontSize,
               fontFamily: monacoFont,
               wordWrap: monacoWordWrap || "off",
+
+              // toggle autocomplete
+              wordBasedSuggestions: monacoAutocomplete ? "allDocuments" : "off",
+              suggestOnTriggerCharacters: monacoAutocomplete,
+              quickSuggestions: {
+                other: monacoAutocomplete,
+                comments: monacoAutocomplete,
+                strings: monacoAutocomplete
+              },
+              parameterHints: {
+                enabled: monacoAutocomplete
+              },
+              snippetSuggestions: monacoAutocomplete ? "top" : "none",
+              suggest: {
+                showWords: monacoAutocomplete
+              },
+
               fontLigatures: false,
               letterSpacing: 0
             }}
