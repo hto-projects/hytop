@@ -105,12 +105,10 @@ const getUserId = (req, res) => {
 // @access  Public
 const createProject = asyncHandler(async (req: any, res) => {
   const userId = getUserId(req, res);
-
-  //possibly add projectType here
   const { projectName, projectDescription, copyingProjectName, projectType } = req.body;
   const slugifiedProjectName = slugifyProjectName(projectName);
-
   const foundProject: IProject = await findProject(slugifiedProjectName);
+  
   if (foundProject) {
     res.status(400);
     throw new Error(
@@ -119,11 +117,11 @@ const createProject = asyncHandler(async (req: any, res) => {
   }
 
   let existingProject: IProject = await findProject(copyingProjectName);
-  const newProjectId: string = uuidv4();
 
+  const newProjectId: string = uuidv4();
   const starterProjectFiles: IProjectFile[] = [
     {
-      fileName: projectType === "html" ? "index.html" : "index.py",
+      fileName: projectType === "html" ? "index.html" : "main.py",
       fileContent: ""
     }
   ];
@@ -134,11 +132,11 @@ const createProject = asyncHandler(async (req: any, res) => {
 
   const projectToCreate: IProject = {
     projectName: slugifiedProjectName,
-    projectDescription,
     projectFiles: copyProjectFiles || starterProjectFiles,
     projectId: newProjectId,
     projectOwnerId: userId,
     projectStatus: "public",
+    projectDescription,
     projectType
   };
 
@@ -553,7 +551,7 @@ const renderFile = asyncHandler(async (req: any, res) => {
 
   if (!fileName) {
     if (req.originalUrl.endsWith("/")) {
-      fileName = project.projectType === "html" ? "index.html" : "index.py";
+      fileName = project.projectType === "html" ? "index.html" : "main.py";
     } else {
       res.redirect(req.originalUrl + "/");
       return;
