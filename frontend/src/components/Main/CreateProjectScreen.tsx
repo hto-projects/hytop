@@ -12,7 +12,8 @@ import {
   Textarea,
   Center,
   useComputedColorScheme,
-  Box
+  Box,
+  Radio
 } from "@mantine/core";
 import Button from "../Interface/Button";
 import Logo from "../Interface/Logo";
@@ -21,6 +22,7 @@ const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [copyingProjectName, setCopyingProjectName] = useState("");
+  const [projectType, setProjectType] = useState("");
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
 
@@ -29,11 +31,12 @@ const CreateProjectScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData(e.currentTarget);
       const res = await createProject({
         projectName,
         projectDescription,
-        copyingProjectName
-
+        copyingProjectName,
+        projectType
       }).unwrap();
       toast.success(res.message);
       window.open(`/e/${res.projectName}`, "_blank");
@@ -104,8 +107,26 @@ const CreateProjectScreen = () => {
                 }
               }}
             />
-            
-             <TextInput
+
+            <p>
+              {" "}
+              <b>Project Type</b>{" "}
+            </p>
+
+            <Radio
+              name="language"
+              value="python"
+              label="Python"
+              onClick={(e) => setProjectType(e.currentTarget.value)}
+            />
+            <Radio
+              name="language"
+              value="html"
+              label="Web (HTML)"
+              defaultChecked
+              onClick={(e) => setProjectType(e.currentTarget.value)}
+            />
+            <TextInput
               label="Copying Project"
               description="Enter the name of an existing project to copy"
               value={copyingProjectName}
@@ -122,7 +143,7 @@ const CreateProjectScreen = () => {
                 }
               }}
             />
-            
+
             <Textarea
               label="Project Description"
               value={projectDescription}
