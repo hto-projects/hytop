@@ -1,16 +1,11 @@
-import {
-  Container,
-  Paper,
-  Text,
-  Button,
-  Group,
-  Box
-} from "@mantine/core";
+import { Container, Paper, Text, Button, Group, Box } from "@mantine/core";
 import Logo from "../Interface/Logo";
 import { useSelector } from "react-redux";
 
 const HomeScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
+  const isAdmin = userInfo?.admin || false;
+  console.log(userInfo);
   return (
     <Box
       style={{
@@ -29,7 +24,7 @@ const HomeScreen = () => {
         my={80}
         style={{
           background: "transparent",
-          color: "#fff",
+          color: "#fff"
         }}
       >
         <Paper
@@ -42,7 +37,7 @@ const HomeScreen = () => {
             flexDirection: "column",
             alignItems: "center",
             background: "#23272a",
-            color: "#fff",
+            color: "#fff"
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
@@ -78,20 +73,38 @@ const HomeScreen = () => {
             >
               Create Project
             </Button>
-            {!userInfo&&<Button
-              size="md"
-              radius="md"
-              component="a"
-              href="/register"
-              style={{
-                fontWeight: 600,
-                fontSize: 18,
-                paddingLeft: 32,
-                paddingRight: 32
-              }}
-            >
-              Sign up
-            </Button>}
+            {!userInfo && (
+              <Button
+                size="md"
+                radius="md"
+                component="a"
+                href="/register"
+                style={{
+                  fontWeight: 600,
+                  fontSize: 18,
+                  paddingLeft: 32,
+                  paddingRight: 32
+                }}
+              >
+                Sign up
+              </Button>
+            )}
+            {isAdmin && (
+              <Button
+                size="md"
+                radius="md"
+                component="a"
+                href="/admin"
+                style={{
+                  fontWeight: 600,
+                  fontSize: 18,
+                  paddingLeft: 32,
+                  paddingRight: 32
+                }}
+              >
+                Sign up
+              </Button>
+            )}
             <Button
               size="md"
               radius="md"
@@ -104,7 +117,6 @@ const HomeScreen = () => {
                 paddingRight: 32
               }}
             >
-
               About Page
             </Button>
             <Button
@@ -119,7 +131,6 @@ const HomeScreen = () => {
                 paddingRight: 32
               }}
             >
-              
               Latest Update Page
             </Button>
           </Group>

@@ -24,23 +24,20 @@ import { setCredentials, logout } from "../../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import ProjectList from "./ProjectList";
 
-
 const ProfileScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userId = userInfo?._id || userInfo?.userId;
 
-
   const [logoutApiCall] = useLogoutMutation();
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
-    const {
+  const {
     data: userProjects = [],
     isLoading: projectsLoading,
     error: projectsError
   } = useGetUserProjectsQuery(userId, { skip: !userId });
-
 
   useEffect(() => {
     if (projectsError?.status === 401) {
