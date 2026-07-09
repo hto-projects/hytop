@@ -32,8 +32,6 @@ const CreateProjectScreen = () => {
     e.preventDefault();
     try {
       const formData = new FormData(e.currentTarget);
-      // console.log("Radio value:", formData.get("language"));
-      console.log(projectType);
       const res = await createProject({
         projectName,
         projectDescription,
@@ -43,7 +41,6 @@ const CreateProjectScreen = () => {
       toast.success(res.message);
       window.open(`/e/${res.projectName}`, "_blank");
     } catch (err) {
-      console.log("hi we are in the cathc");
       toast.error(err?.data?.message || err.error);
     }
   };

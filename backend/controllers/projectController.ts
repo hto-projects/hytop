@@ -6,6 +6,8 @@ import fs from "fs";
 import { IProject, IProjectFile } from "../../shared/types";
 import slugify from "slugify";
 import User from "../models/userModel";
+import { resetPassword } from "./userController";
+import { runPyThroughHTML } from "./runPy";
 
 const slugifyProjectName = (unsluggedName: string): string => {
   return slugify(unsluggedName, {
@@ -124,15 +126,13 @@ const createProject = asyncHandler(async (req: any, res) => {
   let existingProject: IProject = await findProject(copyingProjectName);
   const newProjectId: string = uuidv4();
 
-  //we add if statement for if projectType is python or html
-
-  console.log(`project type is ${projectType}`);
   const starterProjectFiles: IProjectFile[] = [
     {
       fileName: projectType === "html" ? "index.html" : "index.py",
       fileContent: ""
     }
   ];
+
 
   const copyProjectFiles: IProjectFile[] | undefined =
     existingProject && existingProject.projectFiles;
@@ -143,7 +143,8 @@ const createProject = asyncHandler(async (req: any, res) => {
     projectFiles: copyProjectFiles || starterProjectFiles,
     projectId: newProjectId,
     projectOwnerId: userId,
-    projectStatus: "public"
+    projectStatus: "public",
+    projectType
   };
 
   try {
@@ -546,7 +547,6 @@ const getProjectId = asyncHandler(async (req: any, res) => {
 const renderFile = asyncHandler(async (req: any, res) => {
   const projectName: string = req.params.projectName;
   let fileName: string = req.params.filename;
-
   let project: IProject;
 
   try {
@@ -558,7 +558,7 @@ const renderFile = asyncHandler(async (req: any, res) => {
 
   if (!fileName) {
     if (req.originalUrl.endsWith("/")) {
-      fileName = "index.html";
+      fileName = project.projectType === "html" ? "index.html" : "index.py";
     } else {
       res.redirect(req.originalUrl + "/");
       return;
@@ -588,6 +588,12 @@ const renderFile = asyncHandler(async (req: any, res) => {
 
   if (fileName.endsWith(".css")) {
     res.setHeader("Content-Type", "text/css");
+  }
+
+  if (fileName.endsWith(".py")) {
+    res.setHeader("Content-Type", "text/html");
+    res.send(runPyThroughHTML(JSON.stringify(projectFile.fileContent)));
+    return;
   }
 
   res.send(projectFile.fileContent);

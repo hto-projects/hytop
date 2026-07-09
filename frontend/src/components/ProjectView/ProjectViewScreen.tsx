@@ -33,7 +33,6 @@ import ProjectViewContainer from "./Interface/ProjectViewContainer";
 import PreviewComponent from "./Preview/PreviewComponent";
 import FileEditorComponent from "./FileEditor/FileEditorComponent";
 import { IProjectFile } from "../../../../shared/types";
-import Sk from "Skulpt";
 
 const ProjectViewScreen: React.FC = () => {
   const monaco = useMonaco();
@@ -97,28 +96,6 @@ const ProjectViewScreen: React.FC = () => {
     );
 
     return newProjectFiles;
-  };
-
-  const getPythonToRun: () => string = () => {
-    let pythonToRun = "";
-
-    const newProjectFiles: IProjectFile[] = projectFiles.map(
-      (file: IProjectFile) => {
-        const model: editor.ITextModel | undefined =
-          modelsRef.current[file.fileName];
-
-        if (model) {
-          const modelContent: string = model.getValue();
-          if (file.fileName.endsWith('.py')) {
-            console.log("yes we did it!!");
-            pythonToRun = modelContent;
-          }
-        }
-        return file;
-      }
-    );
-
-    return pythonToRun;
   };
 
   // Saves all files, sends to DB
@@ -186,31 +163,7 @@ const ProjectViewScreen: React.FC = () => {
     } catch (err) {
       console.error(err);
     }
-  };
-
-  //team
-  //const Sk = window.Sk; //imported into root html window but we have to let react know it does exist
-  function builtInRead(x) {
-    return Sk.builtinFiles["files"][x];
-  }
-
-  function asyncReturn(pythonToRun) {
-    console.log("hihi we got the async return");
-    return Sk.importMainWithBody("<stdin>", false, pythonToRun, true);
-  }                                                                                                                       
-
-  useEffect(() => {
-    console.log("we got into the use effect");
-    const load = async () => {
-      Sk.configure({ read: builtInRead });
-      Sk.TurtleGraphics = { target: "python-turtle-canvas" };
-      try {
-        await Sk.misceval.asyncToPromise(asyncReturn);
-      } catch (e) {
-        alert(e);
-      }
-    };
-  }, []);
+  };        
 
   // Dispose Monaco Models on unmount
   useEffect(() => {
