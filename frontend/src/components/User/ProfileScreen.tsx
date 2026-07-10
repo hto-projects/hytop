@@ -48,8 +48,8 @@ const ProfileScreen = () => {
 
 
   useEffect(() => {
-    if (projectsError?.status === 401) {
-      logoutApiCall();
+    if ('status' in projectsError && projectsError?.status === 401) {
+      logoutApiCall({});
       dispatch(logout());
       navigate("/login");
     }

@@ -41,7 +41,13 @@ const projectSchema = new mongoose.Schema(
           required: false
         }
       }
-    ]
+    ],
+    projectType: {
+      type: String,
+      required: false,
+      enum: ["html", "python", ""],
+      default: "html"
+    }
   },
   {
     timestamps: true
