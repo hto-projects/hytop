@@ -61,7 +61,7 @@ const FileName = ({
     title: `Confirm Deletion`,
     children: (
       <Text size="sm">
-        Are you sure you want to delete file "{fileName}". This action cannot be undone.
+        Are you sure you want to delete file "{fileName}"? This action cannot be undone.
       </Text>
     ),
     onConfirm: () => handleDeleteFile(fileName),
@@ -88,7 +88,7 @@ const FileName = ({
           : undefined,
         color: selected && theColorScheme === "dark" ? "#fff" : undefined,
         fontWeight: selected ? 600 : 400,
-        display: "block",
+        display: "flex",
         alignItems: "center"
       }}
       onClick={() => {
