@@ -551,7 +551,7 @@ const renderFile = asyncHandler(async (req: any, res) => {
 
   if (!fileName) {
     if (req.originalUrl.endsWith("/")) {
-      fileName = project.projectType === "html" ? "index.html" : "main.py";
+      fileName = project.projectType === "python" ? "main.py" : "index.html";
     } else {
       res.redirect(req.originalUrl + "/");
       return;
