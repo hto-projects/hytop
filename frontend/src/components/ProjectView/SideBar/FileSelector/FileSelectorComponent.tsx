@@ -132,8 +132,8 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
         submitNewFile={submitNewFile}
       />
       <Box style={{ flex: 1, overflowY: "auto" }}>
-        {projectFiles.map((file) => (
-          <ModalsProvider>
+        <ModalsProvider>
+          {projectFiles.map((file) => (
             <FileName
               key={file.fileName}
               fileName={file.fileName}
@@ -144,8 +144,8 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
               updateFileName={handleUpdateFileName}
               handleDeleteFile={handleDeleteFile}
             ></FileName>
-          </ModalsProvider>
-        ))}
+          ))}
+        </ModalsProvider>
       </Box>
     </Box>
   );

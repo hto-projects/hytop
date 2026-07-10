@@ -112,7 +112,9 @@ const FileName = ({
                 icon: <PiTrashBold size={14} />,
                 title: "Delete",
                 color: "red",
-                onClick: openConfirmDeleteModal
+                onClick: () => {
+                  openConfirmDeleteModal()
+                }
               }
             ])
           : undefined
