@@ -2,12 +2,10 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import Loader from "../Interface/Loader";
 import { useCreateProjectMutation } from "../../slices/projectsApiSlice";
-import { useNavigate } from "react-router-dom";
 import {
   Container,
   Paper,
   Title,
-  Text,
   TextInput,
   Textarea,
   Center,
@@ -22,7 +20,7 @@ const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [copyingProjectName, setCopyingProjectName] = useState("");
-  const [projectType, setProjectType] = useState("");
+  const [projectType, setProjectType] = useState("html");
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
 

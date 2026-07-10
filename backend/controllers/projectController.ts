@@ -224,7 +224,8 @@ const copyProject = asyncHandler(async (req: any, res) => {
       projectFiles: existingProject.projectFiles,
       projectStatus: "public",
       projectId: newProjectId,
-      copiedFromId: existingProject.projectId
+      copiedFromId: existingProject.projectId,
+      projectType: existingProject.projectType
     };
 
     const createdProject = await Project.create(newProjectToCreate);
