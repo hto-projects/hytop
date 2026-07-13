@@ -149,10 +149,19 @@ const FileEditorComponent = ({
         );
 
         modelsRef.current[file.fileName] = model;
-        editorRef.current.setModel(model);
+        editorRef.current.setModel(model); 
+        editorRef.current.onDidScrollChange((e) => localStorage.setItem("scrollTop", e.scrollTop.toString()));
       }
     }
   }, [activeTab, editorMounted, projectFiles]);
+
+  // changes to project files have to be tracked separately from tab switches otherwise 
+  // it'll keep the same scroll position across all the tabs when switching
+  useEffect(() => {
+    if (!editorRef.current || editorRef.current.getScrollTop() === parseInt(localStorage.getItem("scrollTop"))) return;
+    
+    editorRef.current.setScrollPosition({ scrollTop: parseInt(localStorage.getItem("scrollTop")) });
+  }, [projectFiles]);
 
   return (
     <Paper
