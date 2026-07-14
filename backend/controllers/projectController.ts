@@ -6,6 +6,7 @@ import fs from "fs";
 import { IProject, IProjectFile } from "../../shared/types";
 import slugify from "slugify";
 import User from "../models/userModel";
+
 import { readdirSync } from "node:fs";
 import { runPyThroughHTML } from "./runPy";
 
@@ -32,7 +33,7 @@ const findProject = async (projectName: string): Promise<IProject> => {
   } catch (e) {
     throw new Error(e);
   }
-
+  //console.log("hi this is starter:" + starterExists); //rebecca
   if (starterExists) {
     try {
       const fileNames: string[] = await fs.promises.readdir(
@@ -70,7 +71,11 @@ const findProject = async (projectName: string): Promise<IProject> => {
       const existingProject: IProject = await Project.findOne({
         projectName: projectName
       });
-
+      //rebecca
+      // if(!existingProject)
+      // {
+      //   throw new Error(":( FILE not found :(");
+      // }
       return existingProject;
     } catch (e) {
       throw new Error(
@@ -117,7 +122,7 @@ const createProject = asyncHandler(async (req: any, res) => {
   if (foundProject) {
     res.status(400);
     throw new Error(
-      `:( project with name ${slugifiedProjectName} already exists :(`
+      `:( project with name ${slugifiedProjectName} already !! exists :(` //rebecca
     );
   }
 
@@ -402,6 +407,7 @@ const changeProjectName = asyncHandler(async (req: any, res) => {
   });
 });
 
+
 const changeProjectDescription = asyncHandler(async (req: any, res) => {
   const { projectId, newProjectDescription } = req.body;
 
@@ -544,17 +550,25 @@ const getProjectId = asyncHandler(async (req: any, res) => {
 // @desc    Render a project file, shows code for when you click on the file
 // @route   GET /pf/:projectName/:filename
 // @access  Public
+  console.log("hello from the other jacket potato");
 const renderFile = asyncHandler(async (req: any, res) => {
+ // console.log("hello from the other koala potato");
   const projectName: string = slugifyProjectName(req.params.projectName);
   let fileName: string = req.params.filename;
   let project: IProject;
 
-  try {
-    project = await findProject(projectName);
-  } catch (e) {
-    res.status(400);
-    throw new Error(":( project not found :(");
+  project = await findProject(projectName);
+  if (!project)
+  {
+   res.status(404);
+    throw new Error(":( project not found :("); 
   }
+  // try {
+  //   project = await findProject(projectName);
+  // } catch (e) {
+  //   res.status(404);
+  //   throw new Error(":( project not found :(");
+  // }
 
   if (!fileName) {
     if (req.originalUrl.endsWith("/")) {
@@ -564,10 +578,18 @@ const renderFile = asyncHandler(async (req: any, res) => {
       return;
     }
   }
-
+  
   const projectFile: IProjectFile | undefined = project.projectFiles.find(
     (file: IProjectFile) => file.fileName === fileName
   );
+  console.log("hello from the other side");
+  console.log(typeof projectFile);
+
+  if(projectFile === null)
+  {
+    res.status(404);
+    throw new Error(":( FILE not found :(");
+  }
 
   if (!projectFile) {
     res.status(404);

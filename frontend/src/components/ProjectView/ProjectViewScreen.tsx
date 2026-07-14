@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   useCheckOwnershipQuery,
   useGetProjectQuery,
@@ -37,22 +37,35 @@ import { IProjectFile } from "../../../../shared/types";
 const ProjectViewScreen: React.FC = () => {
   const monaco = useMonaco();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { projectName } = useParams();
   const dispatch = useDispatch();
 
   const ownership: { data?: { isOwner: boolean } } =
     useCheckOwnershipQuery(projectName);
-  const projectData: {
-    data?: {
-      projectId: string;
-      projectName: string;
-      projectDescription: string;
-      projectFiles: IProjectFile[];
-      ownerUsername: string;
-    };
-  } = useGetProjectQuery(projectName);
-  const [updateProject, { isLoading }] = useUpdateProjectMutation();
+  // const projectData: {
+  //   data?: {
+  //     projectId: string;
+  //     projectName: string;
+  //     projectDescription: string;
+  //     projectFiles: IProjectFile[];
+  //     ownerUsername: string;
+  //   };
+  // } = useGetProjectQuery(projectName);
+ //const projectData = useGetProjectQuery(projectName);
+ const [projectData, { isLoading: isLoadingProjectQuery }] = useGetProjectQuery(projectName);
+  console.log("hi this is projectData" + projectData);
+  if(!projectData)
+  {
+    console.log("we are in the NEW TRY CATCH!");
+      alert(":( FILE does not exist :(" );     
+      navigate('/', {replace: true});
+      return;
+  }
+
+
+  const [updateProject, { isLoading: isLoadingUpdateProject }] = useUpdateProjectMutation();
 
   // Reference to the Monaco Editor instance, persists across re-renders, set in FileEditorComponent
   const editorRef = useRef<editor.IStandaloneCodeEditor>(null);
@@ -214,8 +227,8 @@ const ProjectViewScreen: React.FC = () => {
 
   // Update Store when isLoading changes
   useEffect(() => {
-    dispatch(setEditorIsLoading(isLoading));
-  }, [isLoading, dispatch]);
+    dispatch(setEditorIsLoading(isLoadingUpdateProject));
+  }, [isLoadingUpdateProject, dispatch]);
 
   // localStorage keys for tab config
   const localStorageSelectedFile: string = `hytop_selectedFile_${projectName}`;
@@ -223,7 +236,33 @@ const ProjectViewScreen: React.FC = () => {
 
   // This runs initially when new projectData is loaded from the query
   useEffect(() => {
+    console.log("rebecca said to put a log here");
+    console.log({
+      data: projectData.data,
+      isLoading: projectData.isLoading,
+      isError: projectData.isError,
+      error: projectData.error
+    });
+
+    if(projectData.isLoading === true)
+    {
+      console.log("we are in the is loading state");
+      return;
+    }
+
+    if (projectData.isError === true)
+    {
+      console.log("we are in the is error state");
+      alert(":( FILE does not exist :((" );     
+      navigate('/', {replace: true});
+      return;
+    }
+    //likely fix is to wait for the states so return if it is still loading, put the alert if there is an error, and if there is no data then return
+    
     if (!projectData.data) {
+      console.log("we are in the there is no data state");
+      alert(":( FILE does not exist :(" );     
+      navigate('/', {replace: true});
       return;
     }
 
@@ -233,7 +272,7 @@ const ProjectViewScreen: React.FC = () => {
     setReadyToSetTab(true);
     dispatch(setProjectName(projectData.data.projectName));
     dispatch(setProjectDescription(projectData.data.projectDescription));
-  }, [projectData?.data]);
+  }, [projectData?.data, navigate]);
 
   // Load Initial Tab Configuration from localStorage
   useEffect(() => {
