@@ -1,5 +1,7 @@
 import React from 'react';
-import { socket } from '../socket';
+import { io } from 'socket.io-client';
+
+const socket = io();
 
 export function ConnectionManager() {
   function connect() {

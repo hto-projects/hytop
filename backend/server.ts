@@ -10,6 +10,8 @@ import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import fakeApiRoutes from "./routes/fakeApiRoutes";
 import { renderFile } from "./controllers/projectController";
+import { Server } from "socket.io";
+import { createServer } from "node:http";
 
 const port = process.env.PORT || 5000;
 
@@ -18,6 +20,14 @@ const frontEndUrl = process.env.FRONTEND_URL;
 connectDB();
 
 const app = express();
+const server = createServer(app);
+const io = new Server({
+  cors: {
+    origin: "http://localhost:3000"
+  }
+});
+
+io.listen(4000);
 
 const corsOptions = {
   origin: frontEndUrl,
@@ -41,10 +51,14 @@ app.get("/up-check", (_req, res: any) => {
   res.status(200).send("<h1>BACKEND OPERATION NORMAL</h1>").end();
 });
 
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
 app.get("/pf/:projectName/:filename", renderFile);
 app.get("/pf/:projectName", renderFile);
 
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`Server started on port: ${port}`));
+server.listen(port, () => console.log(`Server started on port: ${port}`));

@@ -6,10 +6,10 @@ import { useComputedColorScheme } from "@mantine/core";
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import { socket } from "./socket";
-import { ConnectionState } from "./components/ConnectionState";
-import { ConnectionManager } from "./components/ConnectionManager";
-import { Events } from "./components/Events";
-import { MyForm } from "./components/MyForm";
+import { ConnectionState } from "./components/Socket/ConnectionState";
+import { ConnectionManager } from "./components/Socket/ConnectionManager";
+import { Events } from "./components/Socket/Events";
+import { MyForm } from "./components/Socket/MyForm";
 
 const App = () => {
   const theColorScheme = useComputedColorScheme("light");
