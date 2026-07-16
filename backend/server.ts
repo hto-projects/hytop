@@ -51,13 +51,21 @@ app.get("/up-check", (_req, res: any) => {
   res.status(200).send("<h1>BACKEND OPERATION NORMAL</h1>").end();
 });
 
-// io.on("connection", (socket) => {
-//   console.log("a user connected");
-
-//   socket.on("disconnect", (reason) => {
-//     console.log(`user disconnected for ${reason}`);
-//   });
+// io.on("user-joins-classroom", (msg) => {
+//   console.log(`user trying to join classroom with id! ${msg}`);
 // });
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  
+  socket.on("user-joins-classroom", (msg) => {
+    console.log(`user trying to join classroom with id: ${msg}`);
+  });
+
+  socket.on("disconnect", (reason) => {
+    console.log(`user disconnected for ${reason}`);
+  });
+});
 
 app.get("/pf/:projectName/:filename", renderFile);
 app.get("/pf/:projectName", renderFile);

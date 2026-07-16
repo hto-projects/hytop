@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io();
+// const socket = io();
 
 const MyForm = () => {
   const [value, setValue] = useState('');
@@ -11,9 +11,9 @@ const MyForm = () => {
     event.preventDefault();
     setIsLoading(true);
 
-    socket.timeout(5000).emit('create-something', value, () => {
-      setIsLoading(false);
-    });
+    // socket.timeout(5000).emit('create-something', value, () => {
+    //   setIsLoading(false);
+    // });
   };
 
   return (

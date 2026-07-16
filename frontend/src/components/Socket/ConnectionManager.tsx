@@ -1,15 +1,15 @@
 import React from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io();
+// const socket = io();
 
 const ConnectionManager = () => {
   const connect = () => {
-    socket.connect();
+    // socket.connect();
   };
 
   const disconnect = () => {
-    socket.disconnect();
+    // socket.disconnect();
   };
 
   return (

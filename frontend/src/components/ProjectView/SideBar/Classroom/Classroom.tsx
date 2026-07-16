@@ -2,10 +2,21 @@ import { Paper, Group, Text, Box, Button, ActionIcon, useComputedColorScheme, Te
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { PiXBold } from "react-icons/pi";
 import { useSelector } from "react-redux";
+import { io } from "socket.io-client";
 
 const Classroom = ({ closePane }) => {
+  const socket = io();
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
+
+  const connect = () => {
+    console.log("a user super duper connected");
+    socket.emit("user-joins-classroom", 1234);
+  };
+
+  const disconnect = () => {
+    socket.disconnect();
+  };
   
   return (
     <Paper
@@ -78,10 +89,40 @@ const Classroom = ({ closePane }) => {
             <Button
               size="xs"
               color={primaryColor}
-              // onClick={handleSave}
+              onClick={connect}
               style={{ fontWeight: 600 }}
             >
               Join
+            </Button>
+          </Group>
+        </Box>
+        <Box p={8} style={{ minWidth: 240 }}>
+          <TextInput
+            label="Create Room"
+            // value={descInput}
+            // onChange={(e) => setDescInput(e.currentTarget.value)}
+            description="Create a room for students to join"
+            size="xs"
+            mb="xs"
+            styles={{
+              input: {
+                color: theColorScheme === "dark" ? "#fff" : undefined,
+                fontFamily: "monospace"
+              },
+              label: {
+                color: theColorScheme === "dark" ? "#fff" : undefined,
+                fontSize: 12
+              }
+            }}
+          />
+          <Group mt="xs" gap={8}>
+            <Button
+              size="xs"
+              color={primaryColor}
+              // onClick={handleSave}
+              style={{ fontWeight: 600 }}
+            >
+              Create
             </Button>
           </Group>
         </Box>
