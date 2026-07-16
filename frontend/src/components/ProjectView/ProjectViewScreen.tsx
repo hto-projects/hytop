@@ -7,7 +7,7 @@ import {
 } from "../../slices/projectsApiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useMonaco } from "@monaco-editor/react";
-import type { editor } from "monaco-editor";
+import { Selection, type editor } from "monaco-editor";
 import {
   setSelectedFile,
   setProjectFiles,
@@ -33,6 +33,7 @@ import ProjectViewContainer from "./Interface/ProjectViewContainer";
 import PreviewComponent from "./Preview/PreviewComponent";
 import FileEditorComponent from "./FileEditor/FileEditorComponent";
 import { IProjectFile } from "../../../../shared/types";
+import { getMonacoLang } from "./util";
 
 const ProjectViewScreen: React.FC = () => {
   const monaco = useMonaco();
@@ -98,6 +99,34 @@ const ProjectViewScreen: React.FC = () => {
     return newProjectFiles;
   };
 
+  /**
+   * Function exists because right now, for the format and save to work we're currently making the formatting edits to the models
+   * directly (since trying to set new project files destroys the undo redo stack). But because of how the project is loaded, all the 
+   * project files don't have corresponding models. A rewrite to how files are loaded should be on the radar.
+   */
+  const setMonacoModelsFromProjectFiles = (): [string, editor.ITextModel][] => {
+    const monacoModels = projectFiles
+      .map((file: IProjectFile): [string, editor.ITextModel] | null => {
+        const uri = monaco.Uri.parse(`file:///${file.fileName}`);
+        const preexistingModel = monaco.editor.getModel(uri);
+        
+        if (preexistingModel) {
+          return [file.fileName, preexistingModel];
+        }
+
+        const model = monaco.editor.createModel(
+          file.fileContent,
+          getMonacoLang(file.fileName),
+          uri
+        );
+
+        modelsRef.current[file.fileName] = model;
+        return [file.fileName, model];
+      });
+
+    return monacoModels;
+  }
+
   // Saves all files, sends to DB
   const saveAllFiles: () => Promise<void> = async () => {
     if (!userIsOwner) return;
@@ -115,6 +144,7 @@ const ProjectViewScreen: React.FC = () => {
 
   // Formats and then saves all files
   const formatAndSaveAllFiles: () => Promise<void> = async () => {
+    console.log('saving from here');
     if (!userIsOwner) return;
     const parserByFileExtension = new Map<
       string,
@@ -127,7 +157,8 @@ const ProjectViewScreen: React.FC = () => {
 
     try {
       const formattedFiles: IProjectFile[] = [];
-      for (const file of projectFiles) {
+
+      for (const file of setProjectFilesStoreFromMonacoModels()) {
         const fileExtension: string = file.fileName.split(".").pop() || "";
         const config: { parser: string; plugins: any[] } | undefined =
           parserByFileExtension.get(fileExtension);
@@ -151,19 +182,32 @@ const ProjectViewScreen: React.FC = () => {
         }
       }
 
-      dispatch(setProjectFiles(formattedFiles));
+      // In order to not break the undo stack we have to write the edits into the models directly
+      const monacoModels = setMonacoModelsFromProjectFiles();
+      for (const entry of monacoModels) {
+        const [modelName, model] = entry;
+        model.pushEditOperations(
+          [], 
+          [{
+            range: model.getFullModelRange(),
+            text: formattedFiles.find((projectFile) => projectFile.fileName === modelName).fileContent
+          }], 
+          null
+        );
+      }
 
-      // Save to backend
+      const syncedProjectFiles = setProjectFilesStoreFromMonacoModels();
       await updateProject({
-        projectFiles: formattedFiles,
+        projectFiles: syncedProjectFiles,
         projectName
       }).unwrap();
+      dispatch(setProjectFiles(syncedProjectFiles));
       dispatch(setProjectVersion(projectVersion + 1));
       dispatch(setUnsavedFiles({}));
     } catch (err) {
       console.error(err);
     }
-  };        
+  };
 
   // Dispose Monaco Models on unmount
   useEffect(() => {
