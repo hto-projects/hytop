@@ -29,31 +29,35 @@ import { setCredentials, logout } from "../../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import ProjectList from "./ProjectList";
 
-
 const ProfileScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userId = userInfo?._id || userInfo?.userId;
 
-
   const [logoutApiCall] = useLogoutMutation();
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
-    const {
+  const {
     data: userProjects = [],
     isLoading: projectsLoading,
     error: projectsError
   } = useGetUserProjectsQuery(userId, { skip: !userId });
 
+  const handleLogout = async () => {
+    try {
+      await logoutApiCall(undefined).unwrap();
+    } catch (err) {}
+
+    dispatch(logout(null));
+    navigate("/login");
+  };
 
   useEffect(() => {
     if (projectsError && 'status' in projectsError && projectsError?.status === 401) {
-      logoutApiCall({});
-      dispatch(logout());
-      navigate("/login");
+      handleLogout();
     }
-  }, [projectsError, logoutApiCall, dispatch, navigate]);
+  }, [projectsError]);
 
   const [email, setEmail] = useState(userInfo ? userInfo.email : "");
   const [name, setName] = useState(userInfo ? userInfo.name : "");
@@ -93,11 +97,6 @@ const ProfileScreen = () => {
       );
     }
   }
-
-  const handleLogout = () => {
-    dispatch(logout(null));
-    navigate("/login");
-  };
 
   return (
     <Box
