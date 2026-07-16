@@ -10,9 +10,10 @@ import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import fakeApiRoutes from "./routes/fakeApiRoutes";
 import { renderFile } from "./controllers/projectController";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 
 const port = process.env.PORT || 5000;
-
 const frontEndUrl = process.env.FRONTEND_URL;
 
 connectDB();
@@ -22,7 +23,7 @@ const app = express();
 const corsOptions = {
   origin: frontEndUrl,
   optionsSuccessStatus: 200,
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -47,4 +48,26 @@ app.get("/pf/:projectName", renderFile);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`Server started on port: ${port}`));
+// app.listen(port, () => console.log(`Server started on port: ${port}`));
+
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: corsOptions
+});
+
+io.on("connection", (socket) => {
+  console.log(`Connected: ${socket.id}`);
+
+  socket.on("hey hey hey", (msg) => {
+    console.log("User is trying to do something!");
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Disconnected: ${socket.id}`);
+  });
+});
+
+httpServer.listen(port, () => {
+  console.log("Server is running");
+});
