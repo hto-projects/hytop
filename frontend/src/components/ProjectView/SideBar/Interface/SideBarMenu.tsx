@@ -40,6 +40,12 @@ const SideBarMenu = ({ selectedPane, setSelectedPane, userIsOwner }) => {
             isOn={selectedPane === "Preferences"}
             onClick={() => setSelectedPane("Preferences")}
           />
+          <SideBarButton
+            name="Classroom"
+            isOn={selectedPane === "Classroom"}
+            onClick={() => setSelectedPane("Classroom")}
+          />
+          {/* // @r&b:preferences  */}
         </>
       )}
     </Box>

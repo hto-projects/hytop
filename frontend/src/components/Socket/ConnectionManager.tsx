@@ -3,12 +3,12 @@ import { io } from 'socket.io-client';
 
 const socket = io();
 
-export function ConnectionManager() {
-  function connect() {
+export const ConnectionManager = () => {
+  const connect = () => {
     socket.connect();
   }
 
-  function disconnect() {
+  const disconnect = () => {
     socket.disconnect();
   }
 

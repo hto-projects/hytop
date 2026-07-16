@@ -56,10 +56,10 @@ const App = () => {
           flex: 1
         }}
       >
-        <ConnectionState isConnected={isConnected} />
+        {/* <ConnectionState isConnected={isConnected} />
         <Events events={fooEvents} />
         <ConnectionManager />
-        <MyForm />
+        <MyForm /> */}
 
         <Outlet />
       </div>
