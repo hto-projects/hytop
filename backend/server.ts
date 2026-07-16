@@ -13,28 +13,21 @@ import { renderFile } from "./controllers/projectController";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || "5000";
 
 const frontEndUrl = process.env.FRONTEND_URL;
 
 connectDB();
-
-const app = express();
-const server = createServer(app);
-const io = new Server({
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
-  }
-});
-
-io.listen(4000);
 
 const corsOptions = {
   origin: frontEndUrl,
   optionsSuccessStatus: 200,
   credentials: true
 };
+
+const app = express();
+const server = createServer(app);
+const io = new Server(server, { cors: corsOptions });
 
 app.use(cors(corsOptions));
 
@@ -52,14 +45,11 @@ app.get("/up-check", (_req, res: any) => {
   res.status(200).send("<h1>BACKEND OPERATION NORMAL</h1>").end();
 });
 
-// io.on("user-joins-classroom", (msg) => {
-//   console.log(`user trying to join classroom with id! ${msg}`);
-// });
+app.use(notFound);
+app.use(errorHandler);
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
-  
-  socket.on("user-joins-classroom", (msg) => {
+  socket.on("test", (msg) => {
     console.log(`user trying to join classroom with id: ${msg}`);
   });
 
@@ -70,8 +60,5 @@ io.on("connection", (socket) => {
 
 app.get("/pf/:projectName/:filename", renderFile);
 app.get("/pf/:projectName", renderFile);
-
-app.use(notFound);
-app.use(errorHandler);
 
 server.listen(port, () => console.log(`Server started on port: ${port}`));

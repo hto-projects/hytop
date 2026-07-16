@@ -1,24 +1,27 @@
-import { Paper, Group, Text, Box, Button, ActionIcon, useComputedColorScheme, TextInput } from "@mantine/core";
+import {
+  Paper,
+  Group,
+  Text,
+  Box,
+  Button,
+  ActionIcon,
+  useComputedColorScheme,
+  TextInput
+} from "@mantine/core";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { PiXBold } from "react-icons/pi";
 import { useSelector } from "react-redux";
-import { io } from "socket.io-client";
+import { socket } from "../../../../socket";
 
 const Classroom = ({ closePane }) => {
-  const socket = io('http://localhost:3000');
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
   const connect = () => {
     console.log("a user super duper connected");
-    // socket.emit("userjoinsclassroom", "1234");
-    socket.emit('chat message', "ffff");
+    socket.emit("test", "ffff");
   };
 
-  const disconnect = () => {
-    socket.disconnect();
-  };
-  
   return (
     <Paper
       style={{
