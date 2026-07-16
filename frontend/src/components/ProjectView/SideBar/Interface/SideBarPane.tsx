@@ -4,6 +4,7 @@ import ProjectSettingsComponent from "../ProjectSettings/ProjectSettingsComponen
 import PreferencesPane from "../../../User/Preferences/PreferencesPane";
 import { SIDEBAR_WIDTH } from "../../constants";
 import React from "react";
+import Classroom from "../Classroom/Classroom";
 
 const SideBarPane = ({ selectedPane, setSelectedPane, userIsOwner }) => {
   const theColorScheme = useComputedColorScheme("light");
@@ -30,6 +31,9 @@ const SideBarPane = ({ selectedPane, setSelectedPane, userIsOwner }) => {
       break;
     case "Preferences":
       pane = <PreferencesPane closePane={closePane} />;
+      break;
+    case "Classroom":
+      pane = <Classroom closePane={closePane} />;
       break;
   }
 

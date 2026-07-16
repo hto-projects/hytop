@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
   console.log(`Connected: ${socket.id}`);
 
   socket.on("hey hey hey", (msg) => {
-    console.log("User is trying to do something!");
+    console.log(`User is trying to do something: ${msg}`);
   });
 
   socket.on("disconnect", () => {
