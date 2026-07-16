@@ -42,6 +42,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data
       })
+    }),
+    promoteAdmin: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/promote-admin`,
+        method: "POST",
+        body: data
+      })
     })
   })
 });
@@ -52,5 +59,6 @@ export const {
   useRegisterMutation,
   useUpdateUserMutation,
   useGetUserProjectsQuery,
-  useResetPasswordMutation
+  useResetPasswordMutation,
+  usePromoteAdminMutation
 } = userApiSlice;

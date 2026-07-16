@@ -187,6 +187,22 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+const adminPromotion = asyncHandler(async (req, res) => {
+  const { username }: { username: string } = req.body;
+  const user = await User.findOne({ username });
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  user.admin = true;
+  await user.save();
+
+  res.json({
+    username
+  });
+});
+
 export {
   authUser,
   registerUser,
@@ -196,5 +212,6 @@ export {
   getUserProjects,
   allUsersAndTheirProjects,
   getProjectsForUser,
-  resetPassword
+  resetPassword,
+  adminPromotion
 };

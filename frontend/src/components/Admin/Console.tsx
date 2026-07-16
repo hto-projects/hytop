@@ -3,7 +3,7 @@ import AdminPanel from "./AdminPanel";
 import AdminPromotion from "./AdminPromotion";
 
 export default function AdminPage() {
-  const theColorScheme = useComputedColorScheme("light");
+  const theColorScheme = useComputedColorScheme("dark");
 
   return (
     <Box
@@ -31,7 +31,7 @@ export default function AdminPage() {
             color: theColorScheme === "dark" ? "#fff" : undefined
           }}
         >
-          <AdminPanel />
+          <AdminPanel colorScheme={theColorScheme} />
         </Paper>
       </Container>
       <Container size={800} my={40}>

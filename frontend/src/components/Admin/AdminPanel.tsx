@@ -1,42 +1,64 @@
-import { useState } from "react";
 import {
-  Title,
-  TextInput,
-  Button,
-  Group,
-  PasswordInput,
-  Box
-} from "@mantine/core";
+  emptyValidation,
+  passwordValidation,
+  Form,
+  PasswordInputForm,
+  TextInputForm
+} from "../Interface/Form";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Title, Button, Group, Box, MantineColorScheme } from "@mantine/core";
 import { toast } from "react-toastify";
 import Loader from "../Interface/Loader";
 import { useResetPasswordMutation } from "../../slices/usersApiSlice";
 
-const AdminPanel = () => {
+interface AdminPanelProps {
+  colorScheme: MantineColorScheme;
+}
+
+const AdminPanel = ({ colorScheme }: AdminPanelProps) => {
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const userIsAdmin = userInfo?.admin || false;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userIsAdmin) {
+      alert!("You are not an admin! Go away!");
+      navigate("/");
+    }
+  }, [userIsAdmin, navigate]);
+
   const [resetUsername, setResetUsername] = useState("");
   const [resetPassword, setResetPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+  const passwordsMatch =
+    resetPassword === resetConfirmPassword &&
+    resetPassword !== "" &&
+    resetConfirmPassword !== "";
 
   const [resetPasswordMutation, { isLoading }] = useResetPasswordMutation();
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    if (resetPassword !== resetConfirmPassword) {
-      toast.error("Passwords do not match");
-    } else {
-      try {
-        const updateData: any = {
-          username: resetUsername,
-          password: resetPassword
-        };
-        const res = await resetPasswordMutation(updateData).unwrap();
-        toast.success(`Password for ${res.username} updated successfully`);
-      } catch (err: any) {
-        toast.error(
-          err?.data?.message || err.error || "Failed to update password"
-        );
-      }
+  async function onSubmit({ fulfilled, event }) {
+    event.preventDefault();
+    if (!fulfilled) {
+      toast.error("missing field");
+      return;
     }
-  };
+
+    try {
+      const updateData: any = {
+        username: resetUsername,
+        password: resetPassword
+      };
+      const res = await resetPasswordMutation(updateData).unwrap();
+      toast.success(`Password for ${res.username} updated successfully`);
+    } catch (err: any) {
+      toast.error(
+        err?.data?.message || err.error || "Failed to update password"
+      );
+    }
+  }
 
   return (
     <div
@@ -47,36 +69,46 @@ const AdminPanel = () => {
       }}
     >
       <Title order={2} ta="center" mb="md">
-        Admin Panel: Reset Password for User
+        Reset Password for User
       </Title>
-      <form onSubmit={submitHandler} style={{ width: "100%" }}>
-        <TextInput
+      <Form
+        colorScheme={colorScheme}
+        customConditions={() => {
+          if (resetPassword === resetConfirmPassword) return true;
+          return false;
+        }}
+        onSubmit={onSubmit}
+      >
+        {/* intentionally holds no validation in case of accounts created prior to standardized form validation */}
+        <TextInputForm
           label="Username"
           value={resetUsername}
-          onChange={(e) => setResetUsername(e.target.value)}
+          setValue={setResetUsername}
+          validation={emptyValidation}
           required
-          mb="md"
-          size="md"
-          style={{ width: "100%" }}
         />
-        <PasswordInput
+        <PasswordInputForm
           label="Password"
           value={resetPassword}
-          onChange={(e) => setResetPassword(e.target.value)}
-          mb="md"
-          size="md"
-          style={{ width: "100%" }}
+          setValue={setResetPassword}
+          validation={passwordValidation}
+          required
+          showAfter
+          hideCompleted
         />
-        <PasswordInput
+        <PasswordInputForm
           label="Confirm Password"
           value={resetConfirmPassword}
-          onChange={(e) => setResetConfirmPassword(e.target.value)}
-          mb="md"
-          size="md"
-          style={{ width: "100%" }}
+          setValue={setResetConfirmPassword}
+          required
         />
         <Group mt="md" justify="space-between">
-          <Button type="submit" size="md" loading={isLoading}>
+          <Button
+            type="submit"
+            size="md"
+            loading={isLoading}
+            disabled={!passwordsMatch}
+          >
             Send Reset Request
           </Button>
         </Group>
@@ -85,7 +117,7 @@ const AdminPanel = () => {
             <Loader />
           </Box>
         )}
-      </form>
+      </Form>
     </div>
   );
 };

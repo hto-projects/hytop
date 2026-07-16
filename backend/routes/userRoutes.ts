@@ -7,6 +7,7 @@ import {
   updateUserProfile,
   allUsersAndTheirProjects,
   resetPassword,
+  adminPromotion,
   getProjectsForUser as getProjectsForUserName
 } from "../controllers/userController";
 import { getUserProjects } from "../controllers/userController";
@@ -18,6 +19,7 @@ router.post("/", registerUser);
 router.post("/auth", authUser);
 router.post("/logout", logoutUser);
 router.post("/reset-password", adminProtect, resetPassword);
+router.post("/promote-admin", adminProtect, adminPromotion);
 
 router
   .route("/profile")
