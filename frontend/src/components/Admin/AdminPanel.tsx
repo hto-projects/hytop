@@ -5,9 +5,7 @@ import {
   PasswordInputForm,
   TextInputForm
 } from "../Interface/Form";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useState } from "react";
 import { Title, Button, Group, Box, MantineColorScheme } from "@mantine/core";
 import { toast } from "react-toastify";
 import Loader from "../Interface/Loader";
@@ -18,17 +16,6 @@ interface AdminPanelProps {
 }
 
 const AdminPanel = ({ colorScheme }: AdminPanelProps) => {
-  const { userInfo } = useSelector((state: any) => state.auth);
-  const userIsAdmin = userInfo?.admin || false;
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!userIsAdmin) {
-      alert!("You are not an admin! Go away!");
-      navigate("/");
-    }
-  }, [userIsAdmin, navigate]);
-
   const [resetUsername, setResetUsername] = useState("");
   const [resetPassword, setResetPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");

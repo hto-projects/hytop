@@ -2,6 +2,7 @@ import { usePromoteAdminMutation } from "../../slices/usersApiSlice";
 import {
   Form,
   TextInputForm,
+  DropdownForm,
   usernameValidation,
   Condition
 } from "../Interface/Form";
@@ -17,6 +18,8 @@ interface AdminPromotionProps {
 export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
   const [username, setUsername] = useState<string>("");
   const [confirmation, setConfirmation] = useState<string>("");
+  const [role, setRole] = useState<string>("");
+  const isAdmin = role.toLowerCase() === "admin" ? true : false;
 
   const [promoteAdminMutation, { isLoading }] = usePromoteAdminMutation();
 
@@ -27,8 +30,12 @@ export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
     }
 
     try {
-      const res = await promoteAdminMutation({ username }).unwrap();
-      toast.success(`admin field for ${res.username} has been set to true`);
+      const res: { username: string; isAdmin: boolean } =
+        await promoteAdminMutation({ username, isAdmin }).unwrap();
+
+      toast.success(
+        `admin field for ${res.username} has been set to ${res.isAdmin}`
+      );
     } catch (e) {
       toast.error(e?.data?.message || e.error || "Failed to give admin status");
     }
@@ -49,7 +56,7 @@ export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
   return (
     <div>
       <Title order={2} ta="center" mb="md">
-        Promote user to Admin
+        Change role of user
       </Title>
       <Form colorScheme={colorScheme} onSubmit={onSubmit}>
         <TextInputForm
@@ -61,6 +68,13 @@ export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
           showAfter
           hideFulfilled
         />
+        <DropdownForm
+          label="Role"
+          placeholder="Select role"
+          options={["User", "Admin"]}
+          value={role}
+          setValue={setRole}
+        />
         <TextInputForm
           label='Type "confirm"'
           value={confirmation}
@@ -70,7 +84,6 @@ export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
           showAfter
           hideFulfilled
         />
-
         <Group mt="md" justify="space-between">
           <Button
             type="submit"
@@ -78,7 +91,7 @@ export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
             style={{ width: "100%" }}
             disabled={confirmation !== "confirm"}
           >
-            Set Admin
+            Change role
           </Button>
         </Group>
         {isLoading && (

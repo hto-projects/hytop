@@ -187,19 +187,22 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
-const adminPromotion = asyncHandler(async (req, res) => {
-  const { username }: { username: string } = req.body;
+const changeAdminStatus = asyncHandler(async (req, res) => {
+  console.log(req.body);
+  const { username, isAdmin }: { username: string; isAdmin: boolean } =
+    req.body;
   const user = await User.findOne({ username });
   if (!user) {
     res.status(404);
     throw new Error("User not found");
   }
 
-  user.admin = true;
+  user.admin = isAdmin;
   await user.save();
 
   res.json({
-    username
+    username,
+    isAdmin
   });
 });
 
@@ -213,5 +216,5 @@ export {
   allUsersAndTheirProjects,
   getProjectsForUser,
   resetPassword,
-  adminPromotion
+  changeAdminStatus
 };

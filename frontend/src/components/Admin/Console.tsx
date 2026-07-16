@@ -1,8 +1,22 @@
 import { Box, Container, Paper, useComputedColorScheme } from "@mantine/core";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import AdminPanel from "./AdminPanel";
 import AdminPromotion from "./AdminPromotion";
 
 export default function AdminPage() {
+  const { userInfo } = useSelector((state: any) => state.auth);
+  const userIsAdmin = userInfo?.admin || false;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!userIsAdmin) {
+      alert!("You are not an admin! Go away!");
+      navigate("/");
+    }
+  }, []);
+
   const theColorScheme = useComputedColorScheme("dark");
 
   return (

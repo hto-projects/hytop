@@ -44,8 +44,8 @@ export const userApiSlice = apiSlice.injectEndpoints({
       })
     }),
     promoteAdmin: builder.mutation({
-      query: (data) => ({
-        url: `${USERS_URL}/promote-admin`,
+      query: (data: { username: string; isAdmin: boolean }) => ({
+        url: `${USERS_URL}/change-admin-status`,
         method: "POST",
         body: data
       })

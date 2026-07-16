@@ -8,7 +8,12 @@ import {
   TextInput,
   PasswordInput,
   Text,
-  MantineColorScheme
+  MantineColorScheme,
+  useCombobox,
+  Combobox,
+  Group,
+  Input,
+  InputBase
 } from "@mantine/core";
 import React, { useState, useEffect, useCallback } from "react";
 const ColorSchemeContext = React.createContext("auto");
@@ -233,6 +238,80 @@ export function TextInputForm(props: MantineFormProps) {
       type={TextInput}
       showConditionsOn="focus_or_blur_with_value"
     />
+  );
+}
+
+interface DropdownProps {
+  options: Array<string>;
+  label: string;
+  placeholder?: string;
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>; // input field hook
+}
+
+export function DropdownForm({
+  options,
+  label,
+  placeholder = "",
+  value,
+  setValue
+}: DropdownProps) {
+  const colorScheme = React.useContext(ColorSchemeContext);
+
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+    onDropdownOpen: (eventSource) => {
+      if (eventSource === "keyboard") {
+        combobox.selectActiveOption();
+      } else {
+        combobox.updateSelectedOptionIndex("active");
+      }
+    }
+  });
+
+  const dropdownOptions = options.map((item) => (
+    <Combobox.Option value={item} key={item} active={item === value}>
+      <Group gap="xs">
+        <Text c={colorScheme === "dark" ? "white" : "black"}>{item}</Text>
+      </Group>
+    </Combobox.Option>
+  ));
+
+  return (
+    <Combobox
+      store={combobox}
+      resetSelectionOnOptionHover
+      onOptionSubmit={(val) => {
+        setValue(val);
+        combobox.closeDropdown();
+      }}
+    >
+      <Combobox.Target targetType="button">
+        <InputBase
+          mb="md"
+          size="md"
+          style={{ width: "100%" }}
+          label={label}
+          color={colorScheme}
+          component="button"
+          type="button"
+          pointer
+          rightSection={<Combobox.Chevron />}
+          rightSectionPointerEvents="none"
+          onClick={() => combobox.toggleDropdown()}
+          onChange={(event) => combobox.updateSelectedOptionIndex()}
+        >
+          {(placeholder && !value && (
+            <Input.Placeholder>{placeholder}</Input.Placeholder>
+          )) ||
+            value}
+        </InputBase>
+      </Combobox.Target>
+
+      <Combobox.Dropdown>
+        <Combobox.Options>{dropdownOptions}</Combobox.Options>
+      </Combobox.Dropdown>
+    </Combobox>
   );
 }
 
