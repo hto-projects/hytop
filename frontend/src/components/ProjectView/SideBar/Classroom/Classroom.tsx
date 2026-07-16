@@ -5,13 +5,14 @@ import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
 const Classroom = ({ closePane }) => {
-  const socket = io();
+  const socket = io('http://localhost:3000');
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
   const connect = () => {
     console.log("a user super duper connected");
-    socket.emit("user-joins-classroom", 1234);
+    // socket.emit("userjoinsclassroom", "1234");
+    socket.emit('chat message', "ffff");
   };
 
   const disconnect = () => {
