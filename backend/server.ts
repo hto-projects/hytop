@@ -59,8 +59,8 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
   console.log(`Connected: ${socket.id}`);
 
-  socket.on("hey hey hey", (msg) => {
-    console.log(`User is trying to do something: ${msg}`);
+  socket.on("joinRoomByID", (id) => {
+    console.log(`User is trying to join room with id: ${id}`);
   });
 
   socket.on("disconnect", () => {

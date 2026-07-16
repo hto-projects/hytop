@@ -4,15 +4,16 @@ import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { useComputedColorScheme } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { socket } from "../../../../socket";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Classroom = ({ closePane }) => {
+  const [roomID, setRoomID] = useState<null | string>(null);
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
-  useEffect(() => {
-    socket.emit("hey hey hey", `${socket.id}`);
-  }, []);
+  const joinRoomByID = () => {
+    socket.emit("joinRoomByID", `${roomID}`);
+  };
 
   return (
     <Paper
@@ -69,7 +70,7 @@ const Classroom = ({ closePane }) => {
             label="Join by Classroom ID"
             description="Enter the ID of the classroom you want to join"
             // value={nameInput}
-            // onChange={(e) => setNameInput(e.currentTarget.value)}
+            onChange={(e) => setRoomID(e.currentTarget.value)}
             size="xs"
             mb="xs"
             autoFocus
@@ -91,7 +92,7 @@ const Classroom = ({ closePane }) => {
           <Button
             size="xs"
             color={primaryColor}
-            // onClick={handleSave}
+            onClick={joinRoomByID}
             style={{ fontWeight: 600 }}
           >
             Join
