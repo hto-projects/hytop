@@ -3,18 +3,18 @@ import { io } from 'socket.io-client';
 
 const socket = io();
 
-export function MyForm() {
+const MyForm = () => {
   const [value, setValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  function onSubmit(event) {
+  const onSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
 
     socket.timeout(5000).emit('create-something', value, () => {
       setIsLoading(false);
     });
-  }
+  };
 
   return (
     <form onSubmit={ onSubmit }>
@@ -23,4 +23,6 @@ export function MyForm() {
       <button type="submit" disabled={ isLoading }>Submit</button>
     </form>
   );
-}
+};
+
+export default MyForm;

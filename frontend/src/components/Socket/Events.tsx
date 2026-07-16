@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const Events = ({ events }) => {
+const Events = ({ events }) => {
   return (
     <ul>
     {
@@ -10,4 +10,6 @@ export const Events = ({ events }) => {
     }
     </ul>
   );
-}
+};
+
+export default Events;

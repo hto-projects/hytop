@@ -6,10 +6,10 @@ import { useComputedColorScheme } from "@mantine/core";
 import "./App.css";
 import React, { useState, useEffect } from "react";
 import { socket } from "./socket";
-import { ConnectionState } from "./components/Socket/ConnectionState";
-import { ConnectionManager } from "./components/Socket/ConnectionManager";
-import { Events } from "./components/Socket/Events";
-import { MyForm } from "./components/Socket/MyForm";
+import ConnectionState from "./components/Socket/ConnectionState";
+import ConnectionManager from "./components/Socket/ConnectionManager";
+import Events from "./components/Socket/Events";
+import MyForm from "./components/Socket/MyForm";
 
 const App = () => {
   const theColorScheme = useComputedColorScheme("light");
@@ -17,17 +17,17 @@ const App = () => {
   const [fooEvents, setFooEvents] = useState([]);
 
   useEffect(() => {
-    function onConnect() {
+    const onConnect = () => {
       setIsConnected(true);
-    }
+    };
 
-    function onDisconnect() {
+    const onDisconnect = () => {
       setIsConnected(false);
-    }
+    };
 
-    function onFooEvent(value) {
+    const onFooEvent = (value) => {
       setFooEvents((previous) => [...previous, value]);
-    }
+    };
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);

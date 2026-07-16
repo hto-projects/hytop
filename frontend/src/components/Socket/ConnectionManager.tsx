@@ -3,14 +3,14 @@ import { io } from 'socket.io-client';
 
 const socket = io();
 
-export const ConnectionManager = () => {
+const ConnectionManager = () => {
   const connect = () => {
     socket.connect();
-  }
+  };
 
   const disconnect = () => {
     socket.disconnect();
-  }
+  };
 
   return (
     <>
@@ -18,4 +18,6 @@ export const ConnectionManager = () => {
       <button onClick={ disconnect }>Disconnect</button>
     </>
   );
-}
+};
+
+export default ConnectionManager;

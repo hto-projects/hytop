@@ -1,5 +1,7 @@
 import React from 'react';
 
-export function ConnectionState({ isConnected }) {
+const ConnectionState = ({ isConnected }) => {
   return <p>State: { '' + isConnected }</p>;
-}
+};
+
+export default ConnectionState;
