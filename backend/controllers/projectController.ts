@@ -7,7 +7,13 @@ import { IProject, IProjectFile } from "../../shared/types";
 import slugify from "slugify";
 import User from "../models/userModel";
 import { readdirSync } from "node:fs";
+import { runPyThroughHTML } from "./runPy";
 
+/**
+ * If you're handling any request that involve getting the project name MAKE SURE you slugify it.
+ * For example, trying to access MyFirstProject vs myfirstproject will not work. 
+ * Slugifying it will make it so that it's not case sensitive.
+ */
 const slugifyProjectName = (unsluggedName: string): string => {
   return slugify(unsluggedName, {
     replacement: "-",
@@ -104,11 +110,10 @@ const getUserId = (req, res) => {
 // @access  Public
 const createProject = asyncHandler(async (req: any, res) => {
   const userId = getUserId(req, res);
-
-  const { projectName, projectDescription, copyingProjectName } = req.body;
+  const { projectName, projectDescription, copyingProjectName, projectType } = req.body;
   const slugifiedProjectName = slugifyProjectName(projectName);
-
   const foundProject: IProject = await findProject(slugifiedProjectName);
+  
   if (foundProject) {
     res.status(400);
     throw new Error(
@@ -117,25 +122,27 @@ const createProject = asyncHandler(async (req: any, res) => {
   }
 
   let existingProject: IProject = await findProject(copyingProjectName);
-  const newProjectId: string = uuidv4();
 
+  const newProjectId: string = uuidv4();
   const starterProjectFiles: IProjectFile[] = [
     {
-      fileName: "index.html",
+      fileName: projectType === "html" ? "index.html" : "main.py",
       fileContent: ""
     }
   ];
+
 
   const copyProjectFiles: IProjectFile[] | undefined =
     existingProject && existingProject.projectFiles;
 
   const projectToCreate: IProject = {
     projectName: slugifiedProjectName,
-    projectDescription,
     projectFiles: copyProjectFiles || starterProjectFiles,
     projectId: newProjectId,
     projectOwnerId: userId,
-    projectStatus: "public"
+    projectStatus: "public",
+    projectDescription,
+    projectType
   };
 
   try {
@@ -192,10 +199,11 @@ const copyProject = asyncHandler(async (req: any, res) => {
   const userId = getUserId(req, res);
 
   const { projectName } = req.body;
+  const slugifiedProjectName = slugifyProjectName(projectName);
   let existingProject: IProject;
 
   try {
-    existingProject = await findProject(projectName);
+    existingProject = await findProject(slugifiedProjectName);
   } catch (e) {
     res.status(400);
     throw new Error(":( project not found :(");
@@ -207,7 +215,7 @@ const copyProject = asyncHandler(async (req: any, res) => {
 
   try {
     newProjectName = await generateNewProjectName(
-      removeTrailingDigits(projectName)
+      removeTrailingDigits(slugifiedProjectName)
     );
   } catch (error) {
     res.status(400);
@@ -222,7 +230,8 @@ const copyProject = asyncHandler(async (req: any, res) => {
       projectFiles: existingProject.projectFiles,
       projectStatus: "public",
       projectId: newProjectId,
-      copiedFromId: existingProject.projectId
+      copiedFromId: existingProject.projectId,
+      projectType: existingProject.projectType
     };
 
     const createdProject = await Project.create(newProjectToCreate);
@@ -240,7 +249,7 @@ const copyProject = asyncHandler(async (req: any, res) => {
 });
 
 export const getForksOfProject = asyncHandler(async (req: any, res) => {
-  const projectName: string = req.params.projectName;
+  const projectName: string = slugifyProjectName(req.params.projectName);
   let projectId: string;
 
   try {
@@ -268,7 +277,7 @@ export const getForksOfProject = asyncHandler(async (req: any, res) => {
 // @access  NOT Public
 const checkOwnership = asyncHandler(async (req: any, res) => {
   const user = req.user;
-  const projectName: string = req.params.projectName;
+  const projectName: string = slugifyProjectName(req.params.projectName);
 
   const existingProject: IProject = await findProject(projectName);
   if (!existingProject) {
@@ -435,7 +444,7 @@ const changeProjectDescription = asyncHandler(async (req: any, res) => {
 // @access  NOT Public
 const updateProject = asyncHandler(async (req: any, res) => {
   const user = req.user;
-  const projectName: string = req.body.projectName;
+  const projectName: string = slugifyProjectName(req.body.projectName);
   const projectFiles: IProjectFile[] = req.body.projectFiles;
 
   const existingProject = await findProject(projectName);
@@ -492,7 +501,7 @@ const getLatest = asyncHandler(async (req: any, res) => {
 // @route   GET /get/:projectId
 // @access  Public
 const getProject = asyncHandler(async (req: any, res) => {
-  const projectName: string = req.params.projectName;
+  const projectName: string = slugifyProjectName(req.params.projectName);
   let project: IProject & { ownerUsername?: string };
   let ownerUsername: string;
 
@@ -519,7 +528,7 @@ const getProject = asyncHandler(async (req: any, res) => {
 });
 
 const getProjectId = asyncHandler(async (req: any, res) => {
-  const projectName: string = req.params.projectName;
+  const projectName: string = slugifyProjectName(req.params.projectName);
   let project: IProject;
 
   try {
@@ -536,9 +545,8 @@ const getProjectId = asyncHandler(async (req: any, res) => {
 // @route   GET /pf/:projectName/:filename
 // @access  Public
 const renderFile = asyncHandler(async (req: any, res) => {
-  const projectName: string = req.params.projectName;
+  const projectName: string = slugifyProjectName(req.params.projectName);
   let fileName: string = req.params.filename;
-
   let project: IProject;
 
   try {
@@ -550,7 +558,7 @@ const renderFile = asyncHandler(async (req: any, res) => {
 
   if (!fileName) {
     if (req.originalUrl.endsWith("/")) {
-      fileName = "index.html";
+      fileName = project.projectType === "python" ? "main.py" : "index.html";
     } else {
       res.redirect(req.originalUrl + "/");
       return;
@@ -580,6 +588,12 @@ const renderFile = asyncHandler(async (req: any, res) => {
 
   if (fileName.endsWith(".css")) {
     res.setHeader("Content-Type", "text/css");
+  }
+
+  if (fileName.endsWith(".py")) {
+    res.setHeader("Content-Type", "text/html");
+    res.send(runPyThroughHTML(JSON.stringify(projectFile.fileContent)));
+    return;
   }
 
   res.send(projectFile.fileContent);

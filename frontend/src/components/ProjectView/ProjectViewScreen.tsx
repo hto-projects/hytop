@@ -83,12 +83,14 @@ const ProjectViewScreen: React.FC = () => {
       (file: IProjectFile) => {
         const model: editor.ITextModel | undefined =
           modelsRef.current[file.fileName];
+
         if (model) {
           const modelContent: string = model.getValue();
           if (modelContent !== file.fileContent) {
             return { ...file, fileContent: modelContent };
           }
         }
+
         return file;
       }
     );
@@ -161,7 +163,7 @@ const ProjectViewScreen: React.FC = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  };        
 
   // Dispose Monaco Models on unmount
   useEffect(() => {

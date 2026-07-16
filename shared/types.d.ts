@@ -10,5 +10,7 @@ export interface IProject {
     projectStatus: string;
     projectFiles: IProjectFile[];
     updatedAt?: number;
+    copiedFromId?: string;
+    projectType?: "python" | "html";
 }
 //# sourceMappingURL=types.d.ts.map

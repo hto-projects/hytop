@@ -12,4 +12,5 @@ export interface IProject {
   projectFiles: IProjectFile[];
   updatedAt?: number;
   copiedFromId?: string;
+  projectType?: "python" | "html";
 }

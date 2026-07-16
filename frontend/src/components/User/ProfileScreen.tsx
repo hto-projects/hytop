@@ -44,8 +44,8 @@ const ProfileScreen = () => {
   } = useGetUserProjectsQuery(userId, { skip: !userId });
 
   useEffect(() => {
-    if (projectsError?.status === 401) {
-      logoutApiCall();
+    if (projectsError && 'status' in projectsError && projectsError?.status === 401) {
+      logoutApiCall({});
       dispatch(logout());
       navigate("/login");
     }
