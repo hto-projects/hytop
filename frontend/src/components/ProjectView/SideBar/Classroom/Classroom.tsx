@@ -7,13 +7,36 @@ import { socket } from "../../../../socket";
 import { useEffect, useState } from "react";
 
 const Classroom = ({ closePane }) => {
-  const [roomID, setRoomID] = useState<null | string>(null);
+  const [roomIDInput, setroomIDInput] = useState("");
+  const [roomNameInput, setroomNameInput] = useState("");
+  const [roomName, setRoomName] = useState(""); 
+  const [roomID, setRoomID] = useState(""); 
+  const [isInRoom, setIsInRoom] = useState(false);
+
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
   const joinRoomByID = () => {
-    socket.emit("joinRoomByID", `${roomID}`);
+    socket.emit("joinRoomByID", roomIDInput);
+    setRoomID(roomIDInput);
+    setIsInRoom(true);
   };
+  
+  const createRoom = () => {
+    socket.emit("createRoom", roomNameInput);
+    setRoomName(roomNameInput);
+    setIsInRoom(true);
+  };
+
+  useEffect(() => {
+    socket.on("joinedRoom", () => {
+      console.log("they're here");
+    });
+
+    return () => {
+      socket.off("joinedRoom");
+    };
+  }, []);
 
   return (
     <Paper
@@ -30,6 +53,7 @@ const Classroom = ({ closePane }) => {
         overflow: "hidden"
       }}
     >
+      
       <Group
         align="apart"
         px="sm"
@@ -65,66 +89,100 @@ const Classroom = ({ closePane }) => {
         <Text fw={700} mb="xs">
           Classroom Portal
         </Text>
-        <Box p={8} style={{ minWidth: 240 }}>
-          <TextInput
-            label="Join by Classroom ID"
-            description="Enter the ID of the classroom you want to join"
-            // value={nameInput}
-            onChange={(e) => setRoomID(e.currentTarget.value)}
-            size="xs"
-            mb="xs"
-            autoFocus
-            styles={{
-              input: {
-                color: theColorScheme === "dark" ? "#fff" : undefined,
-                fontFamily: "monospace"
-              },
-              label: {
-                color: theColorScheme === "dark" ? "#fff" : undefined,
-                fontSize: 12
-              },
-              description: {
-                color: theColorScheme === "dark" ? "#888" : "#666",
-                fontSize: 10
-              }
-            }}
-          />
-          <Button
-            size="xs"
-            color={primaryColor}
-            onClick={joinRoomByID}
-            style={{ fontWeight: 600 }}
-          >
-            Join
-          </Button>
-          <TextInput
-            label="Create a Room"
-            // value={descInput}
-            // onChange={(e) => setDescInput(e.currentTarget.value)}
-            size="xs"
-            mb="xs"
-            styles={{
-              input: {
-                color: theColorScheme === "dark" ? "#fff" : undefined,
-                fontFamily: "monospace"
-              },
-              label: {
-                color: theColorScheme === "dark" ? "#fff" : undefined,
-                fontSize: 12
-              }
-            }}
-          />
-          <Group mt="xs" gap={8}>
-            <Button
-              size="xs"
-              color={primaryColor}
-              // onClick={handleSave}
-              style={{ fontWeight: 600 }}
-            >
-              Create
-            </Button>
-          </Group>
-        </Box>
+        {
+          isInRoom ?
+            <Box p={8} style={{ minWidth: 240 }}>
+              <Text size="xs" fw="bold">Welcome to "{roomName}"</Text>
+              <TextInput
+                description="Send Message in Chat"
+                // value={descInput}
+                // onChange={(e) => setroomNameInput(e.currentTarget.value)}
+                size="xs"
+                mb="xs"
+                styles={{
+                  input: {
+                    color: theColorScheme === "dark" ? "#fff" : undefined,
+                    fontFamily: "monospace"
+                  },
+                  label: {
+                    color: theColorScheme === "dark" ? "#fff" : undefined,
+                    fontSize: 12
+                  }
+                }}
+              />
+              <Group mt="xs" gap={8}>
+                <Button
+                  size="xs"
+                  color={primaryColor}
+                  // onClick={createRoom}
+                  style={{ fontWeight: 600 }}
+                >
+                  Send
+                </Button>
+              </Group>
+            </Box>
+            :
+            <Box p={8} style={{ minWidth: 240 }}>
+              <TextInput
+                label="Join by Classroom ID"
+                description="Enter the ID of the classroom you want to join"
+                // value={nameInput}
+                onChange={(e) => setroomIDInput(e.currentTarget.value)}
+                size="xs"
+                mb="xs"
+                autoFocus
+                styles={{
+                  input: {
+                    color: theColorScheme === "dark" ? "#fff" : undefined,
+                    fontFamily: "monospace"
+                  },
+                  label: {
+                    color: theColorScheme === "dark" ? "#fff" : undefined,
+                    fontSize: 12
+                  },
+                  description: {
+                    color: theColorScheme === "dark" ? "#888" : "#666",
+                    fontSize: 10
+                  }
+                }}
+              />
+              <Button
+                size="xs"
+                color={primaryColor}
+                onClick={joinRoomByID}
+                style={{ fontWeight: 600 }}
+              >
+                Join
+              </Button>
+              <TextInput
+                label="Create a Room"
+                // value={descInput}
+                onChange={(e) => setroomNameInput(e.currentTarget.value)}
+                size="xs"
+                mb="xs"
+                styles={{
+                  input: {
+                    color: theColorScheme === "dark" ? "#fff" : undefined,
+                    fontFamily: "monospace"
+                  },
+                  label: {
+                    color: theColorScheme === "dark" ? "#fff" : undefined,
+                    fontSize: 12
+                  }
+                }}
+              />
+              <Group mt="xs" gap={8}>
+                <Button
+                  size="xs"
+                  color={primaryColor}
+                  onClick={createRoom}
+                  style={{ fontWeight: 600 }}
+                >
+                  Create
+                </Button>
+              </Group>
+            </Box>
+        }
       </Box>
     </Paper>
   );

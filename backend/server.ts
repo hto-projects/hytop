@@ -58,9 +58,16 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   console.log(`Connected: ${socket.id}`);
-
+  
+  // needs to rewrite and create room based on front end
   socket.on("joinRoomByID", (id) => {
     console.log(`User is trying to join room with id: ${id}`);
+    socket.join("room1");
+  });
+
+  // this goes along with that
+  socket.on("createRoom", (name) => {
+    io.to("room1").emit("joinedRoom");
   });
 
   socket.on("disconnect", () => {
