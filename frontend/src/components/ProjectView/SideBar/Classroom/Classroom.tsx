@@ -1,40 +1,73 @@
 import { PiXBold } from "react-icons/pi";
-import { Paper, Group, Text, Box, Button, ActionIcon, TextInput } from "@mantine/core";
+import { Paper, Group, Text, Box, Button, ActionIcon, TextInput, Space } from "@mantine/core";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { useComputedColorScheme } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { socket } from "../../../../socket";
 import { useEffect, useState } from "react";
+import { useGetProjectQuery } from "../../../../slices/projectsApiSlice";
+import { IProjectFile } from "../../../../../../shared/types";
+import { useParams } from "react-router-dom";
 
 const Classroom = ({ closePane }) => {
-  const [roomIDInput, setroomIDInput] = useState("");
-  const [roomNameInput, setroomNameInput] = useState("");
+  // marking these four lines to be moved to global state
+  // cuz big issue, whenever jumping to the classroom panel and back these things automatically get reset.
   const [roomName, setRoomName] = useState(""); 
   const [roomID, setRoomID] = useState(""); 
   const [isInRoom, setIsInRoom] = useState(false);
+  const [isRoomCreator, setIsRoomCreator] = useState(true);
+  
+  const [roomIDInput, setroomIDInput] = useState("");
+  const [roomNameInput, setroomNameInput] = useState("");
 
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
+  const { projectName} = useParams();
+  // const projectData: {
+  //   data?: {
+  //     projectId: string;
+  //     projectName: string;
+  //     projectDescription: string;
+  //     projectFiles: IProjectFile[];
+  //     ownerUsername: string;
+  //   };
+  // } = useGetProjectQuery(projectName);
+
   const joinRoomByID = () => {
-    socket.emit("joinRoomByID", roomIDInput);
+    socket.emit("joinRoomByID", roomIDInput, "brian patton", projectName);
     setRoomID(roomIDInput);
     setIsInRoom(true);
   };
   
   const createRoom = () => {
-    socket.emit("createRoom", roomNameInput);
+    socket.emit("createRoom");
     setRoomName(roomNameInput);
     setIsInRoom(true);
+    setIsRoomCreator(true);
   };
 
   useEffect(() => {
-    socket.on("joinedRoom", () => {
-      console.log("they're here");
+    socket.on("joinedRoom", (id) => {
+      setRoomID(id);
+    });
+
+    socket.on("userJoined", (name, projectName) => {
+      console.log(`${name} has joined!`);
+      console.log(`${isRoomCreator}`);
+
+      if (!isRoomCreator) return;
+      socket.emit("privateMessage", projectName, roomName);
+    });
+
+    socket.on("getRoomName", (roomName) => {
+      setRoomName(roomName)
     });
 
     return () => {
       socket.off("joinedRoom");
+      socket.off("userJoined");
+      socket.off("getRoomName");
     };
   }, []);
 
@@ -93,6 +126,8 @@ const Classroom = ({ closePane }) => {
           isInRoom ?
             <Box p={8} style={{ minWidth: 240 }}>
               <Text size="xs" fw="bold">Welcome to "{roomName}"</Text>
+              <Text size="xs">Room ID: {roomID}</Text>
+              <Space h="md"></Space>
               <TextInput
                 description="Send Message in Chat"
                 // value={descInput}
