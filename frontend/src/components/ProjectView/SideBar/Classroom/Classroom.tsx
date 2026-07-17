@@ -5,63 +5,52 @@ import { useComputedColorScheme } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { socket } from "../../../../socket";
 import { useEffect, useState } from "react";
-import { useGetProjectQuery } from "../../../../slices/projectsApiSlice";
-import { IProjectFile } from "../../../../../../shared/types";
-import { useParams } from "react-router-dom";
+import { setRoomName, setRoomId, setIsInRoom, setIsRoomCreator } from "../../../../slices/roomSlice";
+import { useDispatch } from "react-redux";
 
-const Classroom = ({ closePane }) => {
-  // marking these four lines to be moved to global state
-  // cuz big issue, whenever jumping to the classroom panel and back these things automatically get reset.
-  const [roomName, setRoomName] = useState(""); 
-  const [roomID, setRoomID] = useState(""); 
-  const [isInRoom, setIsInRoom] = useState(false);
-  const [isRoomCreator, setIsRoomCreator] = useState(true);
-  
-  const [roomIDInput, setroomIDInput] = useState("");
+const Classroom = ({ closePane, hidden }) => {
+  const [roomIdInput, setroomIdInput] = useState("");
   const [roomNameInput, setroomNameInput] = useState("");
 
+  const dispatch = useDispatch();
+
+  const {
+    roomName,
+    roomId,
+    isInRoom,
+    isRoomCreator,
+  } = useSelector((state: any) => state.room);
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
-
-  const { projectName} = useParams();
-  // const projectData: {
-  //   data?: {
-  //     projectId: string;
-  //     projectName: string;
-  //     projectDescription: string;
-  //     projectFiles: IProjectFile[];
-  //     ownerUsername: string;
-  //   };
-  // } = useGetProjectQuery(projectName);
+  const projectName = useSelector((state: any) => state.editor.projectName);
 
   const joinRoomByID = () => {
-    socket.emit("joinRoomByID", roomIDInput, "brian patton", projectName);
-    setRoomID(roomIDInput);
-    setIsInRoom(true);
+    socket.emit("joinRoomByID", roomIdInput, "brian patton", projectName);
+    dispatch(setRoomId(roomIdInput));
+    dispatch(setIsInRoom(true));
   };
   
   const createRoom = () => {
     socket.emit("createRoom");
-    setRoomName(roomNameInput);
-    setIsInRoom(true);
-    setIsRoomCreator(true);
+    dispatch(setRoomName(roomNameInput));
+    dispatch(setIsInRoom(true));
+    dispatch(setIsRoomCreator(true));
   };
 
   useEffect(() => {
     socket.on("joinedRoom", (id) => {
-      setRoomID(id);
+      dispatch(setRoomId(id));
     });
 
     socket.on("userJoined", (name, projectName) => {
       console.log(`${name} has joined!`);
-      console.log(`${isRoomCreator}`);
 
       if (!isRoomCreator) return;
       socket.emit("privateMessage", projectName, roomName);
     });
 
     socket.on("getRoomName", (roomName) => {
-      setRoomName(roomName)
+      dispatch(setRoomName(roomName))
     });
 
     return () => {
@@ -69,10 +58,11 @@ const Classroom = ({ closePane }) => {
       socket.off("userJoined");
       socket.off("getRoomName");
     };
-  }, []);
+  }, [isInRoom, isRoomCreator, roomId, roomName]);
 
   return (
     <Paper
+      hidden={hidden}
       shadow="xs"
       p={0}
       style={{
@@ -126,7 +116,7 @@ const Classroom = ({ closePane }) => {
           isInRoom ?
             <Box p={8} style={{ minWidth: 240 }}>
               <Text size="xs" fw="bold">Welcome to "{roomName}"</Text>
-              <Text size="xs">Room ID: {roomID}</Text>
+              <Text size="xs">Room Id: {roomId}</Text>
               <Space h="md"></Space>
               <TextInput
                 description="Send Message in Chat"
@@ -162,7 +152,7 @@ const Classroom = ({ closePane }) => {
                 label="Join by Classroom ID"
                 description="Enter the ID of the classroom you want to join"
                 // value={nameInput}
-                onChange={(e) => setroomIDInput(e.currentTarget.value)}
+                onChange={(e) => setroomIdInput(e.currentTarget.value)}
                 size="xs"
                 mb="xs"
                 autoFocus

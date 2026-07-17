@@ -21,7 +21,7 @@ import {
 import { toast } from "react-toastify";
 import { RootState } from "../../../../store";
 
-const ProjectSettingsComponent = ({ closePane }) => {
+const ProjectSettingsComponent = ({ closePane, hidden }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -108,6 +108,7 @@ const ProjectSettingsComponent = ({ closePane }) => {
 
   return (
     <Paper
+      hidden={hidden}
       shadow="xs"
       p={0}
       style={{
