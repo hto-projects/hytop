@@ -4,13 +4,16 @@ import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { useComputedColorScheme } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { socket } from "../../../../socket";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { setRoomName, setRoomId, setIsInRoom, setIsRoomCreator } from "../../../../slices/roomSlice";
 import { useDispatch } from "react-redux";
 
 const Classroom = ({ closePane, hidden }) => {
   const [roomIdInput, setroomIdInput] = useState("");
   const [roomNameInput, setroomNameInput] = useState("");
+  const [messageInput, setMessageInput] = useState("");
+  const [messagesSent, setMessagesSent] = useState([]);
+  const [messageLogs, setMessageLogs] = useState<React.JSX.Element[]>([]);
 
   const dispatch = useDispatch();
 
@@ -37,6 +40,23 @@ const Classroom = ({ closePane, hidden }) => {
     dispatch(setIsRoomCreator(true));
   };
 
+  const sendMessage = () => {
+    socket.emit("sendMessage", messageInput, roomId);
+  };
+
+  useEffect(() => {
+    setMessageLogs(messagesSent.map((message) => {
+      return (
+        <Text ml="xs" mb="xs" fz="xs" ff="monospace">{message}</Text>
+      );
+    }));
+  }, [messagesSent]);
+  
+  useEffect(() => {
+    if (!isRoomCreator) return;
+    localStorage.setItem("messageLogs", JSON.stringify(messagesSent));
+  }, [messagesSent, isRoomCreator]);
+
   useEffect(() => {
     socket.on("joinedRoom", (id) => {
       dispatch(setRoomId(id));
@@ -44,21 +64,28 @@ const Classroom = ({ closePane, hidden }) => {
 
     socket.on("userJoined", (name, projectName) => {
       console.log(`${name} has joined!`);
-
+      
       if (!isRoomCreator) return;
-      socket.emit("privateMessage", projectName, roomName);
+      socket.emit("sendInfo", projectName, roomName, JSON.parse(localStorage.getItem("messageLogs")));
     });
 
-    socket.on("getRoomName", (roomName) => {
-      dispatch(setRoomName(roomName))
+    socket.on("getRoomInfo", (roomName, messageLogs) => {
+      dispatch(setRoomName(roomName));
+      console.log(messageLogs);
+      setMessagesSent([...messageLogs]);
+    });
+
+    socket.on("recieveMessage", (message) => {
+      setMessagesSent([...messagesSent, message]);
     });
 
     return () => {
       socket.off("joinedRoom");
       socket.off("userJoined");
-      socket.off("getRoomName");
+      socket.off("getRoomInfo");
+      socket.off("recieveMessage");
     };
-  }, [isInRoom, isRoomCreator, roomId, roomName]);
+  }, [isInRoom, isRoomCreator, roomId, roomName, messagesSent]);
 
   return (
     <Paper
@@ -118,29 +145,46 @@ const Classroom = ({ closePane, hidden }) => {
               <Text size="xs" fw="bold">Welcome to "{roomName}"</Text>
               <Text size="xs">Room Id: {roomId}</Text>
               <Space h="md"></Space>
-              <TextInput
-                description="Send Message in Chat"
-                // value={descInput}
-                // onChange={(e) => setroomNameInput(e.currentTarget.value)}
-                size="xs"
-                mb="xs"
-                styles={{
-                  input: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    fontFamily: "monospace"
-                  },
-                  label: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    fontSize: 12
-                  }
+              <Box
+                style={{
+                  minHeight: "40vh",
+                  width: "94%",
+                  background: theColorScheme === "dark" ? "#454bad" : undefined,
+                  color: theColorScheme === "dark" ? "#fff" : undefined,
+                  borderRadius: "7px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-end",
+                  overflow: "auto"
                 }}
-              />
-              <Group mt="xs" gap={8}>
+              >
+                {messageLogs} 
+              </Box>
+              <Space h="lg"></Space>
+              <Group hidden={!isRoomCreator}>
+                <TextInput
+                  description="Send Message in Chat"
+                  // value={descInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  size="xs"
+                  mb="xs"
+                  styles={{
+                    input: {
+                      color: theColorScheme === "dark" ? "#fff" : undefined,
+                      fontFamily: "monospace"
+                    },
+                    label: {
+                      color: theColorScheme === "dark" ? "#fff" : undefined,
+                      fontSize: 12
+                    }
+                  }}
+                />
                 <Button
                   size="xs"
                   color={primaryColor}
-                  // onClick={createRoom}
-                  style={{ fontWeight: 600 }}
+                  onClick={sendMessage}
+                  style={{ fontWeight: 600, marginTop: "-0.77rem" }}
                 >
                   Send
                 </Button>

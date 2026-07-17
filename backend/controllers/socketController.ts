@@ -12,13 +12,17 @@ const createRoom = (io: Server, socket: Socket) => {
   io.to(roomID.toString()).emit("joinedRoom", roomID.toString());
 };
 
-const privateMessage = (io: Server, projectName: string, roomName: string) => {
-  console.log("trying to send private message")
-  io.to(`projectwithname${projectName}`).emit("getRoomName", roomName);
+const sendInfo = (io: Server, projectName: string, roomName: string, messageLogs: string[]) => {
+  io.to(`projectwithname${projectName}`).emit("getRoomInfo", roomName, messageLogs);
+};
+
+const sendMessageInChat = (io: Server, message: string, roomId: number) => {
+  io.to(roomId.toString()).emit("recieveMessage", message);
 };
 
 export {
   joinRoomByID,
   createRoom,
-  privateMessage
+  sendInfo,
+  sendMessageInChat
 };

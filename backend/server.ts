@@ -12,7 +12,7 @@ import fakeApiRoutes from "./routes/fakeApiRoutes";
 import { renderFile } from "./controllers/projectController";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { createRoom, joinRoomByID, privateMessage } from "./controllers/socketController";
+import { createRoom, joinRoomByID, sendMessageInChat, sendInfo } from "./controllers/socketController";
 
 const port = process.env.PORT || 5000;
 const frontEndUrl = process.env.FRONTEND_URL;
@@ -58,7 +58,8 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
   socket.on("joinRoomByID", (id, name, projectName) => joinRoomByID(socket, id, name, projectName));
   socket.on("createRoom", () => createRoom(io, socket));
-  socket.on("privateMessage", (projectName, roomName) => privateMessage(io, projectName, roomName));
+  socket.on("sendInfo", (projectName, roomName, messageLogs) => sendInfo(io, projectName, roomName, messageLogs));
+  socket.on("sendMessage", (message, roomId) => sendMessageInChat(io, message, roomId));
   socket.on("disconnect", () => console.log(`Disconnected: ${socket.id}`));
 });
 
