@@ -12,7 +12,7 @@ import fakeApiRoutes from "./routes/fakeApiRoutes";
 import { renderFile } from "./controllers/projectController";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { createRoom, joinRoomByID, sendMessageInChat, sendInfo } from "./controllers/socketController";
+import { createRoom, joinRoomByID, sendMessageInChat, sendInfo, leaveRoom } from "./controllers/socketController";
 import { IoEventChannels } from "../shared/constants";
 
 const port = process.env.PORT || 5000;
@@ -69,7 +69,7 @@ io.on("connection", (socket) => {
   socket.on(CREATE_ROOM, () => createRoom(io, socket));
   socket.on(SEND_INFO, (projectName, roomName, messageLogs) => sendInfo(io, projectName, roomName, messageLogs));
   socket.on(SEND_MESSAGE, (message, roomId) => sendMessageInChat(io, message, roomId));
-  socket.on(LEAVE_ROOM, () => { console.log("Hi Mom!") });
+  socket.on(LEAVE_ROOM, (id, name, projectName) => { leaveRoom(io, socket, id, name, projectName)});
   socket.on("disconnect", () => console.log(`Disconnected: ${socket.id}`));
 });
 

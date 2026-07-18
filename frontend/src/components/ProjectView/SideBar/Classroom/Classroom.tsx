@@ -1,7 +1,7 @@
 import { PiXBold } from "react-icons/pi";
-import { Paper, Group, Text, Box, Button, ActionIcon, TextInput, Space } from "@mantine/core";
-import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
+import { Paper, Group, Text, Box, Button, ActionIcon, TextInput, Space, Notification, Transition } from "@mantine/core";
 import { useComputedColorScheme } from "@mantine/core";
+import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { useSelector } from "react-redux";
 import { socket } from "../../../../socket";
 import { IoEventChannels } from "../../../../../../shared/constants";
@@ -15,6 +15,10 @@ const Classroom = ({ closePane, hidden }) => {
   const [messageInput, setMessageInput] = useState("");
   const [messagesSent, setMessagesSent] = useState([]);
   const [messageLogs, setMessageLogs] = useState<React.JSX.Element[]>([]);
+  const [userJustJoined, setUserJustJoined] = useState(false);
+  const [mostRecentJoinedUser, setMostRecentJoinedUser] = useState("");
+  const [userJustLeft, setUserJustLeft] = useState(false);
+  const [mostRecentLeavingUser, setMostRecentLeavingUser] = useState("");
 
   const dispatch = useDispatch();
 
@@ -39,7 +43,8 @@ const Classroom = ({ closePane, hidden }) => {
     SEND_INFO,
     SEND_MESSAGE,
     RECIEVE_MESSAGE,
-    RESET_ROOM_INFO
+    RESET_ROOM_INFO,
+    GET_LEAVING_USER
   } = IoEventChannels;
 
   const joinRoomByID = () => {
@@ -61,7 +66,7 @@ const Classroom = ({ closePane, hidden }) => {
   };
 
   const leaveRoom = () => {
-    socket.emit(LEAVE_ROOM);
+    socket.emit(LEAVE_ROOM, roomId, name, projectName);
   }
 
   const handleEnterShortCut = (e: React.KeyboardEvent, callback: () => void) => {
@@ -107,6 +112,11 @@ const Classroom = ({ closePane, hidden }) => {
       // over here we can have another pop up showing who joined the room or not
       if (!isRoomCreator) return;
       socket.emit(SEND_INFO, projectName, roomName, JSON.parse(localStorage.getItem("messageLogs")));
+      setMostRecentJoinedUser(name);
+      setUserJustJoined(true);
+      setTimeout(() => {
+        setUserJustJoined(false);
+      }, 5000);
     });
 
     socket.on(GET_ROOM_INFO, (roomName, messageLogs) => {
@@ -125,12 +135,22 @@ const Classroom = ({ closePane, hidden }) => {
       dispatch(setRoomName(""));
     });
 
+    socket.on(GET_LEAVING_USER, (name) => {
+      if (!isRoomCreator) return;
+      setMostRecentLeavingUser(name);
+      setUserJustLeft(true);
+      setTimeout(() => {
+        setUserJustLeft(false);
+      }, 5000);
+    });
+
     return () => {
       socket.off(CREATOR_JOINED_ROOM);
       socket.off(USER_JOINED);
       socket.off(GET_ROOM_INFO);
       socket.off(RECIEVE_MESSAGE);
       socket.off(RESET_ROOM_INFO);
+      socket.off(GET_LEAVING_USER);
     };
   }, [isInRoom, isRoomCreator, roomId, roomName, messagesSent]);
 
@@ -245,6 +265,56 @@ const Classroom = ({ closePane, hidden }) => {
                   Leave Room
                 </Button>
               </Group>
+              <Transition 
+                mounted={userJustJoined} 
+                duration={200} 
+                timingFunction="ease-in"
+                transition={"slide-left"}
+              >
+                  {(TransitionStyle) => (
+                    <div
+                      style={{
+                        ...TransitionStyle,
+                        position: "absolute",
+                        right: "10vh",
+                        bottom: "10vh",
+                        width: "300px"
+                      }}
+                    >
+                      <Notification 
+                        title="Hey there!"
+                        onClose={() => setUserJustJoined(false)}
+                      >
+                        {mostRecentJoinedUser} has just joined the chat room!
+                      </Notification>
+                    </div>
+                  )}
+              </Transition>
+              <Transition 
+                mounted={userJustLeft} 
+                duration={200} 
+                timingFunction="ease-in"
+                transition={"slide-left"}
+              >
+                  {(TransitionStyle) => (
+                    <div
+                      style={{
+                        ...TransitionStyle,
+                        position: "absolute",
+                        right: "10vh",
+                        bottom: "10vh",
+                        width: "300px"
+                      }}
+                    >
+                      <Notification 
+                        title="Farewell!"
+                        onClose={() => setUserJustLeft(false)}
+                      >
+                        {mostRecentLeavingUser} has just left the chat room!
+                      </Notification>
+                    </div>
+                  )}
+              </Transition>
             </Box>
             : 
             /// IF NOT IN ROOM ///

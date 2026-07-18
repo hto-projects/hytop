@@ -5,8 +5,9 @@ const {
   USER_JOINED,
   CREATOR_JOINED_ROOM,
   GET_ROOM_INFO,
+  GET_LEAVING_USER,
   RECIEVE_MESSAGE,
-  RESET_ROOM_INFO
+  RESET_ROOM_INFO,
 } = IoEventChannels;
 
 const joinRoomByID = (socket: Socket, id: string, name: string, projectName: string) => {
@@ -15,8 +16,9 @@ const joinRoomByID = (socket: Socket, id: string, name: string, projectName: str
   socket.to(id).emit(USER_JOINED, name, projectName);
 };
 
-const leaveRoom = (io: Server, socket: Socket, id: string, projectName: string) => {
+const leaveRoom = (io: Server, socket: Socket, id: string, name: string, projectName: string) => {
   socket.leave(id);
+  socket.to(id).emit(GET_LEAVING_USER, name);
   io.to(`projectwithname${projectName}`).emit(RESET_ROOM_INFO);
 };
 
