@@ -10,26 +10,29 @@ const {
   RESET_ROOM_INFO,
 } = IoEventChannels;
 
-const joinRoomByID = (socket: Socket, id: string, name: string, projectName: string) => {
-  socket.join(`projectwithname${projectName}`);
+/** need a way to privately message users */
+const joinRoomByID = (socket: Socket, id: string, name: string) => {
+  socket.join(`userwithsocketid:${socket.id}`);
   socket.join(id);
-  socket.to(id).emit(USER_JOINED, name, projectName);
+  socket.to(id).emit(USER_JOINED, name, socket.id);
 };
 
-const leaveRoom = (io: Server, socket: Socket, id: string, name: string, projectName: string) => {
+const leaveRoom = (io: Server, socket: Socket, id: string, name: string) => {
+  io.to(`userwithsocketid:${socket.id}`).emit(RESET_ROOM_INFO);
+  socket.leave(`userwithsocketid:${socket.id}`);
   socket.leave(id);
   socket.to(id).emit(GET_LEAVING_USER, name);
-  io.to(`projectwithname${projectName}`).emit(RESET_ROOM_INFO);
 };
 
 const createRoom = (io: Server, socket: Socket) => {
   const roomId = Math.floor(Math.random() * 900000) + 100000;
   socket.join(roomId.toString());
+  socket.join(`userwithsocketid:${socket.id}`);
   io.to(roomId.toString()).emit(CREATOR_JOINED_ROOM, roomId.toString());
 };
 
-const sendInfo = (io: Server, projectName: string, roomName: string, messageLogs: string[]) => {
-  io.to(`projectwithname${projectName}`).emit(GET_ROOM_INFO, roomName, messageLogs);
+const sendInfo = (io: Server, userSocketId: string, roomName: string, messageLogs: string[]) => {
+  io.to(`userwithsocketid:${userSocketId}`).emit(GET_ROOM_INFO, roomName, messageLogs);
 };
 
 const sendMessageInChat = (io: Server, message: string, roomId: number) => {

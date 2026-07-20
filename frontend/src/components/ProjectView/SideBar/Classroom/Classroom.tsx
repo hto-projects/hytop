@@ -31,7 +31,6 @@ const Classroom = ({ closePane, hidden }) => {
   } = useSelector((state: any) => state.room);
   const name = useSelector((state: any) => state.auth.userInfo.name);
   const theColorScheme = useComputedColorScheme("light");
-  const projectName = useSelector((state: any) => state.editor.projectName);
 
   const {
     CREATE_ROOM,
@@ -48,7 +47,7 @@ const Classroom = ({ closePane, hidden }) => {
   } = IoEventChannels;
 
   const joinRoomById = () => {
-    socket.emit(JOIN_ROOM_BY_ID, roomIdInput, name, projectName);
+    socket.emit(JOIN_ROOM_BY_ID, roomIdInput, name);
     dispatch(setRoomId(roomIdInput));
     dispatch(setIsInRoom(true));
   };
@@ -66,7 +65,7 @@ const Classroom = ({ closePane, hidden }) => {
   };
 
   const leaveRoom = () => {
-    socket.emit(LEAVE_ROOM, roomId, name, projectName);
+    socket.emit(LEAVE_ROOM, roomId, name);
   }
 
   useEffect(() => {
@@ -74,9 +73,9 @@ const Classroom = ({ closePane, hidden }) => {
       dispatch(setRoomId(id));
     });
 
-    socket.on(USER_JOINED, (name, projectName) => {
+    socket.on(USER_JOINED, (name, userSocketId) => {
       if (!isRoomCreator) return;
-      socket.emit(SEND_INFO, projectName, roomName, JSON.parse(localStorage.getItem("messageLogs")));
+      socket.emit(SEND_INFO, userSocketId, roomName, JSON.parse(localStorage.getItem("messageLogs")));
       setMostRecentJoinedUser(name);
       setUserJustJoined(true);
       setTimeout(() => {

@@ -105,6 +105,14 @@ const ClassroomMessagesPane = ({
         >
           Send
         </Button>
+        <Button
+          size="xs"
+          color={primaryColor}
+          onClick={leaveRoom}
+          style={{ fontWeight: 600, marginTop: "-0.77rem" }}
+        >
+          Leave Room
+        </Button>
       </Group>
       <Group hidden={isRoomCreator}>
         <Button

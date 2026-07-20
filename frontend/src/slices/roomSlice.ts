@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Room slice could go back in the classroom logic since it's not remounting anymore
 const initialState = {
   roomName: "",
   roomId: "",
