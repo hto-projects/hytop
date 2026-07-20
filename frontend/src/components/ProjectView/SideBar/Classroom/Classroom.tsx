@@ -8,13 +8,14 @@ import { IoEventChannels } from "../../../../../../shared/constants";
 import React, { useEffect, useState } from "react";
 import { setRoomName, setRoomId, setIsInRoom, setIsRoomCreator } from "../../../../slices/roomSlice";
 import { useDispatch } from "react-redux";
+import ClassroomJoinPane from "./ClassroomJoinPane";
+import ClassroomMessagesPane from "./ClassroomMessagesPane";
 
 const Classroom = ({ closePane, hidden }) => {
   const [roomIdInput, setRoomIdInput] = useState("");
   const [roomNameInput, setRoomNameInput] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [messagesSent, setMessagesSent] = useState([]);
-  const [messageLogs, setMessageLogs] = useState<React.JSX.Element[]>([]);
   const [userJustJoined, setUserJustJoined] = useState(false);
   const [mostRecentJoinedUser, setMostRecentJoinedUser] = useState("");
   const [userJustLeft, setUserJustLeft] = useState(false);
@@ -30,7 +31,6 @@ const Classroom = ({ closePane, hidden }) => {
   } = useSelector((state: any) => state.room);
   const name = useSelector((state: any) => state.auth.userInfo.name);
   const theColorScheme = useComputedColorScheme("light");
-  const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const projectName = useSelector((state: any) => state.editor.projectName);
 
   const {
@@ -47,7 +47,7 @@ const Classroom = ({ closePane, hidden }) => {
     GET_LEAVING_USER
   } = IoEventChannels;
 
-  const joinRoomByID = () => {
+  const joinRoomById = () => {
     socket.emit(JOIN_ROOM_BY_ID, roomIdInput, name, projectName);
     dispatch(setRoomId(roomIdInput));
     dispatch(setIsInRoom(true));
@@ -69,47 +69,12 @@ const Classroom = ({ closePane, hidden }) => {
     socket.emit(LEAVE_ROOM, roomId, name, projectName);
   }
 
-  const handleEnterShortCut = (e: React.KeyboardEvent, callback: () => void) => {
-    if (e.key !== "Enter") return;
-    callback();
-  };
-
-  useEffect(() => {
-    const messages = messagesSent
-      .map((message, index) => {
-        return (
-          <Text 
-            key={index}
-            ml="xs" 
-            mb="xs" 
-            fz="xs" 
-            ff="monospace"
-            style={{
-              background: "rgba(0, 0, 0, 0.2)",
-              borderRadius: "6px",
-              padding: "0.2rem",
-              maxWidth: "90%",
-              width: "max-content"
-            }}
-          >
-            {message}
-          </Text>
-        );
-      })
-      .reverse();
-    setMessageLogs(messages);
-
-    if (!isRoomCreator) return;
-    localStorage.setItem("messageLogs", JSON.stringify(messagesSent));
-  }, [messagesSent, isRoomCreator]);
-
   useEffect(() => {
     socket.on(CREATOR_JOINED_ROOM, (id) => {
       dispatch(setRoomId(id));
     });
 
     socket.on(USER_JOINED, (name, projectName) => {
-      // over here we can have another pop up showing who joined the room or not
       if (!isRoomCreator) return;
       socket.emit(SEND_INFO, projectName, roomName, JSON.parse(localStorage.getItem("messageLogs")));
       setMostRecentJoinedUser(name);
@@ -119,9 +84,9 @@ const Classroom = ({ closePane, hidden }) => {
       }, 5000);
     });
 
-    socket.on(GET_ROOM_INFO, (roomName, messageLogs) => {
+    socket.on(GET_ROOM_INFO, (roomName, messagesBeforeJoined) => {
       dispatch(setRoomName(roomName));
-      setMessagesSent([...messageLogs]);
+      setMessagesSent([...messagesBeforeJoined]);
     });
 
     socket.on(RECIEVE_MESSAGE, (message) => {
@@ -176,8 +141,7 @@ const Classroom = ({ closePane, hidden }) => {
         px="sm"
         py="xs"
         style={{
-          borderBottom:
-            theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
+          borderBottom: theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
           background: theColorScheme === "dark" ? "#181A1B" : undefined
         }}
       >
@@ -203,185 +167,75 @@ const Classroom = ({ closePane, hidden }) => {
           height: "100%"
         }}
       >
-        <Text fw={700} mb="xs">
-          Classroom Portal
-        </Text>
+        <Text fw={700} mb="xs">Classroom Portal</Text>
         {
           isInRoom ?
-            <Box p={8} style={{ minWidth: 240 }}>
-              <Text size="xs" fw="bold">Welcome to "{roomName}"</Text>
-              <Text size="xs">Room Id: {roomId}</Text>
-              <Space h="md"></Space>
-              <Box
-                style={{
-                  height: "40vh",
-                  width: "94%",
-                  background: theColorScheme === "dark" ? primaryColor : undefined,
-                  color: theColorScheme === "dark" ? "#fff" : undefined,
-                  borderRadius: "7px",
-                  display: "flex",
-                  flexDirection: "column-reverse",
-                  overflowY: "auto",
-                }}
-              >
-                {messageLogs} 
-              </Box>
-              <Space h="lg"></Space>
-              <Group hidden={!isRoomCreator}>
-                <TextInput
-                  description="Send Message in Chat"
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyDown={(e) => handleEnterShortCut(e, sendMessage)}
-                  size="xs"
-                  mb="xs"
-                  styles={{
-                    input: {
-                      color: theColorScheme === "dark" ? "#fff" : undefined,
-                      fontFamily: "monospace"
-                    },
-                    label: {
-                      color: theColorScheme === "dark" ? "#fff" : undefined,
-                      fontSize: 12
-                    }
-                  }}
-                />
-                <Button
-                  size="xs"
-                  color={primaryColor}
-                  onClick={sendMessage}
-                  style={{ fontWeight: 600, marginTop: "-0.77rem" }}
-                >
-                  Send
-                </Button>
-              </Group>
-              <Group hidden={isRoomCreator}>
-                <Button
-                  size="xs"
-                  color={primaryColor}
-                  onClick={leaveRoom}
-                  style={{ fontWeight: 600, marginTop: "-0.77rem" }}
-                >
-                  Leave Room
-                </Button>
-              </Group>
-              <Transition 
-                mounted={userJustJoined} 
-                duration={200} 
-                timingFunction="ease-in"
-                transition={"slide-left"}
-              >
-                  {(TransitionStyle) => (
-                    <div
-                      style={{
-                        ...TransitionStyle,
-                        position: "absolute",
-                        right: "10vh",
-                        bottom: "10vh",
-                        width: "300px"
-                      }}
-                    >
-                      <Notification 
-                        title="Hey there!"
-                        onClose={() => setUserJustJoined(false)}
-                      >
-                        {mostRecentJoinedUser} has just joined the chat room!
-                      </Notification>
-                    </div>
-                  )}
-              </Transition>
-              <Transition 
-                mounted={userJustLeft} 
-                duration={200} 
-                timingFunction="ease-in"
-                transition={"slide-left"}
-              >
-                  {(TransitionStyle) => (
-                    <div
-                      style={{
-                        ...TransitionStyle,
-                        position: "absolute",
-                        right: "10vh",
-                        bottom: "10vh",
-                        width: "300px"
-                      }}
-                    >
-                      <Notification 
-                        title="Farewell!"
-                        onClose={() => setUserJustLeft(false)}
-                      >
-                        {mostRecentLeavingUser} has just left the chat room!
-                      </Notification>
-                    </div>
-                  )}
-              </Transition>
-            </Box>
+            <ClassroomMessagesPane 
+              messagesSent={messagesSent}
+              messageInput={messageInput}
+              setMessageInput={setMessageInput}
+              sendMessage={sendMessage}
+              leaveRoom={leaveRoom}
+            />
             : 
-            /// IF NOT IN ROOM ///
-            <Box p={8} style={{ minWidth: 240 }}>
-              <TextInput
-                label="Join by Classroom ID"
-                description="Enter the ID of the classroom you want to join"
-                // value={nameInput}
-                onChange={(e) => setRoomIdInput(e.currentTarget.value)}
-                onKeyDown={(e) => handleEnterShortCut(e, joinRoomByID)}
-                size="xs"
-                mb="xs"
-                autoFocus
-                styles={{
-                  input: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    fontFamily: "monospace"
-                  },
-                  label: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    fontSize: 12
-                  },
-                  description: {
-                    color: theColorScheme === "dark" ? "#888" : "#666",
-                    fontSize: 10
-                  }
-                }}
-              />
-              <Button
-                size="xs"
-                color={primaryColor}
-                onClick={joinRoomByID}
-                style={{ fontWeight: 600 }}
-              >
-                Join
-              </Button>
-              <TextInput
-                label="Create a Room"
-                // value={descInput}
-                onChange={(e) => setRoomNameInput(e.currentTarget.value)}
-                onKeyDown={(e) => handleEnterShortCut(e, createRoom)}
-                size="xs"
-                mb="xs"
-                styles={{
-                  input: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    fontFamily: "monospace"
-                  },
-                  label: {
-                    color: theColorScheme === "dark" ? "#fff" : undefined,
-                    fontSize: 12
-                  }
-                }}
-              />
-              <Group mt="xs" gap={8}>
-                <Button
-                  size="xs"
-                  color={primaryColor}
-                  onClick={createRoom}
-                  style={{ fontWeight: 600 }}
-                >
-                  Create
-                </Button>
-              </Group>
-            </Box>
+            <ClassroomJoinPane 
+              setRoomIdInput={setRoomIdInput}
+              setRoomNameInput={setRoomNameInput}
+              joinRoomById={joinRoomById}
+              createRoom={createRoom}
+            />
         }
       </Box>
+      <Transition 
+        mounted={userJustJoined} 
+        duration={200} 
+        timingFunction="ease-in"
+        transition={"slide-left"}
+      >
+        {(TransitionStyle) => (
+          <div
+            style={{
+              ...TransitionStyle,
+              position: "absolute",
+              right: "10vh",
+              bottom: "10vh",
+              width: "300px"
+            }}
+          >
+            <Notification 
+              title="Hey there!"
+              onClose={() => setUserJustJoined(false)}
+            >
+              {mostRecentJoinedUser} has just joined the chat room!
+            </Notification>
+          </div>
+        )}
+      </Transition>
+      <Transition 
+        mounted={userJustLeft} 
+        duration={200} 
+        timingFunction="ease-in"
+        transition={"slide-left"}
+      >
+        {(TransitionStyle) => (
+          <div
+            style={{
+              ...TransitionStyle,
+              position: "absolute",
+              right: "10vh",
+              bottom: "10vh",
+              width: "300px"
+            }}
+          >
+            <Notification 
+              title="See you later!"
+              onClose={() => setUserJustLeft(false)}
+            >
+              {mostRecentLeavingUser} has just left the chat room!
+            </Notification>
+          </div>
+        )}
+      </Transition>
     </Paper>
   );
 };

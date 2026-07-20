@@ -7,4 +7,10 @@ function getMonacoLang(filename: string) {
   return "plaintext";
 }
 
-export { getMonacoLang };
+/** use with input fields */
+function handleEnterShortCut(e: React.KeyboardEvent, callback: () => void) {
+  if (e.key !== "Enter") return;
+  callback();
+};
+
+export { getMonacoLang, handleEnterShortCut };
