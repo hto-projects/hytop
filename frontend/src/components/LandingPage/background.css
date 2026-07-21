@@ -1,0 +1,37 @@
+#stars-close, 
+#stars-mid, 
+#stars-far {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: transparent;
+  color: transparent;
+}
+
+#stars-close {
+	width: 2.5px;
+	height: 2.5px;
+	animation: parallaxScroll 60s linear infinite;
+}
+
+#stars-mid {
+	width: 2px;
+	height: 2px;
+	animation: parallaxScroll 80s linear infinite;
+}
+
+#stars-far {
+	width: 1.5px;
+	height: 1.5px;
+	animation: parallaxScroll 100s linear infinite;
+}
+
+@keyframes parallaxScroll {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-1000px);
+  }
+}
