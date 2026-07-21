@@ -13,18 +13,21 @@
 	width: 2.5px;
 	height: 2.5px;
 	animation: parallaxScroll 60s linear infinite;
+	z-index: -1;
 }
 
 #stars-mid {
 	width: 2px;
 	height: 2px;
 	animation: parallaxScroll 80s linear infinite;
+	z-index: -1;
 }
 
 #stars-far {
 	width: 1.5px;
 	height: 1.5px;
 	animation: parallaxScroll 100s linear infinite;
+	z-index: -1;
 }
 
 @keyframes parallaxScroll {
