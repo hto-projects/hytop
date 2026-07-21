@@ -1,4 +1,5 @@
 import { Box, useComputedColorScheme } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { useDispatch, useSelector } from "react-redux";
 import { useUpdateProjectMutation } from "../../../../slices/projectsApiSlice";
 import { useParams } from "react-router-dom";
@@ -131,18 +132,20 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
         submitNewFile={submitNewFile}
       />
       <Box style={{ flex: 1, overflowY: "auto" }}>
-        {projectFiles.map((file) => (
-          <FileName
-            key={file.fileName}
-            fileName={file.fileName}
-            selected={selectedFile === file.fileName}
-            unsaved={!!unsavedFiles[file.fileName]}
-            isDuplicateRename={isDuplicateRename}
-            contextMenuEnabled={userIsOwner}
-            updateFileName={handleUpdateFileName}
-            handleDeleteFile={handleDeleteFile}
-          ></FileName>
-        ))}
+        <ModalsProvider>
+          {projectFiles.map((file) => (
+            <FileName
+              key={file.fileName}
+              fileName={file.fileName}
+              selected={selectedFile === file.fileName}
+              unsaved={!!unsavedFiles[file.fileName]}
+              isDuplicateRename={isDuplicateRename}
+              contextMenuEnabled={userIsOwner}
+              updateFileName={handleUpdateFileName}
+              handleDeleteFile={handleDeleteFile}
+            ></FileName>
+          ))}
+        </ModalsProvider>
       </Box>
     </Box>
   );

@@ -1,9 +1,11 @@
-import { Box, TextInput, useComputedColorScheme } from "@mantine/core";
-import { PiDotOutlineFill, PiPencilBold, PiTrashBold } from "react-icons/pi";
+import { Box, TextInput, useComputedColorScheme, Text, BackgroundImage } from "@mantine/core";
+import { modals } from "@mantine/modals";
+import { PiCheckBold, PiDotOutlineFill, PiPencilBold, PiTrashBold, PiXBold } from "react-icons/pi";
 import { useState } from "react";
 import { useContextMenu } from "mantine-contextmenu";
 import { useDispatch } from "react-redux";
 import { openTab, setSelectedFile } from "../../../../slices/editorSlice";
+import "@mantine/core/styles.css";
 
 const FileName = ({
   fileName,
@@ -55,6 +57,23 @@ const FileName = ({
     }
   };
 
+  const openConfirmDeleteModal = () => modals.openConfirmModal({
+    title: `Confirm Deletion`,
+    children: (
+      <Text size="sm">
+        Are you sure you want to delete file "{fileName}"? This action cannot be undone.
+      </Text>
+    ),
+    onConfirm: () => handleDeleteFile(fileName),
+    onCancel: () => modals.closeAll(),
+    labels: { 
+      confirm: <PiCheckBold size={14} />, 
+      cancel: <PiXBold size={14} />
+    },
+    style: {
+      color: "#fff"
+    }
+  });
 
   return (
     <Box
@@ -93,7 +112,9 @@ const FileName = ({
                 icon: <PiTrashBold size={14} />,
                 title: "Delete",
                 color: "red",
-                onClick: () => handleDeleteFile(fileName)
+                onClick: () => {
+                  openConfirmDeleteModal()
+                }
               }
             ])
           : undefined
