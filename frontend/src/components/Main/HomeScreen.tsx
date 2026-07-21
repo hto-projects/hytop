@@ -61,7 +61,7 @@ const HomeScreen = () => {
       <span id="stars-far"></span>
       <Box
         style={{
-          height: "200vh",
+          height: "100vh",
           width: "100%",
           backgroundColor: "#000000",
           overflowY: "auto",
@@ -77,14 +77,15 @@ const HomeScreen = () => {
       >
         <Box
           style={{
-            height: "100vh",
-            width: "100vw",
+            height: "60vh",
+            width: "40vw",
+            margin: "auto",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
-          <Logo svgPath="/logo.svg" height={300} />
+          <Logo svgPath="/logo.svg" height={700}/>
         </Box>
       </Box>
       <LoginScreen />

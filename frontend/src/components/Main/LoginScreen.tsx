@@ -47,7 +47,7 @@ const LoginScreen = () => {
   return (
     <Box
     style={{
-        height: "200vh",
+        height: "100vh",
         width: "100%",
         overflowY: "auto",
         backgroundImage: 'url("https://wallpaperaccess.com/full/3112075.jpg")',
