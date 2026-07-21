@@ -11,6 +11,9 @@ import {
 } from "@mantine/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import LoginScreen from "./LoginScreen";
+
+import Logo from "../Interface/Logo";
 
 import { useLoginMutation } from "../../slices/usersApiSlice";
 import { setCredentials } from "../../slices/authSlice";
@@ -56,13 +59,12 @@ const HomeScreen = () => {
       <span id="stars-close"></span>
       <span id="stars-mid"></span>
       <span id="stars-far"></span>
-
       <Box
         style={{
           height: "200vh",
           width: "100%",
-          overflowY: "auto",
           backgroundColor: "#000000",
+          overflowY: "auto",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -73,87 +75,19 @@ const HomeScreen = () => {
           boxSizing: "border-box"
         }}
       >
-        <Paper
-          shadow="xl"
-          p={30}
-          radius="lg"
-          withBorder
+        <Box
           style={{
-            width: 440,
-            backgroundImage:
-              'url("https://static.vecteezy.com/system/resources/previews/011/049/040/original/v1-black-gradient-background-diamond-shape-pattern-vector.jpg")',
-            color: "#fff",
-            border: "1px solid #373A40",
+            height: "100vh",
+            width: "100vw",
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            paddingTop: 35,
-            paddingBottom: 35
+            justifyContent: "center",
+            alignItems: "center"
           }}
         >
-          <Text size="1.6rem" fw={700} ta="center" c="white" mb={25}>
-            Sign In
-          </Text>
-
-          <form onSubmit={submitHandler}>
-            <TextInput
-              label="Username"
-              placeholder="Enter your username"
-              size="md"
-              radius="md"
-              value={username}
-              onChange={(e) => setUsername(e.currentTarget.value)}
-              required
-              mb={20}
-              styles={{
-                label: {
-                  color: "white",
-                  fontSize: "14px"
-                },
-                input: {
-                  backgroundColor: "#2c2e33",
-                  color: "white",
-                  fontSize: "14px",
-                  height: "45px"
-                }
-              }}
-            />
-
-            <PasswordInput
-              label="Password"
-              placeholder="Enter your password"
-              size="md"
-              radius="md"
-              value={password}
-              onChange={(e) => setPassword(e.currentTarget.value)}
-              required
-              mb={25}
-              styles={{
-                label: {
-                  color: "white",
-                  fontSize: "14px"
-                },
-                input: {
-                  backgroundColor: "#2c2e33",
-                  color: "white",
-                  fontSize: "14px",
-                  height: "45px"
-                }
-              }}
-            />
-
-            <Button
-              type="submit"
-              size="md"
-              radius="md"
-              fullWidth
-              loading={isLoading}
-            >
-              Sign In
-            </Button>
-          </form>
-        </Paper>
+          <Logo svgPath="/logo.svg" height={300} />
+        </Box>
       </Box>
+      <LoginScreen />
     </ScrollArea>
   );
 };

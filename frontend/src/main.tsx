@@ -16,7 +16,7 @@ import App from "./App";
 import HomeScreen from "./components/Main/HomeScreen";
 import PrivateRoute from "./components/Main/PrivateRoute";
 import ProfileScreen from "./components/User/ProfileScreen";
-import LoginScreen from "./components/User/LoginScreen";
+import LoginScreen from "./components/Main/LoginScreen";
 import RegisterScreen from "./components/User/RegisterScreen";
 import CreateProjectScreen from "./components/Main/CreateProjectScreen";
 import ProjectViewScreen from "./components/ProjectView/ProjectViewScreen";
