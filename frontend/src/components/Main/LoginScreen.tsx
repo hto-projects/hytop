@@ -94,8 +94,6 @@ const LoginScreen = () => {
           withBorder
           style={{
             width: 440,
-            backgroundImage:
-              'url("https://static.vecteezy.com/system/resources/previews/011/049/040/original/v1-black-gradient-background-diamond-shape-pattern-vector.jpg")',
             color: "#fff",
             border: "1px solid #373A40",
             display: "flex",
