@@ -16,7 +16,7 @@ import App from "./App";
 import HomeScreen from "./components/Main/HomeScreen";
 import PrivateRoute from "./components/Main/PrivateRoute";
 import ProfileScreen from "./components/User/ProfileScreen";
-import LoginForm from "./components/LandingPage/LoginForm";
+import LoginScreen from "./components/LandingPage/LoginScreen";
 import RegisterScreen from "./components/User/RegisterScreen";
 import CreateProjectScreen from "./components/Main/CreateProjectScreen";
 import ProjectViewScreen from "./components/ProjectView/ProjectViewScreen";
@@ -39,7 +39,7 @@ const router = createBrowserRouter(
       <Route path="/forks-of/:projectName" element={<ForksOfProject />} />
       <Route path="/about" element={<AboutScreen />} />
       <Route path="/latest-updates" element={<LatestUpdatesScreen />} />
-      <Route path="/login" element={<LoginForm />} />
+      <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
