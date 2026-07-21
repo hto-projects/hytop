@@ -14,6 +14,7 @@ import ClassroomNotification from "./ClassroomNotification";
 import { Classroom as TClassroom } from "../../../../../../shared/types";
 
 const Classroom = ({ closePane, hidden }) => {
+  // NO ADMIN LOGIC RIGHT NOW
   const [roomNameInput, setRoomNameInput] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [messagesSent, setMessagesSent] = useState([]);
@@ -40,9 +41,8 @@ const Classroom = ({ closePane, hidden }) => {
     isInRoom,
     isRoomCreator,
   } = useSelector((state: any) => state.room);
-  const name = useSelector((state: any) => state.auth.userInfo.name); // might change this to user name
+  const name = useSelector((state: any) => state.auth.userInfo.name); 
   const authId = useSelector((state: any) => state.auth.userInfo._id);
-  // const isAdmin = useSelector((state: any) => state.auth.userInfo.admin);
   const theColorScheme = useComputedColorScheme("light");
   const notificationTimeoutDuration = 5000;
 
