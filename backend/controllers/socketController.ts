@@ -3,7 +3,7 @@ import { IoEventChannels } from "../../shared/constants";
 
 const {
   USER_JOINED,
-  CREATOR_JOINED_ROOM,
+  CREATED_ROOM,
   GET_ROOM_INFO,
   GET_LEAVING_USER,
   RECIEVE_MESSAGE,
@@ -28,7 +28,7 @@ const createRoom = (io: Server, socket: Socket) => {
   const roomId = Math.floor(Math.random() * 900000) + 100000;
   socket.join(roomId.toString());
   socket.join(`userwithsocketid:${socket.id}`);
-  io.to(roomId.toString()).emit(CREATOR_JOINED_ROOM, roomId.toString());
+  io.to(roomId.toString()).emit(CREATED_ROOM, roomId.toString());
 };
 
 const sendInfo = (io: Server, userSocketId: string, roomName: string, messageLogs: string[]) => {

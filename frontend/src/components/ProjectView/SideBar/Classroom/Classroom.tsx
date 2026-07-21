@@ -1,25 +1,30 @@
 import { PiXBold } from "react-icons/pi";
-import { Paper, Group, Text, Box, Button, ActionIcon, TextInput, Space, Notification, Transition } from "@mantine/core";
+import { Paper, Group, Text, Box, ActionIcon } from "@mantine/core";
 import { useComputedColorScheme } from "@mantine/core";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { useSelector } from "react-redux";
 import { socket } from "../../../../socket";
 import { IoEventChannels } from "../../../../../../shared/constants";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { setRoomName, setRoomId, setIsInRoom, setIsRoomCreator } from "../../../../slices/roomSlice";
 import { useDispatch } from "react-redux";
 import ClassroomJoinPane from "./ClassroomJoinPane";
 import ClassroomMessagesPane from "./ClassroomMessagesPane";
+import ClassroomNotification from "./ClassroomNotification";
 
 const Classroom = ({ closePane, hidden }) => {
   const [roomIdInput, setRoomIdInput] = useState("");
   const [roomNameInput, setRoomNameInput] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [messagesSent, setMessagesSent] = useState([]);
+
   const [userJustJoined, setUserJustJoined] = useState(false);
   const [mostRecentJoinedUser, setMostRecentJoinedUser] = useState("");
   const [userJustLeft, setUserJustLeft] = useState(false);
   const [mostRecentLeavingUser, setMostRecentLeavingUser] = useState("");
+  
+  const [teacherJustJoined, setTeacherJustJoined] = useState(false);
+  const [teacherJustLeft, setTeacherJustLeft] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -30,12 +35,13 @@ const Classroom = ({ closePane, hidden }) => {
     isRoomCreator,
   } = useSelector((state: any) => state.room);
   const name = useSelector((state: any) => state.auth.userInfo.name);
+  const authId = useSelector((state: any) => state.auth.userInfo._id);
   const theColorScheme = useComputedColorScheme("light");
 
   const {
     CREATE_ROOM,
     JOIN_ROOM_BY_ID,
-    CREATOR_JOINED_ROOM,
+    CREATED_ROOM,
     USER_JOINED,
     LEAVE_ROOM,
     GET_ROOM_INFO,
@@ -50,6 +56,9 @@ const Classroom = ({ closePane, hidden }) => {
     socket.emit(JOIN_ROOM_BY_ID, roomIdInput, name);
     dispatch(setRoomId(roomIdInput));
     dispatch(setIsInRoom(true));
+    if (sessionStorage.getItem(`roomsCreated:${authId}:${roomIdInput}`) === roomIdInput) {
+      dispatch(setIsRoomCreator(true));
+    }
   };
   
   const createRoom = () => {
@@ -69,18 +78,26 @@ const Classroom = ({ closePane, hidden }) => {
   }
 
   useEffect(() => {
-    socket.on(CREATOR_JOINED_ROOM, (id) => {
+    socket.on(CREATED_ROOM, (id) => {
       dispatch(setRoomId(id));
+      sessionStorage.setItem(`roomsCreated:${authId}:${id}`, id);
     });
 
     socket.on(USER_JOINED, (name, userSocketId) => {
-      if (!isRoomCreator) return;
-      socket.emit(SEND_INFO, userSocketId, roomName, JSON.parse(localStorage.getItem("messageLogs")));
-      setMostRecentJoinedUser(name);
-      setUserJustJoined(true);
-      setTimeout(() => {
-        setUserJustJoined(false);
-      }, 5000);
+      if (isRoomCreator) {
+        socket.emit(SEND_INFO, userSocketId, roomName, JSON.parse(localStorage.getItem("messageLogs")));
+        setMostRecentJoinedUser(name);
+        setUserJustJoined(true);
+        setTimeout(() => {
+          setUserJustJoined(false);
+        }, 5000);
+      } else {
+        socket.emit(SEND_INFO, userSocketId, roomName, messagesSent);
+        setTeacherJustJoined(true);
+        setTimeout(() => {
+          setTeacherJustJoined(false);
+        }, 5000);
+      }
     });
 
     socket.on(GET_ROOM_INFO, (roomName, messagesBeforeJoined) => {
@@ -97,19 +114,26 @@ const Classroom = ({ closePane, hidden }) => {
       dispatch(setIsRoomCreator(false));
       dispatch(setRoomId(""));
       dispatch(setRoomName(""));
+      setMessagesSent([]);
     });
 
     socket.on(GET_LEAVING_USER, (name) => {
-      if (!isRoomCreator) return;
-      setMostRecentLeavingUser(name);
-      setUserJustLeft(true);
-      setTimeout(() => {
-        setUserJustLeft(false);
-      }, 5000);
+      if (isRoomCreator) {
+        setMostRecentLeavingUser(name);
+        setUserJustLeft(true);
+        setTimeout(() => {
+          setUserJustLeft(false);
+        }, 5000);
+      } else {
+        setTeacherJustLeft(true);
+        setTimeout(() => {
+          setTeacherJustLeft(false);
+        }, 5000);
+      }
     });
 
     return () => {
-      socket.off(CREATOR_JOINED_ROOM);
+      socket.off(CREATED_ROOM);
       socket.off(USER_JOINED);
       socket.off(GET_ROOM_INFO);
       socket.off(RECIEVE_MESSAGE);
@@ -134,7 +158,30 @@ const Classroom = ({ closePane, hidden }) => {
         overflow: "hidden"
       }}
     >
-      
+      <ClassroomNotification 
+        mounted={userJustJoined}
+        onClose={() => setUserJustJoined(false)}
+        title="Hey there!"
+        message={`${mostRecentJoinedUser} has just joined the chat room!`}
+      />
+      <ClassroomNotification 
+        mounted={userJustLeft}
+        onClose={() => setUserJustLeft(false)}
+        title="See you later!"
+        message={`${mostRecentLeavingUser} has just left the chat room!`}
+      />
+      <ClassroomNotification 
+        mounted={teacherJustLeft}
+        onClose={() => setTeacherJustLeft(false)}
+        title="Class has ended!"
+        message="The teacher has just left the chat room!"
+      />
+      <ClassroomNotification 
+        mounted={teacherJustJoined}
+        onClose={() => setTeacherJustJoined(false)}
+        title="Class is back up!"
+        message="The teacher has just rejoined the chat room!"
+      />
       <Group
         align="apart"
         px="sm"
@@ -145,8 +192,8 @@ const Classroom = ({ closePane, hidden }) => {
         }}
       >
         <Group gap={4}>
-          {SIDEBAR_ICON_MAP["Settings"]}
-          <Text size="sm">Settings</Text>
+          {SIDEBAR_ICON_MAP["Classroom"]}
+          <Text size="sm">Classroom</Text>
         </Group>
         <ActionIcon
           variant="subtle"
@@ -185,56 +232,6 @@ const Classroom = ({ closePane, hidden }) => {
             />
         }
       </Box>
-      <Transition 
-        mounted={userJustJoined} 
-        duration={200} 
-        timingFunction="ease-in"
-        transition={"slide-left"}
-      >
-        {(TransitionStyle) => (
-          <div
-            style={{
-              ...TransitionStyle,
-              position: "absolute",
-              right: "10vh",
-              bottom: "10vh",
-              width: "300px"
-            }}
-          >
-            <Notification 
-              title="Hey there!"
-              onClose={() => setUserJustJoined(false)}
-            >
-              {mostRecentJoinedUser} has just joined the chat room!
-            </Notification>
-          </div>
-        )}
-      </Transition>
-      <Transition 
-        mounted={userJustLeft} 
-        duration={200} 
-        timingFunction="ease-in"
-        transition={"slide-left"}
-      >
-        {(TransitionStyle) => (
-          <div
-            style={{
-              ...TransitionStyle,
-              position: "absolute",
-              right: "10vh",
-              bottom: "10vh",
-              width: "300px"
-            }}
-          >
-            <Notification 
-              title="See you later!"
-              onClose={() => setUserJustLeft(false)}
-            >
-              {mostRecentLeavingUser} has just left the chat room!
-            </Notification>
-          </div>
-        )}
-      </Transition>
     </Paper>
   );
 };

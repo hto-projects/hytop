@@ -1,5 +1,6 @@
 /**
  * Keep adding to this file if you want to keep future events consistent
+ * Also this one was created to share constants between front end and back end. There is a constants file that is only in the front end
  */
 
 /**
@@ -7,7 +8,7 @@
  * Server prefix indicates the opposite.
  */
 export const IoEventChannels = {
-  CREATOR_JOINED_ROOM: "user:joined_room",
+  CREATED_ROOM: "user:joined_room",
   GET_ROOM_INFO: "user:get_room_info",
   RECIEVE_MESSAGE: "user:recieve_message",
   USER_JOINED: "user:user_joined",
