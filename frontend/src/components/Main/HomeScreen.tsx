@@ -59,6 +59,7 @@ const HomeScreen = () => {
       <span id="stars-close"></span>
       <span id="stars-mid"></span>
       <span id="stars-far"></span>
+
       <Box
         style={{
           height: "200vh",
