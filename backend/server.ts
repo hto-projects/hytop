@@ -65,9 +65,9 @@ const {
 } = IoEventChannels;
 
 io.on("connection", (socket) => {
-  socket.on(JOIN_ROOM_BY_ID, (id, name) => joinRoomByID(socket, id, name));
+  socket.on(JOIN_ROOM_BY_ID, (id, name) => joinRoomByID(io, socket, id, name));
   socket.on(CREATE_ROOM, () => createRoom(io, socket));
-  socket.on(SEND_INFO, (userSocketId, roomName, messageLogs) => sendInfo(io, userSocketId, roomName, messageLogs));
+  socket.on(SEND_INFO, (userSocketId, roomName, roomId, messageLogs) => sendInfo(io, userSocketId, roomName, roomId, messageLogs));
   socket.on(SEND_MESSAGE, (message, roomId) => sendMessageInChat(io, message, roomId));
   socket.on(LEAVE_ROOM, (id, name) => { leaveRoom(io, socket, id, name)});
   socket.on("disconnect", () => console.log(`Disconnected: ${socket.id}`));

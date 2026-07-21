@@ -14,6 +14,7 @@ export const IoEventChannels = {
   USER_JOINED: "user:user_joined",
   RESET_ROOM_INFO: "user:reset_room_info",
   GET_LEAVING_USER: "user:get_leaving_user",
+  ROOM_DOESNT_EXISTS: "user:room_doesnt_exists",
   JOIN_ROOM_BY_ID: "server:join_room",
   LEAVE_ROOM: "server:leave_room",
   CREATE_ROOM: "server:create_room",

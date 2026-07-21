@@ -13,11 +13,11 @@ import ClassroomMessagesPane from "./ClassroomMessagesPane";
 import ClassroomNotification from "./ClassroomNotification";
 
 const Classroom = ({ closePane, hidden }) => {
-  const [roomIdInput, setRoomIdInput] = useState("");
   const [roomNameInput, setRoomNameInput] = useState("");
+  const [roomIdInput, setRoomIdInput] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [messagesSent, setMessagesSent] = useState([]);
-
+  
   const [userJustJoined, setUserJustJoined] = useState(false);
   const [mostRecentJoinedUser, setMostRecentJoinedUser] = useState("");
   const [userJustLeft, setUserJustLeft] = useState(false);
@@ -25,6 +25,9 @@ const Classroom = ({ closePane, hidden }) => {
   
   const [teacherJustJoined, setTeacherJustJoined] = useState(false);
   const [teacherJustLeft, setTeacherJustLeft] = useState(false);
+
+  const [roomDoesntExists, setRoomDoesntExists] = useState(false);
+  let notificationSlideOutTimeout: number | null = null;
 
   const dispatch = useDispatch();
 
@@ -36,7 +39,9 @@ const Classroom = ({ closePane, hidden }) => {
   } = useSelector((state: any) => state.room);
   const name = useSelector((state: any) => state.auth.userInfo.name);
   const authId = useSelector((state: any) => state.auth.userInfo._id);
+  const isAdmin = useSelector((state: any) => state.auth.userInfo.admin);
   const theColorScheme = useComputedColorScheme("light");
+  const notificationTimeoutDuration = 5000;
 
   const {
     CREATE_ROOM,
@@ -49,16 +54,12 @@ const Classroom = ({ closePane, hidden }) => {
     SEND_MESSAGE,
     RECIEVE_MESSAGE,
     RESET_ROOM_INFO,
-    GET_LEAVING_USER
+    GET_LEAVING_USER,
+    ROOM_DOESNT_EXISTS
   } = IoEventChannels;
 
   const joinRoomById = () => {
     socket.emit(JOIN_ROOM_BY_ID, roomIdInput, name);
-    dispatch(setRoomId(roomIdInput));
-    dispatch(setIsInRoom(true));
-    if (sessionStorage.getItem(`roomsCreated:${authId}:${roomIdInput}`) === roomIdInput) {
-      dispatch(setIsRoomCreator(true));
-    }
   };
   
   const createRoom = () => {
@@ -83,26 +84,27 @@ const Classroom = ({ closePane, hidden }) => {
       sessionStorage.setItem(`roomsCreated:${authId}:${id}`, id);
     });
 
-    socket.on(USER_JOINED, (name, userSocketId) => {
+    socket.on(USER_JOINED, (name, userSocketId, roomId) => {
       if (isRoomCreator) {
-        socket.emit(SEND_INFO, userSocketId, roomName, JSON.parse(localStorage.getItem("messageLogs")));
+        socket.emit(SEND_INFO, userSocketId, roomName, roomId, JSON.parse(localStorage.getItem("messageLogs")));
         setMostRecentJoinedUser(name);
         setUserJustJoined(true);
-        setTimeout(() => {
-          setUserJustJoined(false);
-        }, 5000);
+        setTimeout(() => setUserJustJoined(false), notificationTimeoutDuration);
       } else {
-        socket.emit(SEND_INFO, userSocketId, roomName, messagesSent);
+        socket.emit(SEND_INFO, userSocketId, roomName, roomId, messagesSent);
         setTeacherJustJoined(true);
-        setTimeout(() => {
-          setTeacherJustJoined(false);
-        }, 5000);
+        setTimeout(() => setTeacherJustJoined(false), notificationTimeoutDuration);
       }
     });
 
-    socket.on(GET_ROOM_INFO, (roomName, messagesBeforeJoined) => {
+    socket.on(GET_ROOM_INFO, (roomName, roomId, messagesBeforeJoined) => {
       dispatch(setRoomName(roomName));
+      dispatch(setRoomId(roomId));
+      dispatch(setIsInRoom(true));
       setMessagesSent([...messagesBeforeJoined]);
+      if (sessionStorage.getItem(`roomsCreated:${authId}:${roomIdInput}`) === roomIdInput) {
+        dispatch(setIsRoomCreator(true));
+      }
     });
 
     socket.on(RECIEVE_MESSAGE, (message) => {
@@ -121,15 +123,20 @@ const Classroom = ({ closePane, hidden }) => {
       if (isRoomCreator) {
         setMostRecentLeavingUser(name);
         setUserJustLeft(true);
-        setTimeout(() => {
-          setUserJustLeft(false);
-        }, 5000);
+        setTimeout(() => setUserJustLeft(false), notificationTimeoutDuration);
       } else {
         setTeacherJustLeft(true);
-        setTimeout(() => {
-          setTeacherJustLeft(false);
-        }, 5000);
+        setTimeout(() => setTeacherJustLeft(false), notificationTimeoutDuration);
       }
+    });
+
+    socket.on(ROOM_DOESNT_EXISTS, () => {
+      setRoomDoesntExists(true);
+      clearTimeout(notificationSlideOutTimeout);
+      notificationSlideOutTimeout = setTimeout(() => {
+        setRoomDoesntExists(false)
+        setRoomIdErrorMsgWasSet(false);
+      }, notificationTimeoutDuration);
     });
 
     return () => {
@@ -141,6 +148,21 @@ const Classroom = ({ closePane, hidden }) => {
       socket.off(GET_LEAVING_USER);
     };
   }, [isInRoom, isRoomCreator, roomId, roomName, messagesSent]);
+
+
+  const [roomIdErrorMsg, setRoomIdErrorMsg] = useState("");
+
+  /** this variable is here so that if the notification is already up it stops the id value from updating */
+  const [roomIdErrorMsgWasSet, setRoomIdErrorMsgWasSet] = useState(false);
+
+  useEffect(() => {
+    if (!roomDoesntExists || (roomIdErrorMsgWasSet && roomDoesntExists)) {
+      return;
+    };
+
+    setRoomIdErrorMsg(roomIdInput); 
+    setRoomIdErrorMsgWasSet(true);
+  }, [roomDoesntExists, roomIdErrorMsgWasSet, roomIdInput]);
 
   return (
     <Paper
@@ -181,6 +203,15 @@ const Classroom = ({ closePane, hidden }) => {
         onClose={() => setTeacherJustJoined(false)}
         title="Class is back up!"
         message="The teacher has just rejoined the chat room!"
+      />
+      <ClassroomNotification 
+        mounted={roomDoesntExists}
+        onClose={() => {
+          setRoomDoesntExists(false);
+          setRoomIdErrorMsgWasSet(false);
+        }}
+        title="Oops!"
+        message={`The room you tried to join (${roomIdErrorMsg}) doesn't exists`}
       />
       <Group
         align="apart"

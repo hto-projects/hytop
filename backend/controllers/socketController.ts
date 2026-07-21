@@ -8,13 +8,19 @@ const {
   GET_LEAVING_USER,
   RECIEVE_MESSAGE,
   RESET_ROOM_INFO,
+  ROOM_DOESNT_EXISTS
 } = IoEventChannels;
 
 /** need a way to privately message users */
-const joinRoomByID = (socket: Socket, id: string, name: string) => {
+const joinRoomByID = (io: Server, socket: Socket, id: string, name: string) => {
+  if (!io.sockets.adapter.rooms.get(id)) {
+    io.to(socket.id).emit(ROOM_DOESNT_EXISTS);
+    return;
+  }
+
   socket.join(`userwithsocketid:${socket.id}`);
   socket.join(id);
-  socket.to(id).emit(USER_JOINED, name, socket.id);
+  socket.to(id).emit(USER_JOINED, name, socket.id, id);
 };
 
 const leaveRoom = (io: Server, socket: Socket, id: string, name: string) => {
@@ -31,8 +37,8 @@ const createRoom = (io: Server, socket: Socket) => {
   io.to(roomId.toString()).emit(CREATED_ROOM, roomId.toString());
 };
 
-const sendInfo = (io: Server, userSocketId: string, roomName: string, messageLogs: string[]) => {
-  io.to(`userwithsocketid:${userSocketId}`).emit(GET_ROOM_INFO, roomName, messageLogs);
+const sendInfo = (io: Server, userSocketId: string, roomName: string, roomId: string, messageLogs: string[]) => {
+  io.to(`userwithsocketid:${userSocketId}`).emit(GET_ROOM_INFO, roomName, roomId, messageLogs);
 };
 
 const sendMessageInChat = (io: Server, message: string, roomId: number) => {
