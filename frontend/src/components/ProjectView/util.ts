@@ -7,10 +7,15 @@ function getMonacoLang(filename: string) {
   return "plaintext";
 }
 
-/** use with input fields */
-function handleEnterShortCut(e: React.KeyboardEvent, callback: () => void) {
+/** 
+ * Used with input fields.
+ * aAlso feel free to use @ts-ignore to get e.target.value
+ * since because this should only be used with input fields it should theoretically never be undefined.
+ * @param args you can add arguments to the function as well
+ */
+function handleEnterShortCut(e: React.KeyboardEvent, callback: (...args: any[]) => void, ...args: any[]) {
   if (e.key !== "Enter") return;
-  callback();
+  callback(...args);
 };
 
 export { getMonacoLang, handleEnterShortCut };

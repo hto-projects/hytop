@@ -12,7 +12,7 @@ import fakeApiRoutes from "./routes/fakeApiRoutes";
 import { renderFile } from "./controllers/projectController";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { createRoom, joinRoomByID, sendMessageInChat, sendInfo, leaveRoom } from "./controllers/socketController";
+import { createRoom, joinRoomByID, sendMessageInChat, sendInfo, leaveRoom, updateAllClassrooms } from "./controllers/socketController";
 import { IoEventChannels } from "../shared/constants";
 
 const port = process.env.PORT || 5000;
@@ -64,12 +64,17 @@ const {
   SEND_MESSAGE,
 } = IoEventChannels;
 
+io.data = {
+  classRooms: []
+};
+
 io.on("connection", (socket) => {
-  socket.on(JOIN_ROOM_BY_ID, (id, name) => joinRoomByID(io, socket, id, name));
-  socket.on(CREATE_ROOM, () => createRoom(io, socket));
+  updateAllClassrooms(io);
+  socket.on(JOIN_ROOM_BY_ID, (id, name, isRoomCreator) => joinRoomByID(io, socket, id, name, isRoomCreator));
+  socket.on(CREATE_ROOM, (roomName) => createRoom(io, socket, roomName));
   socket.on(SEND_INFO, (userSocketId, roomName, roomId, messageLogs) => sendInfo(io, userSocketId, roomName, roomId, messageLogs));
   socket.on(SEND_MESSAGE, (message, roomId) => sendMessageInChat(io, message, roomId));
-  socket.on(LEAVE_ROOM, (id, name) => { leaveRoom(io, socket, id, name)});
+  socket.on(LEAVE_ROOM, (id, name, isRoomCreator) => { leaveRoom(io, socket, id, name, isRoomCreator)});
   socket.on("disconnect", () => console.log(`Disconnected: ${socket.id}`));
 });
 

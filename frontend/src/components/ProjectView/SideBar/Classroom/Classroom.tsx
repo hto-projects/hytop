@@ -1,22 +1,24 @@
 import { PiXBold } from "react-icons/pi";
-import { Paper, Group, Text, Box, ActionIcon } from "@mantine/core";
+import { Paper, Group, Text, Box, ActionIcon, Input } from "@mantine/core";
 import { useComputedColorScheme } from "@mantine/core";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { useSelector } from "react-redux";
 import { socket } from "../../../../socket";
 import { IoEventChannels } from "../../../../../../shared/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { setRoomName, setRoomId, setIsInRoom, setIsRoomCreator } from "../../../../slices/roomSlice";
 import { useDispatch } from "react-redux";
 import ClassroomJoinPane from "./ClassroomJoinPane";
 import ClassroomMessagesPane from "./ClassroomMessagesPane";
 import ClassroomNotification from "./ClassroomNotification";
+import { Classroom as TClassroom } from "../../../../../../shared/types";
 
 const Classroom = ({ closePane, hidden }) => {
   const [roomNameInput, setRoomNameInput] = useState("");
-  const [roomIdInput, setRoomIdInput] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [messagesSent, setMessagesSent] = useState([]);
+
+  const roomIdFromInput = useRef("");
   
   const [userJustJoined, setUserJustJoined] = useState(false);
   const [mostRecentJoinedUser, setMostRecentJoinedUser] = useState("");
@@ -26,6 +28,7 @@ const Classroom = ({ closePane, hidden }) => {
   const [teacherJustJoined, setTeacherJustJoined] = useState(false);
   const [teacherJustLeft, setTeacherJustLeft] = useState(false);
 
+  const [allClassrooms, setAllClassrooms] = useState<TClassroom[]>([]);
   const [roomDoesntExists, setRoomDoesntExists] = useState(false);
   let notificationSlideOutTimeout: number | null = null;
 
@@ -37,9 +40,9 @@ const Classroom = ({ closePane, hidden }) => {
     isInRoom,
     isRoomCreator,
   } = useSelector((state: any) => state.room);
-  const name = useSelector((state: any) => state.auth.userInfo.name);
+  const name = useSelector((state: any) => state.auth.userInfo.name); // might change this to user name
   const authId = useSelector((state: any) => state.auth.userInfo._id);
-  const isAdmin = useSelector((state: any) => state.auth.userInfo.admin);
+  // const isAdmin = useSelector((state: any) => state.auth.userInfo.admin);
   const theColorScheme = useComputedColorScheme("light");
   const notificationTimeoutDuration = 5000;
 
@@ -55,18 +58,26 @@ const Classroom = ({ closePane, hidden }) => {
     RECIEVE_MESSAGE,
     RESET_ROOM_INFO,
     GET_LEAVING_USER,
-    ROOM_DOESNT_EXISTS
+    ROOM_DOESNT_EXISTS,
+    ALL_ROOMS_UPDATED
   } = IoEventChannels;
 
+  const roomsCreated: string[] = (() => {
+    const roomsCreated = JSON.parse(sessionStorage.getItem(`roomsCreatedBy:${authId}`));
+    if (roomsCreated) {
+      return roomsCreated;
+    } else {
+      sessionStorage.setItem(`roomsCreatedBy:${authId}`, JSON.stringify([]));
+      return [];
+    }
+  })();
+
   const joinRoomById = () => {
-    socket.emit(JOIN_ROOM_BY_ID, roomIdInput, name);
+    socket.emit(JOIN_ROOM_BY_ID, roomIdFromInput.current, name, roomsCreated.includes(roomIdFromInput.current));
   };
   
   const createRoom = () => {
-    socket.emit(CREATE_ROOM);
-    dispatch(setRoomName(roomNameInput));
-    dispatch(setIsInRoom(true));
-    dispatch(setIsRoomCreator(true));
+    socket.emit(CREATE_ROOM, roomNameInput);
   };
 
   const sendMessage = () => {
@@ -75,25 +86,29 @@ const Classroom = ({ closePane, hidden }) => {
   };
 
   const leaveRoom = () => {
-    socket.emit(LEAVE_ROOM, roomId, name);
-  }
+    socket.emit(LEAVE_ROOM, roomId, name, isRoomCreator);
+  };
 
   useEffect(() => {
-    socket.on(CREATED_ROOM, (id) => {
+    socket.on(CREATED_ROOM, (id, roomName) => {
       dispatch(setRoomId(id));
-      sessionStorage.setItem(`roomsCreated:${authId}:${id}`, id);
+      dispatch(setRoomName(roomName));
+      dispatch(setIsInRoom(true));
+      dispatch(setIsRoomCreator(true));
+      roomsCreated.push(id);
+      sessionStorage.setItem(`roomsCreatedBy:${authId}`, JSON.stringify(roomsCreated));
     });
 
-    socket.on(USER_JOINED, (name, userSocketId, roomId) => {
+    socket.on(USER_JOINED, (name, userSocketId, roomId, isRoomCreator) => {
       if (isRoomCreator) {
+        socket.emit(SEND_INFO, userSocketId, roomName, roomId, messagesSent);
+        setTeacherJustJoined(true);
+        setTimeout(() => setTeacherJustJoined(false), notificationTimeoutDuration);
+      } else {
         socket.emit(SEND_INFO, userSocketId, roomName, roomId, JSON.parse(localStorage.getItem("messageLogs")));
         setMostRecentJoinedUser(name);
         setUserJustJoined(true);
         setTimeout(() => setUserJustJoined(false), notificationTimeoutDuration);
-      } else {
-        socket.emit(SEND_INFO, userSocketId, roomName, roomId, messagesSent);
-        setTeacherJustJoined(true);
-        setTimeout(() => setTeacherJustJoined(false), notificationTimeoutDuration);
       }
     });
 
@@ -102,7 +117,7 @@ const Classroom = ({ closePane, hidden }) => {
       dispatch(setRoomId(roomId));
       dispatch(setIsInRoom(true));
       setMessagesSent([...messagesBeforeJoined]);
-      if (sessionStorage.getItem(`roomsCreated:${authId}:${roomIdInput}`) === roomIdInput) {
+      if (roomsCreated.includes(roomIdFromInput.current)) {
         dispatch(setIsRoomCreator(true));
       }
     });
@@ -119,14 +134,14 @@ const Classroom = ({ closePane, hidden }) => {
       setMessagesSent([]);
     });
 
-    socket.on(GET_LEAVING_USER, (name) => {
+    socket.on(GET_LEAVING_USER, (name, isRoomCreator) => {
       if (isRoomCreator) {
+        setTeacherJustLeft(true);
+        setTimeout(() => setTeacherJustLeft(false), notificationTimeoutDuration);
+      } else {
         setMostRecentLeavingUser(name);
         setUserJustLeft(true);
         setTimeout(() => setUserJustLeft(false), notificationTimeoutDuration);
-      } else {
-        setTeacherJustLeft(true);
-        setTimeout(() => setTeacherJustLeft(false), notificationTimeoutDuration);
       }
     });
 
@@ -139,6 +154,10 @@ const Classroom = ({ closePane, hidden }) => {
       }, notificationTimeoutDuration);
     });
 
+    socket.on(ALL_ROOMS_UPDATED, (allClassrooms) => {
+      setAllClassrooms([...allClassrooms]);
+    });
+
     return () => {
       socket.off(CREATED_ROOM);
       socket.off(USER_JOINED);
@@ -146,13 +165,14 @@ const Classroom = ({ closePane, hidden }) => {
       socket.off(RECIEVE_MESSAGE);
       socket.off(RESET_ROOM_INFO);
       socket.off(GET_LEAVING_USER);
+      socket.off(ROOM_DOESNT_EXISTS);
+      socket.off(ALL_ROOMS_UPDATED);
     };
   }, [isInRoom, isRoomCreator, roomId, roomName, messagesSent]);
 
 
   const [roomIdErrorMsg, setRoomIdErrorMsg] = useState("");
-
-  /** this variable is here so that if the notification is already up it stops the id value from updating */
+  /** this is here so that if the notification is already up it stops the id value from updating when the user types */
   const [roomIdErrorMsgWasSet, setRoomIdErrorMsgWasSet] = useState(false);
 
   useEffect(() => {
@@ -160,9 +180,9 @@ const Classroom = ({ closePane, hidden }) => {
       return;
     };
 
-    setRoomIdErrorMsg(roomIdInput); 
+    setRoomIdErrorMsg(roomIdFromInput.current); 
     setRoomIdErrorMsgWasSet(true);
-  }, [roomDoesntExists, roomIdErrorMsgWasSet, roomIdInput]);
+  }, [roomDoesntExists, roomIdErrorMsgWasSet]);
 
   return (
     <Paper
@@ -256,10 +276,11 @@ const Classroom = ({ closePane, hidden }) => {
             />
             : 
             <ClassroomJoinPane 
-              setRoomIdInput={setRoomIdInput}
+              roomIdFromInput={roomIdFromInput}
               setRoomNameInput={setRoomNameInput}
               joinRoomById={joinRoomById}
               createRoom={createRoom}
+              rooms={allClassrooms}
             />
         }
       </Box>
