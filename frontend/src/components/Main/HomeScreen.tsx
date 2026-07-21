@@ -1,131 +1,149 @@
+import { useState, useEffect, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  Container,
+  Box,
   Paper,
   Text,
+  TextInput,
+  PasswordInput,
   Button,
-  Group,
-  Box
+  ScrollArea,
 } from "@mantine/core";
-import Logo from "../Interface/Logo";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+
+import { useLoginMutation } from "../../slices/usersApiSlice";
+import { setCredentials } from "../../slices/authSlice";
 
 const HomeScreen = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [login, { isLoading }] = useLoginMutation();
+
   const { userInfo } = useSelector((state: any) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [navigate, userInfo]);
+
+  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const res = await login({ username, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate("/");
+    } catch (err: any) {
+      toast.error(err?.data?.message || err?.error || "Login failed");
+    }
+  };
+
   return (
+    <ScrollArea h={1000} w="100vw">
     <Box
       style={{
-        minHeight: "100vh",
-        width: "100vw",
-        background: "#181A1B",
-        color: "#fff",
+        height: "200vh",
+        width: "100%",
+        overflowY: "auto",
+        backgroundImage: 'url("https://wallpaperaccess.com/full/3112075.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "auto"
+        justifyContent: "flex-end",
+        alignItems: "flex-start",
+        padding: "50px",
+        boxSizing: "border-box"
       }}
     >
-      <Container
-        size={900}
-        my={80}
+      <Paper
+        shadow="xl"
+        p={30}
+        radius="lg"
+        withBorder
         style={{
-          background: "transparent",
+          width: 440,
+          backgroundImage:
+            'url("https://static.vecteezy.com/system/resources/previews/011/049/040/original/v1-black-gradient-background-diamond-shape-pattern-vector.jpg")',
           color: "#fff",
+          border: "1px solid #373A40",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          paddingTop: 35,
+          paddingBottom: 35
         }}
       >
-        <Paper
-          shadow="md"
-          p={40}
-          radius="md"
-          withBorder
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            background: "#23272a",
-            color: "#fff",
-          }}
-        >
-          <div style={{ marginBottom: "1rem" }}>
-            <Logo
-              svgPath="/logo.svg"
-              height="20em"
-              style={{ marginBottom: "0.5rem" }}
-            />
-          </div>
-          <Text
-            size="lg"
-            ta="center"
-            mb="xl"
-            style={{
-              color: "#fff"
-            }}
-          >
-            Welcome to the Hyland Tech Outreach Portal. Here, you can build and
-            host your own websites.
-          </Text>
-          <Group align="center" mt="md" wrap="nowrap">
-            <Button
-              size="md"
-              radius="md"
-              component="a"
-              href="/create-project"
-              style={{
-                fontWeight: 600,
-                fontSize: 18,
-                paddingLeft: 16,
-                paddingRight: 16
-              }}
-            >
-              Create Project
-            </Button>
-            {!userInfo&&<Button
-              size="md"
-              radius="md"
-              component="a"
-              href="/register"
-              style={{
-                fontWeight: 600,
-                fontSize: 18,
-                paddingLeft: 32,
-                paddingRight: 32
-              }}
-            >
-              Sign up
-            </Button>}
-            <Button
-              size="md"
-              radius="md"
-              component="a"
-              href="/about"
-              style={{
-                fontWeight: 600,
-                fontSize: 18,
-                paddingLeft: 32,
-                paddingRight: 32
-              }}
-            >
+        <Text size="1.6rem" fw={700} ta="center" c="white" mb={25}>
+          Sign In
+        </Text>
 
-              About Page
-            </Button>
-            <Button
-              size="md"
-              radius="md"
-              component="a"
-              href="/latest-updates"
-              style={{
-                fontWeight: 600,
-                fontSize: 18,
-                paddingLeft: 32,
-                paddingRight: 32
-              }}
-            >
-              
-              Latest Update Page
-            </Button>
-          </Group>
-        </Paper>
-      </Container>
+        <form onSubmit={submitHandler}>
+          <TextInput
+            label="Username"
+            placeholder="Enter your username"
+            size="md"
+            radius="md"
+            value={username}
+            onChange={(e) => setUsername(e.currentTarget.value)}
+            required
+            mb={20}
+            styles={{
+              label: {
+                color: "white",
+                fontSize: "14px"
+              },
+              input: {
+                backgroundColor: "#2c2e33",
+                color: "white",
+                fontSize: "14px",
+                height: "45px"
+              }
+            }}
+          />
+
+          <PasswordInput
+            label="Password"
+            placeholder="Enter your password"
+            size="md"
+            radius="md"
+            value={password}
+            onChange={(e) => setPassword(e.currentTarget.value)}
+            required
+            mb={25}
+            styles={{
+              label: {
+                color: "white",
+                fontSize: "14px"
+              },
+              input: {
+                backgroundColor: "#2c2e33",
+                color: "white",
+                fontSize: "14px",
+                height: "45px"
+              }
+            }}
+          />
+
+          <Button
+            type="submit"
+            size="md"
+            radius="md"
+            fullWidth
+            loading={isLoading}
+          >
+            Sign In
+          </Button>
+        </form>
+      </Paper>
     </Box>
+    </ScrollArea>
   );
 };
 
