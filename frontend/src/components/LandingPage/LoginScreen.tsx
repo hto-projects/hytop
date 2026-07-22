@@ -1,6 +1,9 @@
 import Login from "../User/LoginComponent";
 import Register from "../User/RegisterScreen";
-import { Box } from "@mantine/core";
+import { 
+  Box,
+  Button, 
+} from "@mantine/core";
 import { useState } from "react";
 
 const LoginScreen = () => {
@@ -51,6 +54,33 @@ const LoginScreen = () => {
           <Register setDisplayedPanel={setDisplayedPanel} />
         )}
       </div>
+      {displayedPanel === "Login" ? (
+      <Button
+      component="a"
+      href="/create-project"
+      variant="transparent"
+      style ={{
+        position: "relative",
+        right: "16vw",
+        top: "46.5vh"
+      }}
+      >
+        Continue as guest
+      </Button>
+      ) : (
+        <Button
+      component="a"
+      href="/create-project"
+      variant="transparent"
+      style ={{
+        position: "relative",
+        right: "16vw",
+        top: "72.5vh"
+      }}
+      >
+        Continue as guest
+      </Button>
+      )}
     </Box>
   );
 };

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import LoginScreen from "../LandingPage/LoginScreen";
 import FeaturedProjects from "../LandingPage/FeaturedProjects";
+import AboutScreen from "../LandingPage/AboutScreen";
 import Splash from "../LandingPage/Splash";
 
 const HomeScreen = () => {
@@ -17,6 +18,7 @@ const HomeScreen = () => {
       <Splash />
       <LoginScreen />
       <FeaturedProjects />
+      <AboutScreen />
     </ScrollArea>
   );
 };

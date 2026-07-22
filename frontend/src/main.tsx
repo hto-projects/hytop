@@ -21,7 +21,7 @@ import RegisterScreen from "./components/User/RegisterScreen";
 import CreateProjectScreen from "./components/Main/CreateProjectScreen";
 import ProjectViewScreen from "./components/ProjectView/ProjectViewScreen";
 import CopyProjectScreen from "./components/Main/CopyProjectScreen";
-import AboutScreen from "./components/Main/AboutScreen";
+import AboutScreen from "./components/LandingPage/AboutScreen";
 import LatestUpdatesScreen from "./components/Main/LatestUpdatesScreen";
 import ForksOfProject from "./components/Main/ForksOfProject";
 import { setMonacoTheme } from "./slices/editorSlice";
