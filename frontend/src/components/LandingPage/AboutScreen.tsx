@@ -26,51 +26,18 @@ const AboutScreen = () => {
         overflow: "auto"
       }}
     >
-      <Box
+      <Title
+        ta="right"
+        mb="md"
         style={{
-          height: "80vh",
-          width: "30vw",
-          background: "#0e0707",
+          fontWeight: 800,
           color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          overflow: "auto",
-          marginLeft: "5vw",
-          marginBottom: "5vh"
+          marginLeft: "3vw",
+          fontSize: "75px"
         }}
       >
-        <Paper
-          shadow="md"
-          p={40}
-          radius="md"
-          withBorder
-          style={{
-            display: "flex",
-            height: "75vh",
-            width: "27vw",
-            justifyContent: "center",
-            alignItems: "center",
-            background: "#23272A",
-            color: "#fff",
-            marginBottom: "auto",
-            marginTop: "auto",
-          }}
-        >
-          <Title
-            order={1}
-            ta="right"
-            mb="md"
-            style={{
-              fontWeight: 800,
-              color: "#fff"
-            }}
-          >
-            Meet the Interns
-          </Title>
-        </Paper>
-      </Box>
+        Meet the Interns
+      </Title>
       <ScrollArea>
         <Box
           style={{
@@ -107,19 +74,36 @@ const AboutScreen = () => {
             }}
           >
             <Title
-              order={1}
               ta="center"
               mb="md"
+              mt={0}
+              pt={0}
               style={{
                 fontWeight: 800,
-                color: "#fff"
+                color: "#ffffff",
+                fontSize: "70px",
+                marginLeft: "Auto",
+                flexDirection: "row",
+                position: "relative",
+                top: "-10vh",
+                left: "15vw"
               }}
             >
-              Meet the 2026 Summer Interns...
+              2026
             </Title>
             <Text
+              ta="center"
               style={{
-                marginBottom: 20
+                marginBottom: 20,
+                flexDirection: "row",
+                marginRight: "1vw",
+                position: "relative",
+                left: "-2vw",
+                top: "4.5vh",
+                fontSize: "30px",
+                flexShrink: 0,
+                width: "25vw",
+                fontWeight: 450
               }}
             >
               Seen below (from left to right) is Sathvik, Vinny, Brian, Sophie,
@@ -145,19 +129,36 @@ const AboutScreen = () => {
             }}
           >
             <Title
-              order={1}
               ta="center"
               mb="md"
+              mt={0}
+              pt={0}
               style={{
                 fontWeight: 800,
-                color: "#fff"
+                color: "#ffffff",
+                fontSize: "70px",
+                marginLeft: "Auto",
+                flexDirection: "row",
+                position: "relative",
+                top: "-10vh",
+                left: "9vw"
               }}
             >
-              2025 Summer Interns
+              2025
             </Title>
             <Text
+              ta = "center"
               style={{
-                marginBottom: 20
+                marginBottom: 20,
+                marginRight: "-5vw",
+                flexDirection: "row",
+                position: "relative",
+                left: "-8vw",
+                top: "6vh",
+                fontSize: "25px",
+                flexShrink: 0,
+                width: "25vw",
+                fontWeight: 450
               }}
             >
               Our work is built on the foundation created by the 2025 Summer
