@@ -51,11 +51,10 @@ export default function FeaturedProjects() {
   return (
     <Box
       style={{
-        // backgroundColor: "#E06391",
         backgroundColor: "#BF527B",
         width: "100vw",
         height: "115vh",
-        paddingTop: "10vh",
+        paddingTop: "2vh",
         boxSizing: "border-box"
       }}
     >
