@@ -5,8 +5,7 @@ import {
   Text,
   Group,
   Box,
-  Image,
-  ScrollArea
+  Image
 } from "@mantine/core";
 import teamimage from "../../assets/teamimage.jpg";
 import oldteamimage from "../../assets/oldteamimage.jpg";
@@ -15,79 +14,15 @@ const AboutScreen = () => {
   return (
     <Box
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100vw",
-        background: "#ff0800",
+        background: "#181A1B",
         color: "#fff",
-        display: "flex",
-        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "center",
         overflow: "auto"
       }}
     >
-      <Box
-        style={{
-          height: "80vh",
-          width: "30vw",
-          background: "#0e0707",
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          overflow: "auto",
-          marginLeft: "5vw",
-          marginBottom: "5vh"
-        }}
-      >
-        <Paper
-          shadow="md"
-          p={40}
-          radius="md"
-          withBorder
-          style={{
-            display: "flex",
-            height: "75vh",
-            width: "27vw",
-            justifyContent: "center",
-            alignItems: "center",
-            background: "#23272A",
-            color: "#fff",
-            marginBottom: "auto",
-            marginTop: "auto",
-          }}
-        >
-          <Title
-            order={1}
-            ta="right"
-            mb="md"
-            style={{
-              fontWeight: 800,
-              color: "#fff"
-            }}
-          >
-            Meet the Interns
-          </Title>
-        </Paper>
-      </Box>
-      <ScrollArea>
-        <Box
-          style={{
-            height: "80vh",
-            width: "60vw",
-            background: "#0e0707",
-            color: "#fff",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            overflow: "auto",
-            marginLeft: "auto",
-            marginRight: "2vw",
-            marginBottom: "5vh"
-          }}
-        >
           <Paper
             shadow="md"
             p={40}
@@ -95,12 +30,7 @@ const AboutScreen = () => {
             withBorder
             style={{
               display: "flex",
-              width: "57vw",
-              justifyContent: "flex-end",
-              height: "35vh",
-              marginRight: "auto",
-              marginLeft: "auto",
-              flexDirection: "row",
+              flexDirection: "column",
               alignItems: "center",
               background: "#23272A",
               color: "#fff"
@@ -127,6 +57,7 @@ const AboutScreen = () => {
             </Text>
             <Image src={teamimage} width={600} height={300} radius="md"></Image>
           </Paper>
+
           <Paper
             shadow="md"
             p={40}
@@ -134,14 +65,10 @@ const AboutScreen = () => {
             withBorder
             style={{
               display: "flex",
-              width: "57vw",
-              height: "35vh",
-              flexDirection: "row",
+              flexDirection: "column",
               alignItems: "center",
               background: "#23272A",
-              color: "#fff",
-              marginTop: "4vh",
-              marginBottom: "3vh"
+              color: "#fff"
             }}
           >
             <Title
@@ -171,8 +98,6 @@ const AboutScreen = () => {
               radius="md"
             ></Image>
           </Paper>
-        </Box>
-      </ScrollArea>
     </Box>
   );
 };
