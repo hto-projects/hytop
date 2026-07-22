@@ -3,6 +3,7 @@ import { ScrollArea } from "@mantine/core";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import LoginScreen from "../LandingPage/LoginScreen";
+import FeaturedProjects from "../LandingPage/FeaturedProjects";
 import Splash from "../LandingPage/Splash";
 
 const HomeScreen = () => {
@@ -15,6 +16,7 @@ const HomeScreen = () => {
     <ScrollArea h={1000} w="100vw">
       <Splash />
       <LoginScreen />
+      <FeaturedProjects />
     </ScrollArea>
   );
 };

@@ -89,8 +89,8 @@ const RegisterScreen = ({ setDisplayedPanel }: LoginProps) => {
         width: "100%",
         height: "100%",
         margin: "0 auto",
-        background: theColorScheme === "dark" ? "#23272A" : undefined,
-        color: theColorScheme === "dark" ? "#fff" : undefined
+        background: "#23272A",
+        color: "#fff"
       }}
     >
       <Center mb="lg">

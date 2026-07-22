@@ -8,8 +8,6 @@ const LoginScreen = () => {
     "Login"
   );
 
-  console.log(displayedPanel);
-
   return (
     <Box
       style={{
