@@ -41,8 +41,19 @@ const Classroom = ({ closePane, hidden }) => {
     isInRoom,
     isRoomCreator,
   } = useSelector((state: any) => state.room);
-  const name = useSelector((state: any) => state.auth.userInfo.name); 
-  const authId = useSelector((state: any) => state.auth.userInfo._id);
+
+  const guestInfo = {
+    admin: false,
+    name: "Guest",
+    _id: "01001000 01010100 01101111 01110000"
+  };
+
+  const { 
+    name, 
+    admin: isAdmin, 
+    _id: authId, 
+  } = useSelector((state: any) => state.auth.userInfo ?? guestInfo);
+
   const theColorScheme = useComputedColorScheme("light");
   const notificationTimeoutDuration = 5000;
 
@@ -281,6 +292,7 @@ const Classroom = ({ closePane, hidden }) => {
               joinRoomById={joinRoomById}
               createRoom={createRoom}
               rooms={allClassrooms}
+              isAdmin={isAdmin}
             />
         }
       </Box>

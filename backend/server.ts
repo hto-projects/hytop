@@ -69,15 +69,16 @@ io.data = {
 };
 
 io.on("connection", (socket) => {
+  console.log(`Socket connected: ${socket.id}`)
   updateAllClassrooms(io);
   socket.on(JOIN_ROOM_BY_ID, (id, name, isRoomCreator) => joinRoomByID(io, socket, id, name, isRoomCreator));
   socket.on(CREATE_ROOM, (roomName) => createRoom(io, socket, roomName));
   socket.on(SEND_INFO, (userSocketId, roomName, roomId, messageLogs) => sendInfo(io, userSocketId, roomName, roomId, messageLogs));
   socket.on(SEND_MESSAGE, (message, roomId) => sendMessageInChat(io, message, roomId));
   socket.on(LEAVE_ROOM, (id, name, isRoomCreator) => { leaveRoom(io, socket, id, name, isRoomCreator)});
-  socket.on("disconnect", () => console.log(`Disconnected: ${socket.id}`));
+  socket.on("disconnect", () => console.log(`Socket disconnected: ${socket.id}`));
 });
 
 httpServer.listen(port, () => {
-  console.log("Server is running");
+  console.log(`HTTP server listening on port ${port}`);
 });

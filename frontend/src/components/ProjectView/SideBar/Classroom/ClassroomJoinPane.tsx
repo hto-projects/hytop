@@ -9,6 +9,7 @@ type ClassroomJoinPaneProps = {
   roomIdFromInput: React.MutableRefObject<string>;
   setRoomNameInput: React.Dispatch<React.SetStateAction<string>>;
   rooms: Classroom[];
+  isAdmin: boolean;
   joinRoomById: () => void;
   createRoom: () => void;
 };
@@ -17,15 +18,17 @@ const ClassroomJoinPane = ({
   roomIdFromInput,
   setRoomNameInput,
   rooms,
+  isAdmin,
   joinRoomById,
   createRoom,
 }: ClassroomJoinPaneProps) => {
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
 
-  const roomElements = rooms.map((room) => {
+  const roomElements = rooms.map((room, index) => {
     return (
       <Button 
+        key={index}
         variant="outline" 
         onClick={() => {
           roomIdFromInput.current = room.id;
@@ -70,36 +73,41 @@ const ClassroomJoinPane = ({
       >
         Join
       </Button>
-      <TextInput
-        label="Create a Room"
-        description="Give your classroom a name"
-        onChange={(e) => setRoomNameInput(e.currentTarget.value)}
-        onKeyDown={(e) => handleEnterShortCut(e, createRoom)}
-        size="xs"
-        mb="xs"
-        styles={{
-          input: {
-            color: theColorScheme === "dark" ? "#fff" : undefined,
-            fontFamily: "monospace"
-          },
-          label: {
-            color: theColorScheme === "dark" ? "#fff" : undefined,
-            fontSize: 12
-          }
-        }}
-      />
-      <Group mt="xs" gap={8}>
-        <Button
+      <Group
+        hidden={!isAdmin}
+        style={{ display: "block" }}
+      >
+        <TextInput
+          label="Create a Room"
+          description="Give your classroom a name"
+          onChange={(e) => setRoomNameInput(e.currentTarget.value)}
+          onKeyDown={(e) => handleEnterShortCut(e, createRoom)}
           size="xs"
-          color={primaryColor}
-          onClick={createRoom}
-          style={{ fontWeight: 600 }}
-        >
-          Create
-        </Button>
+          mb="xs"
+          styles={{
+            input: {
+              color: theColorScheme === "dark" ? "#fff" : undefined,
+              fontFamily: "monospace"
+            },
+            label: {
+              color: theColorScheme === "dark" ? "#fff" : undefined,
+              fontSize: 12
+            }
+          }}
+        />
+        <Group mt="xs" gap={2}>
+          <Button
+            size="xs"
+            color={primaryColor}
+            onClick={createRoom}
+            style={{ fontWeight: 600 }}
+          >
+            Create
+          </Button>
+        </Group>
       </Group>
       <Space h="md"></Space>
-      <Text size="sm" fw="bold">Join Rooms</Text>
+      <Text size="sm" fw="bold">Open Rooms</Text>
       <Space h="md"></Space>
       <Group>
         {

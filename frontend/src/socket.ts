@@ -1,6 +1,5 @@
 import { io } from "socket.io-client";
 
-const port = 5000;
-export const socket = io(`http://localhost:${port}`, {
+export const socket = io(import.meta.env.VITE_BACKEND_URL, {
   autoConnect: false
 });

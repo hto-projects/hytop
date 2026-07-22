@@ -42,9 +42,10 @@ const ClassroomMessagesPane = ({
             style={{
               background: "rgba(0, 0, 0, 0.2)",
               borderRadius: "6px",
-              padding: "0.2rem",
+              padding: "0.2rem 0.5rem",
               maxWidth: "90%",
-              width: "max-content"
+              width: "max-content",
+              color: "white"
             }}
           >
             {message}
@@ -67,12 +68,13 @@ const ClassroomMessagesPane = ({
         style={{
           height: "40vh",
           width: "94%",
-          background: theColorScheme === "dark" ? primaryColor : undefined,
+          background: primaryColor,
           color: theColorScheme === "dark" ? "#fff" : undefined,
           borderRadius: "7px",
           display: "flex",
           flexDirection: "column-reverse",
           overflowY: "auto",
+          paddingTop: "0.75rem"
         }}
       >
         {messageLogs} 

@@ -7,7 +7,7 @@
  * User prefix indicates that the event is listening from the front end.
  * Server prefix indicates the opposite.
  */
-export const IoEventChannels = {
+const IoEventChannels = {
   CREATED_ROOM: "user:joined_room",
   GET_ROOM_INFO: "user:get_room_info",
   RECIEVE_MESSAGE: "user:recieve_message",
@@ -23,4 +23,9 @@ export const IoEventChannels = {
   SEND_MESSAGE: "server:send_message",
 } as const;
 
-export type IoEventChannelNames = typeof IoEventChannels[keyof typeof IoEventChannels];
+type IoEventChannelNames = typeof IoEventChannels[keyof typeof IoEventChannels];
+
+export {
+  IoEventChannels,
+  IoEventChannelNames,
+};
