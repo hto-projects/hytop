@@ -1,6 +1,9 @@
-import { Box, Center, Stack } from "@mantine/core";
+import { Box } from "@mantine/core";
 import { Link } from "react-router-dom";
 
+import { Carousel } from "@mantine/carousel";
+import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
 // DC for demo cover
 import DC_3ddemo from "../../assets/3d_demo.png";
 
@@ -15,28 +18,28 @@ interface ProjectProps {
 // Define projects here!
 const projects: ProjectProps[] = [
   {
-    name: "3D environment demo",
+    name: "3D Environment Demo",
     description: "A scene and moveable camera set in 3D environment.",
     authors: ["Joseph"],
     link: "https://hytop.onrender.com/e/aframe/",
     demoCover: DC_3ddemo
   },
   {
-    name: "3D environment demo",
+    name: "3D Environment Demo",
     description: "A scene and moveable camera set in 3D environment.",
     authors: ["Joseph"],
     link: "https://hytop.onrender.com/e/aframe/",
     demoCover: DC_3ddemo
   },
   {
-    name: "3D environment demo",
+    name: "3D Environment Demo",
     description: "A scene and moveable camera set in 3D environment.",
     authors: ["Joseph"],
     link: "https://hytop.onrender.com/e/aframe/",
     demoCover: DC_3ddemo
   },
   {
-    name: "3D environment demo",
+    name: "3D Environment Demo",
     description: "A scene and moveable camera set in 3D environment.",
     authors: ["Joseph"],
     link: "https://hytop.onrender.com/e/aframe/",
@@ -65,40 +68,24 @@ export default function FeaturedProjects() {
           platform
         </p>
       </div>
-      <Box
-        style={{
-          padding: "20px",
-          width: "100vw",
-          height: "55vh",
-          display: "flex",
-          flexDirection: "row",
-          gap: "20px",
-          overflowX: "scroll",
-          overflowY: "hidden",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          paddingLeft: "60px",
-          paddingRight: "60px",
-          webkitMaskImage:
-            "linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, black 10%, black 90%, rgba(0, 0, 0, 0.5) 100%)",
-          maskImage:
-            "linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, black 10%, black 90%, rgba(0, 0, 0, 0.5) 100%)"
+      <Carousel
+        slideSize="33.333%"
+        slideGap="xl"
+        withIndicators
+        height="50vh"
+        emblaOptions={{
+          loop: true,
+          dragFree: true,
+          align: "center"
         }}
+        style={{ margin: "50px", paddingBottom: "40px" }}
       >
-        {projects.map(
-          ({ name, description, authors, link, demoCover }: ProjectProps) => {
-            return (
-              <Project
-                name={name}
-                description={description}
-                authors={authors}
-                link={link}
-                demoCover={demoCover}
-              />
-            );
-          }
-        )}
-      </Box>
+        {projects.map((project, i) => (
+          <Carousel.Slide key={i}>
+            <Project {...project} />
+          </Carousel.Slide>
+        ))}
+      </Carousel>
     </Box>
   );
 }
@@ -116,10 +103,8 @@ function Project({
       <Box
         style={{
           padding: "20px",
-          width: "30vw",
           height: "100%",
           background: "#23272A",
-          border: "solid 2px white",
           borderRadius: "10px",
           display: "flex",
           flexDirection: "column",
@@ -184,7 +169,6 @@ function Project({
           <img
             style={{
               width: "50%",
-              border: "solid 2px white",
               borderRadius: "10px"
             }}
             src={demoCover}

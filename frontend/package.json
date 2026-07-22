@@ -8,12 +8,14 @@
     "build": "tsc -b && vite build"
   },
   "dependencies": {
+    "@mantine/carousel": "^9.4.2",
     "@mantine/core": "^8.1.1",
     "@mantine/hooks": "^8.1.0",
     "@monaco-editor/react": "^4.7.0",
     "@reduxjs/toolkit": "^2.8.2",
     "bootstrap": "^5.2.3",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
     "lodash": "^4.17.21",
     "mantine-contextmenu": "^8.1.2",
     "monaco-vim": "^0.4.2",
