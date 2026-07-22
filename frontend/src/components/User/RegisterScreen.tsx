@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import {
-  Container,
   Paper,
   Title,
   Center,
-  Box,
   useComputedColorScheme,
   Text
 } from "@mantine/core";
@@ -26,11 +24,11 @@ import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
 import Logo from "../Interface/Logo";
 
-const RegisterScreen = ({
-  setScreen
-}: {
-  setScreen?: (screen: string) => void;
-}) => {
+interface LoginProps {
+  setDisplayedPanel: React.Dispatch<React.SetStateAction<"Login" | "Register">>;
+}
+
+const RegisterScreen = ({ setDisplayedPanel }: LoginProps) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -41,9 +39,7 @@ const RegisterScreen = ({
   const navigate = useNavigate();
 
   const [register, { isLoading }] = useRegisterMutation();
-
   const { userInfo } = useSelector((state: any) => state.auth);
-
   const theColorScheme = useComputedColorScheme("light");
 
   useEffect(() => {
@@ -84,110 +80,95 @@ const RegisterScreen = ({
   }
 
   return (
-    <Box
+    <Paper
+      shadow="md"
+      p={48}
+      radius="md"
+      withBorder
       style={{
-        minHeight: "100vh",
-        width: "100vw",
-        background: theColorScheme === "dark" ? "#181A1B" : undefined,
-        color: theColorScheme === "dark" ? "#fff" : undefined,
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "auto"
+        width: "100%",
+        height: "100%",
+        margin: "0 auto",
+        background: theColorScheme === "dark" ? "#23272A" : undefined,
+        color: theColorScheme === "dark" ? "#fff" : undefined
       }}
     >
-      <Container size={600} my={40}>
-        <Paper
-          shadow="md"
-          p={48}
-          radius="md"
-          withBorder
-          style={{
-            maxWidth: 520,
-            margin: "0 auto",
-            background: theColorScheme === "dark" ? "#23272A" : undefined,
-            color: theColorScheme === "dark" ? "#fff" : undefined
-          }}
-        >
-          <Center mb="lg">
-            <Logo svgPath="/favicon.svg" height="5em" />
+      <Center mb="lg">
+        <Logo svgPath="/favicon.svg" height="5em" />
+      </Center>
+      <Title order={2} ta="center" mb="md">
+        Register
+      </Title>
+      <Form
+        colorScheme={theColorScheme}
+        customConditions={() => {
+          return confirmPasswordHandler(password, confirmPassword);
+        }}
+        onSubmit={onSubmit}
+      >
+        <TextInputForm
+          label="Name"
+          value={name}
+          setValue={setName}
+          validation={nameValidation}
+          required
+          hideFulfilled
+        ></TextInputForm>
+        <TextInputForm
+          label="Email"
+          value={email}
+          setValue={setEmail}
+          validation={emailValidation}
+          required
+          showAfter
+          hideFulfilled
+        />
+        <TextInputForm
+          label="Username"
+          value={username}
+          setValue={setUsername}
+          validation={usernameValidation}
+          required
+          hideFulfilled
+        ></TextInputForm>
+        <PasswordInputForm
+          label="Password"
+          value={password}
+          setValue={setPassword}
+          validation={passwordValidation}
+          required
+          showAfter
+          hideCompleted
+        />
+        <PasswordInputForm
+          label="Confirm Password"
+          value={confirmPassword}
+          setValue={setConfirmPassword}
+          required
+        />
+        <Center mt="md">
+          <Button type="submit" size="md" style={{ width: "100%" }}>
+            {isLoading ? "Registering..." : "Register"}
+          </Button>
+        </Center>
+        {isLoading && (
+          <Center mt="md">
+            <Loader />
           </Center>
-          <Title order={2} ta="center" mb="md">
-            Register
-          </Title>
-          <Form
-            colorScheme={theColorScheme}
-            customConditions={() => {
-              return confirmPasswordHandler(password, confirmPassword);
-            }}
-            onSubmit={onSubmit}
-          >
-            <TextInputForm
-              label="Name"
-              value={name}
-              setValue={setName}
-              validation={nameValidation}
-              required
-              hideFulfilled
-            ></TextInputForm>
-            <TextInputForm
-              label="Email"
-              value={email}
-              setValue={setEmail}
-              validation={emailValidation}
-              required
-              showAfter
-              hideFulfilled
-            />
-            <TextInputForm
-              label="Username"
-              value={username}
-              setValue={setUsername}
-              validation={usernameValidation}
-              required
-              hideFulfilled
-            ></TextInputForm>
-            <PasswordInputForm
-              label="Password"
-              value={password}
-              setValue={setPassword}
-              validation={passwordValidation}
-              required
-              showAfter
-              hideCompleted
-            />
-            <PasswordInputForm
-              label="Confirm Password"
-              value={confirmPassword}
-              setValue={setConfirmPassword}
-              required
-            />
-            <Center mt="md">
-              <Button type="submit" size="md" style={{ width: "100%" }}>
-                {isLoading ? "Registering..." : "Register"}
-              </Button>
-            </Center>
-            {isLoading && (
-              <Center mt="md">
-                <Loader />
-              </Center>
-            )}
-          </Form>
-          <Text ta="center" mt="md">
-            Already have an account?{" "}
-            <Button
-              onClick={() =>
-                setScreen ? setScreen("sign in") : navigate("/login")
-              }
-              variant="hi"
-              size="sm"
-              style={{ padding: 1, marginLeft: 4 }}
-            >
-              Sign In
-            </Button>
-          </Text>
-        </Paper>
-      </Container>
-    </Box>
+        )}
+      </Form>
+      <Text ta="center" mt="md">
+        Already have an account?{" "}
+        <Button
+          onClick={() => setDisplayedPanel("Login")}
+          variant="hi"
+          size="sm"
+          style={{ padding: 1, marginLeft: 4 }}
+        >
+          Sign In
+        </Button>
+      </Text>
+    </Paper>
   );
 };
 
