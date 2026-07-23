@@ -10,9 +10,12 @@ import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import fakeApiRoutes from "./routes/fakeApiRoutes";
 import { renderFile } from "./controllers/projectController";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
+import { createRoom, joinRoomByID, sendMessageInChat, sendInfo, leaveRoom, updateAllClassrooms } from "./controllers/socketController";
+import { IoEventChannels } from "../shared/constants";
 
 const port = process.env.PORT || 5000;
-
 const frontEndUrl = process.env.FRONTEND_URL;
 
 connectDB();
@@ -22,7 +25,7 @@ const app = express();
 const corsOptions = {
   origin: frontEndUrl,
   optionsSuccessStatus: 200,
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -47,4 +50,35 @@ app.get("/pf/:projectName", renderFile);
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`Server started on port: ${port}`));
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: corsOptions
+});
+
+const {
+  JOIN_ROOM_BY_ID,
+  LEAVE_ROOM,
+  CREATE_ROOM,
+  SEND_INFO,
+  SEND_MESSAGE,
+} = IoEventChannels;
+
+io.data = {
+  classRooms: []
+};
+
+io.on("connection", (socket) => {
+  console.log(`Socket connected: ${socket.id}`)
+  updateAllClassrooms(io);
+  socket.on(JOIN_ROOM_BY_ID, (id, name, isRoomCreator) => joinRoomByID(io, socket, id, name, isRoomCreator));
+  socket.on(CREATE_ROOM, (roomName) => createRoom(io, socket, roomName));
+  socket.on(SEND_INFO, (userSocketId, roomName, roomId, messageLogs) => sendInfo(io, userSocketId, roomName, roomId, messageLogs));
+  socket.on(SEND_MESSAGE, (message, roomId) => sendMessageInChat(io, message, roomId));
+  socket.on(LEAVE_ROOM, (id, name, isRoomCreator) => { leaveRoom(io, socket, id, name, isRoomCreator)});
+  socket.on("disconnect", () => console.log(`Socket disconnected: ${socket.id}`));
+});
+
+httpServer.listen(port, () => {
+  console.log(`HTTP server listening on port ${port}`);
+});

@@ -8,6 +8,6 @@
     "rootDir": ".",
     "composite": true,
     "strict": true,
-    "moduleResolution": "bundler"
-  }
+    "moduleResolution": "bundler",
+  },
 }

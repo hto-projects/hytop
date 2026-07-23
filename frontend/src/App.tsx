@@ -4,9 +4,19 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Main/Header";
 import { useComputedColorScheme } from "@mantine/core";
 import "./App.css";
+import { socket } from "./socket";
+import { useEffect } from "react";
 
 const App = () => {
   const theColorScheme = useComputedColorScheme("light");
+
+  useEffect(() => {
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    }
+  }, []);
 
   return (
     <>
