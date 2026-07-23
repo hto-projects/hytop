@@ -12,7 +12,6 @@
   "author": "Hyland Software, Inc.",
   "license": "MIT",
   "dependencies": {
-    "@mantine/carousel": "^8.3.18",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
