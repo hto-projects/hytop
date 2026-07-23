@@ -294,7 +294,7 @@ const Classroom = ({ closePane, hidden }) => {
               joinRoomById={joinRoomById}
               createRoom={createRoom}
               rooms={allClassrooms}
-              isAdmin={true}
+              isAdmin={isAdmin}
             />
         }
       </Box>
