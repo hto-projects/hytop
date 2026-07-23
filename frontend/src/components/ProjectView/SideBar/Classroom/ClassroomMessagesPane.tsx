@@ -45,7 +45,8 @@ const ClassroomMessagesPane = ({
               padding: "0.2rem 0.5rem",
               maxWidth: "90%",
               width: "max-content",
-              color: "white"
+              color: "white",
+              wordWrap: "break-word",
             }}
           >
             {message}

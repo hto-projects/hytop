@@ -13,7 +13,6 @@ const App = () => {
   useEffect(() => {
     socket.connect();
 
-
     return () => {
       socket.disconnect();
     }

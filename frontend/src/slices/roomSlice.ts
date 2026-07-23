@@ -1,10 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, type Draft } from "@reduxjs/toolkit";
 
 const initialState = {
   roomName: "",
   roomId: "",
   isInRoom: false,
-  isRoomCreator: false
+  isRoomCreator: false,
 };
 
 const roomSlice = createSlice({
@@ -25,7 +25,7 @@ const roomSlice = createSlice({
     
     setIsRoomCreator: (state, action: PayloadAction<boolean>) => {
       state.isRoomCreator = action.payload;
-    }
+    },
   }
 });
 
@@ -33,6 +33,6 @@ export const {
   setRoomName, 
   setRoomId, 
   setIsInRoom, 
-  setIsRoomCreator 
+  setIsRoomCreator,
 } = roomSlice.actions;
 export default roomSlice.reducer;

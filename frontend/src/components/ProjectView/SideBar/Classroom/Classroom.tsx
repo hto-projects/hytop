@@ -14,13 +14,12 @@ import ClassroomNotification from "./ClassroomNotification";
 import { Classroom as TClassroom } from "../../../../../../shared/types";
 
 const Classroom = ({ closePane, hidden }) => {
-  // NO ADMIN LOGIC RIGHT NOW
   const [roomNameInput, setRoomNameInput] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [messagesSent, setMessagesSent] = useState([]);
 
   const roomIdFromInput = useRef("");
-  
+
   const [userJustJoined, setUserJustJoined] = useState(false);
   const [mostRecentJoinedUser, setMostRecentJoinedUser] = useState("");
   const [userJustLeft, setUserJustLeft] = useState(false);
@@ -45,6 +44,7 @@ const Classroom = ({ closePane, hidden }) => {
   const guestInfo = {
     admin: false,
     name: "Guest",
+    // if you change the line below this EVERYTHING WILL BREAK
     _id: "01001000 01010100 01101111 01110000"
   };
 
@@ -88,10 +88,12 @@ const Classroom = ({ closePane, hidden }) => {
   };
   
   const createRoom = () => {
+    if (roomNameInput.trim() === "") return;
     socket.emit(CREATE_ROOM, roomNameInput);
   };
 
   const sendMessage = () => {
+    if (messageInput.trim() === "") return;
     socket.emit(SEND_MESSAGE, messageInput, roomId);
     setMessageInput("");
   };
@@ -292,7 +294,7 @@ const Classroom = ({ closePane, hidden }) => {
               joinRoomById={joinRoomById}
               createRoom={createRoom}
               rooms={allClassrooms}
-              isAdmin={isAdmin}
+              isAdmin={true}
             />
         }
       </Box>

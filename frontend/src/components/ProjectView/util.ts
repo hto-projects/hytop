@@ -9,7 +9,7 @@ function getMonacoLang(filename: string) {
 
 /** 
  * Used with input fields.
- * aAlso feel free to use @ts-ignore to get e.target.value
+ * Also feel free to use @ts-ignore to get e.target.value
  * since because this should only be used with input fields it should theoretically never be undefined.
  * @param args you can add arguments to the function as well
  */
