@@ -1,13 +1,4 @@
-import {
-  Container,
-  Paper,
-  Title,
-  Text,
-  Group,
-  Box,
-  Image,
-  ScrollArea
-} from "@mantine/core";
+import { Paper, Title, Text, Box, Image, ScrollArea } from "@mantine/core";
 import teamimage from "../../assets/teamimage.jpg";
 import oldteamimage from "../../assets/oldteamimage.jpg";
 
@@ -16,164 +7,187 @@ const AboutScreen = () => {
     <Box
       style={{
         height: "100vh",
-        width: "100vw",
+        width: "100%",
         background: "#ff0800",
-        color: "#fff",
         display: "flex",
-        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
-        overflow: "auto"
+        justifyContent: "center",
+        padding: "2rem",
+        boxSizing: "border-box",
+        overflow: "hidden"
       }}
     >
-      <Title
-        ta="right"
-        mb="md"
+      <Box
         style={{
-          fontWeight: 800,
-          color: "#fff",
-          marginLeft: "3vw",
-          fontSize: "75px"
+          display: "flex",
+          flexDirection: "row",
+          gap: "3rem",
+          width: "100%",
+          maxWidth: "1800px",
+          height: "100%",
+          alignItems: "center"
         }}
       >
-        Meet the Interns
-      </Title>
-      <ScrollArea>
+        {/* Left Title */}
         <Box
           style={{
-            height: "80vh",
-            width: "60vw",
-            background: "#0e0707",
-            color: "#fff",
+            flex: "0 0 22%",
             display: "flex",
-            flexDirection: "column",
+            justifyContent: "center",
             alignItems: "center",
-            justifyContent: "flex-end",
-            overflow: "auto",
-            marginLeft: "auto",
-            marginRight: "2vw",
-            marginBottom: "5vh"
+            minWidth: "220px"
           }}
         >
-          <Paper
-            shadow="md"
-            p={40}
-            radius="md"
-            withBorder
+          <Title
+            ta="center"
             style={{
-              display: "flex",
-              width: "57vw",
-              justifyContent: "flex-end",
-              height: "35vh",
-              marginRight: "auto",
-              marginLeft: "auto",
-              flexDirection: "row",
-              alignItems: "center",
-              background: "#23272A",
-              color: "#fff"
-            }}
-          >
-            <Title
-              ta="center"
-              mb="md"
-              mt={0}
-              pt={0}
-              style={{
-                fontWeight: 800,
-                color: "#ffffff",
-                fontSize: "70px",
-                marginLeft: "Auto",
-                flexDirection: "row",
-                position: "relative",
-                top: "-10vh",
-                left: "15vw"
-              }}
-            >
-              2026
-            </Title>
-            <Text
-              ta="center"
-              style={{
-                marginBottom: 20,
-                flexDirection: "row",
-                marginRight: "1vw",
-                position: "relative",
-                left: "-2vw",
-                top: "4.5vh",
-                fontSize: "30px",
-                flexShrink: 0,
-                width: "25vw",
-                fontWeight: 450
-              }}
-            >
-              Seen below (from left to right) is Sathvik, Vinny, Brian, Sophie,
-              and Rebecca!
-            </Text>
-            <Image src={teamimage} width={600} height={300} radius="md"></Image>
-          </Paper>
-          <Paper
-            shadow="md"
-            p={40}
-            radius="md"
-            withBorder
-            style={{
-              display: "flex",
-              width: "57vw",
-              height: "35vh",
-              flexDirection: "row",
-              alignItems: "center",
-              background: "#23272A",
               color: "#fff",
-              marginTop: "4vh",
-              marginBottom: "3vh"
+              fontWeight: 800,
+              fontSize: "clamp(2.5rem, 5vw, 5rem)"
             }}
           >
-            <Title
-              ta="center"
-              mb="md"
-              mt={0}
-              pt={0}
-              style={{
-                fontWeight: 800,
-                color: "#ffffff",
-                fontSize: "70px",
-                marginLeft: "Auto",
-                flexDirection: "row",
-                position: "relative",
-                top: "-10vh",
-                left: "9vw"
-              }}
-            >
-              2025
-            </Title>
-            <Text
-              ta = "center"
-              style={{
-                marginBottom: 20,
-                marginRight: "-5vw",
-                flexDirection: "row",
-                position: "relative",
-                left: "-8vw",
-                top: "6vh",
-                fontSize: "25px",
-                flexShrink: 0,
-                width: "25vw",
-                fontWeight: 450
-              }}
-            >
-              Our work is built on the foundation created by the 2025 Summer
-              Interns, and we are extremely grateful for them. Seen below (from
-              left to right) is Layla, Fernando, and Morgan!
-            </Text>
-            <Image
-              src={oldteamimage}
-              width={600}
-              height={300}
-              radius="md"
-            ></Image>
-          </Paper>
+            Meet the Interns
+          </Title>
         </Box>
-      </ScrollArea>
+
+        {/* Right Content */}
+        <ScrollArea
+          style={{
+            flex: 1,
+            height: "90%"
+          }}
+        >
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "2rem",
+              paddingRight: "1rem"
+            }}
+          >
+            {/* 2026 */}
+            <Paper
+              shadow="md"
+              radius="md"
+              withBorder
+              p="xl"
+              style={{
+                background: "#23272A",
+                color: "#fff"
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "2rem",
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}
+              >
+                <Box
+                  style={{
+                    flex: "1 1 300px",
+                    minWidth: "280px"
+                  }}
+                >
+                  <Title
+                    order={1}
+                    style={{
+                      color: "#fff",
+                      fontSize: "clamp(2rem,4vw,4.5rem)"
+                    }}
+                  >
+                    2026
+                  </Title>
+
+                  <Text
+                    mt="md"
+                    style={{
+                      fontSize: "clamp(1rem,1.5vw,1.5rem)",
+                      lineHeight: 1.6
+                    }}
+                  >
+                    Seen below (from left to right) is Sathvik, Vinny, Brian,
+                    Sophie, and Rebecca!
+                  </Text>
+                </Box>
+
+                <Image
+                  src={teamimage}
+                  radius="md"
+                  style={{
+                    flex: "1 1 500px",
+                    width: "100%",
+                    maxWidth: "650px"
+                  }}
+                />
+              </Box>
+            </Paper>
+
+            {/* 2025 */}
+            <Paper
+              shadow="md"
+              radius="md"
+              withBorder
+              p="xl"
+              style={{
+                background: "#23272A",
+                color: "#fff"
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "2rem",
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}
+              >
+                <Box
+                  style={{
+                    flex: "1 1 300px",
+                    minWidth: "280px"
+                  }}
+                >
+                  <Title
+                    order={1}
+                    style={{
+                      color: "#fff",
+                      fontSize: "clamp(2rem,4vw,4.5rem)"
+                    }}
+                  >
+                    2025
+                  </Title>
+
+                  <Text
+                    mt="md"
+                    style={{
+                      fontSize: "clamp(1rem,1.5vw,1.4rem)",
+                      lineHeight: 1.6
+                    }}
+                  >
+                    Our work is built on the foundation created by the 2025
+                    Summer Interns, and we are extremely grateful for them. Seen
+                    below (from left to right) is Layla, Fernando, and Morgan!
+                  </Text>
+                </Box>
+
+                <Image
+                  src={oldteamimage}
+                  radius="md"
+                  style={{
+                    flex: "1 1 500px",
+                    width: "100%",
+                    maxWidth: "650px"
+                  }}
+                />
+              </Box>
+            </Paper>
+          </Box>
+        </ScrollArea>
+      </Box>
     </Box>
   );
 };
