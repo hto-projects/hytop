@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, type Draft } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState = {
   roomName: "",

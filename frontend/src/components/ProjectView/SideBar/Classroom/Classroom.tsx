@@ -1,5 +1,5 @@
 import { PiXBold } from "react-icons/pi";
-import { Paper, Group, Text, Box, ActionIcon, Input } from "@mantine/core";
+import { Paper, Group, Text, Box, ActionIcon } from "@mantine/core";
 import { useComputedColorScheme } from "@mantine/core";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../constants";
 import { useSelector } from "react-redux";
