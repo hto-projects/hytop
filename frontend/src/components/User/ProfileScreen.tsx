@@ -43,13 +43,20 @@ const ProfileScreen = () => {
     error: projectsError
   } = useGetUserProjectsQuery(userId, { skip: !userId });
 
+  const handleLogout = async () => {
+    try {
+      await logoutApiCall(undefined).unwrap();
+    } catch (err) {}
+
+    dispatch(logout(null));
+    navigate("/login");
+  };
+
   useEffect(() => {
     if (projectsError && 'status' in projectsError && projectsError?.status === 401) {
-      logoutApiCall({});
-      dispatch(logout());
-      navigate("/login");
+      handleLogout();
     }
-  }, [projectsError, logoutApiCall, dispatch, navigate]);
+  }, [projectsError]);
 
   const [email, setEmail] = useState(userInfo ? userInfo.email : "");
   const [name, setName] = useState(userInfo ? userInfo.name : "");
@@ -85,11 +92,6 @@ const ProfileScreen = () => {
       );
     }
   }
-
-  const handleLogout = () => {
-    dispatch(logout(null));
-    navigate("/login");
-  };
 
   return (
     <Box
