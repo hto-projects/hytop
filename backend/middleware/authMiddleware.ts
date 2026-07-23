@@ -3,9 +3,7 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
 
 const protect = asyncHandler(async (req: any, res, next) => {
-  let token;
-
-  token = req.cookies.jwt;
+  const token = req.cookies.jwt;
 
   if (token) {
     try {
@@ -26,9 +24,7 @@ const protect = asyncHandler(async (req: any, res, next) => {
 });
 
 const adminProtect = asyncHandler(async (req: any, res, next) => {
-  let token;
-
-  token = req.cookies.jwt;
+  const token = req.cookies.jwt;
 
   if (token) {
     try {
@@ -54,9 +50,7 @@ const adminProtect = asyncHandler(async (req: any, res, next) => {
 });
 
 const protectAllowAnon = asyncHandler(async (req: any, res, next) => {
-  let token;
-
-  token = req.cookies.jwt;
+  const token = req.cookies.jwt;
 
   if (token) {
     try {
