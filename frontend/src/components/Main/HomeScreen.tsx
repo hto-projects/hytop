@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 const HomeScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
   const isAdmin = userInfo?.admin || false;
-  console.log(userInfo, isAdmin);
   return (
     <Box
       style={{
