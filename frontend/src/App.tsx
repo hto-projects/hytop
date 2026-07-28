@@ -14,7 +14,7 @@ const App = () => {
     socket.connect();
 
     return () => {
-      socket.disconnect();
+      socket.();
     }
   }, []);
 
