@@ -5,6 +5,7 @@ import Logo from "../Interface/Logo";
 import "../LandingPage/background.css";
 import { generateStars } from "../LandingPage/background";
 
+
 export default function Splash() {
   useEffect(() => {
     generateStars();
@@ -19,6 +20,7 @@ export default function Splash() {
         isolation: "isolate",
         contain: "paint"
       }}
+      id="splash"
     >
       <span id="stars-close"></span>
       <span id="stars-mid"></span>

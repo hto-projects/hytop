@@ -37,10 +37,7 @@ const router = createBrowserRouter(
       <Route path="/e/:projectName" element={<ProjectViewScreen />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
       <Route path="/forks-of/:projectName" element={<ForksOfProject />} />
-      <Route path="/about" element={<AboutScreen />} />
       <Route path="/latest-updates" element={<LatestUpdatesScreen />} />
-      <Route path="/login" element={<LoginScreen />} />
-      <Route path="/register" element={<RegisterScreen />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />

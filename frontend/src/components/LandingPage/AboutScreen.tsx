@@ -17,6 +17,7 @@ const AboutScreen = () => {
         boxSizing: "border-box",
         overflow: "hidden"
       }}
+      id="about"
     >
       <Box
         style={{
