@@ -6,9 +6,9 @@ const AboutScreen = () => {
   return (
     <Box
       style={{
-        height: "100vh",
+        height: "150vh",
         width: "100%",
-        background: "#ff0800",
+        background: "#8a417a",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

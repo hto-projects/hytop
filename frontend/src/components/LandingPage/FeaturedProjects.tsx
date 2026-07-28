@@ -51,9 +51,9 @@ export default function FeaturedProjects() {
   return (
     <Box
       style={{
-        backgroundColor: "#8A4F7D",
+        backgroundColor: "#3a4499",
         width: "100vw",
-        height: "115vh",
+        height: "125vh",
         paddingTop: "2vh",
         boxSizing: "border-box"
       }}
@@ -85,6 +85,42 @@ export default function FeaturedProjects() {
           </Carousel.Slide>
         ))}
       </Carousel>
+
+      <svg
+        id="visual"
+        viewBox="0 400 900 600"
+        width="100vw"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M0 408L129 438L257 470L386 450L514 439L643 491L771 443L900 408L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
+          fill="#3a4499"
+        ></path>
+        <path
+          d="M0 435L129 440L257 490L386 424L514 442L643 409L771 454L900 476L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
+          fill="#504295"
+        ></path>
+        <path
+          d="M0 455L129 482L257 431L386 516L514 442L643 468L771 467L900 511L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
+          fill="#614190"
+        ></path>
+        <path
+          d="M0 512L129 530L257 484L386 537L514 540L643 510L771 521L900 524L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
+          fill="#6e408b"
+        ></path>
+        <path
+          d="M0 552L129 560L257 522L386 541L514 509L643 539L771 539L900 495L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
+          fill="#794085"
+        ></path>
+        <path
+          d="M0 564L129 569L257 540L386 566L514 545L643 568L771 548L900 521L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
+          fill="#824080"
+        ></path>
+        <path
+          d="M0 581L129 552L257 559L386 578L514 551L643 546L771 557L900 589L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
+          fill="#8a417a"
+        ></path>
+      </svg>
     </Box>
   );
 }
