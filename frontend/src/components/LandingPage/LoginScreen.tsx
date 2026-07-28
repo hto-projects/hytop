@@ -16,6 +16,7 @@ const LoginScreen = () => {
           width: "100vw",
           height: "80%"
         }}
+        id="login"
       >
         <div
           className="background-svgs"

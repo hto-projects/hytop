@@ -64,7 +64,7 @@ const Header = () => {
     >
       <ActionIcon
         component={Link}
-        to="/"
+        to="/#splash"
         size="xs"
         variant="subtle"
         style={{
@@ -109,6 +109,8 @@ const Header = () => {
     transform: "translateX(-50%)",
   }}
 >
+  
+  <Link to="/#login">
   <Button
     component="a"
     href="/#login"
@@ -120,19 +122,23 @@ const Header = () => {
   >
     Login
   </Button>
+  </Link>
 
+  <Link to="/#featuredprojects">
     <Button
-    component="a"
-    href="/#featuredprojects"
-    size="xs"
-    variant="subtle"
-    style={{
-      color: theColorScheme === "dark" ? "#fff" : undefined,
-    }}
-  >
-    Featured Projects
-  </Button>
+      // component="a"
+      // href="/#featuredprojects"
+      size="xs"
+      variant="subtle"
+      style={{
+        color: theColorScheme === "dark" ? "#fff" : undefined,
+      }}
+    >
+      Featured Projects
+    </Button>
+  </Link>
 
+<Link to="/#about">
   <Button
     component="a"
     href="/#about"
@@ -144,6 +150,8 @@ const Header = () => {
   >
     About
   </Button>
+</Link>
+
 </Group>
 
       {isEditor && (

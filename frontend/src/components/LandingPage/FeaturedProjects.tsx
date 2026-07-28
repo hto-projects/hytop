@@ -58,6 +58,7 @@ export default function FeaturedProjects() {
           paddingTop: "20vh",
           boxSizing: "border-box"
         }}
+        id="featuredprojects"
       >
         <div style={{ width: "50%", margin: "auto", textAlign: "center" }}>
           <h2
