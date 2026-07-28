@@ -30,7 +30,7 @@ const Classroom = ({ closePane, hidden }) => {
 
   const [allClassrooms, setAllClassrooms] = useState<TClassroom[]>([]);
   const [roomDoesntExists, setRoomDoesntExists] = useState(false);
-  let notificationSlideOutTimeout: number | null = null;
+  let notificationSlideOutTimeout: ReturnType<typeof setTimeout> | null = null;
 
   const dispatch = useDispatch();
 
