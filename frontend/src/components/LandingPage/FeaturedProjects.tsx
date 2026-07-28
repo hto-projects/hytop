@@ -51,7 +51,7 @@ export default function FeaturedProjects() {
   return (
     <Box
       style={{
-        backgroundColor: "#BF527B",
+        backgroundColor: "#3058b0",
         width: "100vw",
         height: "115vh",
         paddingTop: "2vh",
