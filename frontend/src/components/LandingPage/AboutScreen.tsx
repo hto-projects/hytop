@@ -13,6 +13,7 @@ const AboutScreen = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem",
+        paddingTop: "20vh",
         boxSizing: "border-box",
         overflow: "hidden"
       }}
