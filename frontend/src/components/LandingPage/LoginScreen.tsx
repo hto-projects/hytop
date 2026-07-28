@@ -158,7 +158,7 @@ const LoginScreen = () => {
         style={{ backgroundColor: "#5e50b4" }}
       >
         <path
-          fill="#3058b0"
+          fill="#8A4F7D"
           d="M0 533L129 511L257 539L386 532L514 540L643 538L771 558L900 511L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
         />
       </svg>
