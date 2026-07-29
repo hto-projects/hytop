@@ -15,7 +15,8 @@ const AboutScreen = () => {
         padding: "2rem",
         paddingTop: "20vh",
         boxSizing: "border-box",
-        overflow: "hidden"
+        overflow: "hidden",
+        preserveAspectRatio: "xMinYMin slice"
       }}
       id="about"
     >
