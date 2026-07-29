@@ -158,6 +158,7 @@ const CreateProjectScreen = () => {
               className={styles.autocomplete}
               classNames={{
                 dropdown: styles.autocompleteDropdown,
+                input: styles.inputTextBox
               }}
               onChange={(e) => setCopyingProjectName(e)}
             />
@@ -170,7 +171,9 @@ const CreateProjectScreen = () => {
             minRows={2}
             mb="md"
             size="md"
+            placeholder="Project Description"
             className={styles.input}
+            classNames={{ input: styles.inputTextBox }}
             styles={{
               input: {
                 color: theColorSchemeish === "dark" ? "#fff" : undefined

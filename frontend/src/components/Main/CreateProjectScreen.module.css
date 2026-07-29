@@ -61,7 +61,9 @@
 }
 
 .inputTextBox {
-  background: #00000098;
+  /* background: #06315675; */
+  background: #33323242;
+  outline: none;
 }
 
 
@@ -93,6 +95,7 @@
 
 .autocompleteDropdown {
   color: white;
+  /* background: #1b1b1b; */
 }
 
 @media (max-height: 800px) {
