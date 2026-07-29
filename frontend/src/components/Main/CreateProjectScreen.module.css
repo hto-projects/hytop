@@ -14,12 +14,24 @@
 }
 
 .paper {
-  background: #23272A;
+  background: transparent;
   color: white;
   width: 500px;
   height: 600px;
   overflow: hidden;
   z-index: 1;
+  position: relative;
+}
+
+.paper::before {
+  content: "";
+  inset: 0;
+  position: absolute;
+  width: 500px;
+  height: 600px;
+  backdrop-filter: blur(0.25rem);
+  background-color: #00000098;
+  z-index: -1;
 }
 
 .title {
@@ -80,7 +92,8 @@
 }
 
 @media (max-height: 800px) {
-  .paper {
+  .paper,
+  .paper::before {
     width: 700px;
     height: 400px;
   }
@@ -103,7 +116,8 @@
 }
 
 @media (max-height: 550px) {
-  .paper {
+  .paper,
+  .paper::before {
     width: 100vw;
     height: 100%;
   }
