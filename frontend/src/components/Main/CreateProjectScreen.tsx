@@ -31,8 +31,22 @@ const CreateProjectScreen = () => {
 
   const theColorSchemeish = useComputedColorScheme("light");
 
-  const python = ["monte python", "woohoo"];
-  const html = ["hey hey hey", "ho ho ho", "heee heee"];
+  const python = [
+    "simple-turtle",
+    "py-print",
+    "py-cli ",
+  ];
+
+  const html = [
+    "www",
+    "aframe",
+    "three-js-blank-game-1",
+    "p5-cube-image",
+    "tv-characters",
+    "funk-playlist",
+    "zine-machine-rowan-fyi",
+    "quiz-about-me",
+  ];
 
   const starterProjects = [
     {
@@ -173,5 +187,22 @@ const CreateProjectScreen = () => {
     </Box>
   );
 };
+
+/*
+WEB
+www
+aframe
+three-js-blank-game-1
+p5-cube-image
+tv-characters
+funk-playlist
+zine-machine-rowan-fyi
+quiz-about-me
+ 
+PYTHON
+simple-turtle
+py-print
+py-cli 
+*/
 
 export default CreateProjectScreen;
