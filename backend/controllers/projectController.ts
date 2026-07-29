@@ -112,6 +112,7 @@ const getUserId = (req, res) => {
 const createProject = asyncHandler(async (req: any, res) => {
   const userId = getUserId(req, res);
   const { projectName, projectDescription, copyingProjectName, projectType } = req.body;
+  const hyphenatedCopyingProjectName = copyingProjectName.trim().replaceAll(" ", "-");
   const slugifiedProjectName = slugifyProjectName(projectName);
   const foundProject: IProject = await findProject(slugifiedProjectName);
   
@@ -122,7 +123,7 @@ const createProject = asyncHandler(async (req: any, res) => {
     );
   }
 
-  let existingProject: IProject = await findProject(copyingProjectName);
+  let existingProject: IProject = await findProject(hyphenatedCopyingProjectName);
 
   const newProjectId: string = uuidv4();
   const starterProjectFiles: IProjectFile[] = [

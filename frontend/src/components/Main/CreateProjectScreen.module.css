@@ -1,0 +1,132 @@
+.box {
+  background: #181A1B;
+  width: 100vw;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.svg {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+
+.paper {
+  background: transparent;
+  color: white;
+  width: 500px;
+  height: 600px;
+  overflow: hidden;
+  z-index: 1;
+  position: relative;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+.paper::before {
+  content: "";
+  inset: 0;
+  position: absolute;
+  width: 500px;
+  height: 600px;
+  backdrop-filter: blur(0.5rem);
+  background-color: #00000098;
+  z-index: -1;
+}
+
+.title {
+  font-size: 1.5rem;;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 40%;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  align-items: safe center;
+  height: 60%;
+  overflow: auto;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.inputTextBox {
+  /* background: #06315675; */
+  background: #33323242;
+  outline: none;
+}
+
+
+.projectType {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.starterProjects {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.starterProject {
+  cursor: pointer;
+}
+
+.submit {
+  margin-bottom: 1rem;
+}
+
+.autocomplete {
+  width: 100%;
+}
+
+.autocompleteDropdown {
+  color: white;
+  /* background: #1b1b1b; */
+}
+
+@media (max-height: 800px) {
+  .paper,
+  .paper::before {
+    width: 700px;
+    height: 400px;
+  }
+
+  .header {
+    width: 40%;
+    height: 100%;
+    float: left;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .form {
+    width: 60%;
+    height: 100%;
+    float: left;
+  }
+}
+
+@media (max-height: 550px) {
+  .paper,
+  .paper::before {
+    width: 100vw;
+    height: 100%;
+  }
+}
