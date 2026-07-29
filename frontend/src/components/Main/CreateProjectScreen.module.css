@@ -29,7 +29,7 @@
   position: absolute;
   width: 500px;
   height: 600px;
-  backdrop-filter: blur(0.25rem);
+  backdrop-filter: blur(0.5rem);
   background-color: #00000098;
   z-index: -1;
 }
@@ -58,6 +58,10 @@
 .input {
   width: 100%;
   padding: 0.5rem;
+}
+
+.inputTextBox {
+  background: #00000098;
 }
 
 

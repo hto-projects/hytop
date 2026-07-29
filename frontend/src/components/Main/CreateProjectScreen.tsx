@@ -106,6 +106,7 @@ const CreateProjectScreen = () => {
             required
             autoFocus
             className={styles.input}
+            classNames={{ input: styles.inputTextBox }}
             size="md"
             styles={{
               input: {
