@@ -1,6 +1,7 @@
 import { Container, Paper, Text, Button, Group, Box } from "@mantine/core";
 import Logo from "../Interface/Logo";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const HomeScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
@@ -58,20 +59,21 @@ const HomeScreen = () => {
             host your own websites.
           </Text>
           <Group align="center" mt="md" wrap="nowrap">
-            <Button
-              size="md"
-              radius="md"
-              component="a"
-              href="/create-project"
-              style={{
-                fontWeight: 600,
-                fontSize: 18,
-                paddingLeft: 16,
-                paddingRight: 16
-              }}
-            >
-              Create Project
-            </Button>
+            <Link to="/create-project#topelement">
+              <Button
+                size="md"
+                radius="md"
+                component="a"
+                style={{
+                  fontWeight: 600,
+                  fontSize: 18,
+                  paddingLeft: 16,
+                  paddingRight: 16
+                }}
+              >
+                Create Project
+              </Button>
+            </Link>
             {!userInfo && (
               <Button
                 size="md"

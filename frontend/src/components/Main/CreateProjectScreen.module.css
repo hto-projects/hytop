@@ -1,0 +1,103 @@
+.box {
+  background: #181A1B;
+  width: 100vw;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paper {
+  background: #23272A;
+  color: white;
+  width: 500px;
+  height: 600px;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 1.5rem;;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 40%;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  align-items: safe center;
+  height: 60%;
+  overflow: auto;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+
+.projectType {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.starterProjects {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.starterProject {
+  cursor: pointer;
+}
+
+.submit {
+  margin-bottom: 1rem;
+}
+
+.autocomplete {
+  width: 100%;
+}
+
+.autocompleteDropdown {
+  color: white;
+}
+
+@media (max-height: 800px) {
+  .paper {
+    width: 700px;
+    height: 400px;
+  }
+
+  .header {
+    width: 40%;
+    height: 100%;
+    float: left;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .form {
+    width: 60%;
+    height: 100%;
+    float: left;
+  }
+}
+
+@media (max-height: 550px) {
+  .paper {
+    width: 100vw;
+    height: 100%;
+  }
+}
