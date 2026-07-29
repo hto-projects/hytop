@@ -56,7 +56,8 @@ const findProject = async (projectName: string): Promise<IProject> => {
         projectFiles: projectFiles,
         projectId: projectName,
         projectStatus: "frozen",
-        projectOwnerId: "0"
+        projectOwnerId: "0",
+        projectType: fileNames.includes("main.py") ? "python" : "html"
       };
 
       return starterProject;
