@@ -1,0 +1,33 @@
+name: Pull Requests
+
+on: 
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build the project
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version: '22'
+
+    - name: Install backend dependencies
+      run: npm install
+
+    # The backend is not built by Render, simply installed and run. No build step is required.
+    
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: npm install
+
+    - name: Build frontend
+      working-directory: ./frontend
+      run: npm run build
