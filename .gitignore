@@ -25,3 +25,11 @@ dist-ssr
 # pnpm files
 pnpm-lock.yaml*
 pnpm-workspace.yaml*
+
+# Build artifacts
+*.tsbuildinfo
+shared/**/*.js
+shared/**/*.d.ts
+shared/**/*.d.ts.map
+frontend/vite.config.js
+frontend/vite.config.d.ts
