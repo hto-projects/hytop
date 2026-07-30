@@ -64,7 +64,7 @@ const Header = () => {
     >
       <ActionIcon
         component={Link}
-        to="/"
+        to="/#splash"
         size="xs"
         variant="subtle"
         style={{
@@ -100,6 +100,60 @@ const Header = () => {
           HyTOP
         </Text>
       )}
+
+<Group
+  gap="xs"
+  style={{
+    position: "absolute",
+    left: "50%",
+    transform: "translateX(-50%)",
+  }}
+>
+  
+  <Link to="/#login">
+  <Button
+    component="a"
+    href="/#login"
+    size="xs"
+    variant="subtle"
+    style={{
+      color: theColorScheme === "dark" ? "#fff" : undefined,
+    }}
+  >
+    Login
+  </Button>
+  </Link>
+
+  <Link to="/#featuredprojects">
+    <Button
+      // component="a"
+      // href="/#featuredprojects"
+      size="xs"
+      variant="subtle"
+      style={{
+        color: theColorScheme === "dark" ? "#fff" : undefined,
+      }}
+    >
+      Featured Projects
+    </Button>
+  </Link>
+
+<Link to="/#about">
+  <Button
+    component="a"
+    href="/#about"
+    size="xs"
+    variant="subtle"
+    style={{
+      color: theColorScheme === "dark" ? "#fff" : undefined,
+    }}
+  >
+    About
+  </Button>
+</Link>
+
+</Group>
+
       {isEditor && (
         <>
           <Group gap={0}>
@@ -149,6 +203,7 @@ const Header = () => {
           </Tooltip>
         </>
       )}
+
       <Group gap={0} ml="auto">
         {userInfo ? (
           <Button
@@ -169,7 +224,7 @@ const Header = () => {
             size="xs"
             variant="subtle"
             style={{
-              color: theColorScheme === "dark" ? "#fff" : undefined
+              color: theColorScheme === "dark" ? "#ce1a1a" : undefined
             }}
           >
             Sign In

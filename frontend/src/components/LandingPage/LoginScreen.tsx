@@ -9,92 +9,208 @@ const LoginScreen = () => {
   );
 
   return (
-    <>
-      <Box
+    <div style={{ height: "115vh" }}>
+      <div
         style={{
-          backgroundColor: "#5e50b4",
+          position: "relative",
           width: "100vw",
-          overflowY: "auto",
-          display: "flex",
-          alignItems: "flex-start",
-          padding: "50px",
-          paddingBottom: "15vh",
-          boxSizing: "border-box"
+          height: "80%"
         }}
+        id="login"
       >
         <div
+          className="background-svgs"
           style={{
-            paddingTop: "12.5vh",
-            marginLeft: "12.5vw",
-            width: "30vw"
+            backgroundColor: "#5e50b4",
+            display: "absolute",
+            inset: "0",
+            width: "100%",
+            height: "100%",
+            zIndex: "1"
           }}
         >
-          <h2
-            style={{
-              fontSize: "calc(4.5vw + 2.5vh)",
-              width: "auto",
-              color: "white",
-              paddingBottom: "5px"
-            }}
-          >
-            Welcome
-          </h2>
-          <p style={{ fontSize: "30px", color: "white" }}>
-            to the Hyland Tech Outreach Portal (HyTOP), A one stop shop for all
-            your web and Python development needs.
-          </p>
+          {/* planet */}
+          <div style={{ width: "15vw", height: "auto" }}>
+            <svg
+              width="100%"
+              viewBox="0 -15.89 87.181 87.181"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g id="Planet" transform="translate(-355.391 -272.962)">
+                <g id="Group_18" data-name="Group 18">
+                  <circle
+                    id="Ellipse_4"
+                    data-name="Ellipse 4"
+                    cx="4.92"
+                    cy="4.92"
+                    r="4.92"
+                    transform="translate(355.391 287.812) rotate(-45)"
+                  />
+                </g>
+                <g id="Group_19" data-name="Group 19">
+                  <path
+                    id="Path_18"
+                    data-name="Path 18"
+                    d="M442.279,287.352c-2.261-7.09-15.761-6.48-21.731-5.85a27.744,27.744,0,0,0-47.44,15.14c-5.24,2.94-16.6,10.25-14.34,17.34,1.62,5.08,8.98,6.2,15.22,6.2a59.677,59.677,0,0,0,6.51-.37,27.7,27.7,0,0,0,47.42-15.11C433.148,301.772,444.539,294.442,442.279,287.352Zm-78.271,24.96c-.529-1.64,3.5-5.62,8.93-9.14a27.892,27.892,0,0,0,3.64,11.42C370.118,314.882,364.539,313.962,364.008,312.312Zm43.26,9.5a22.166,22.166,0,0,1-19.63-3.05,136.488,136.488,0,0,0,33.82-10.77A22.169,22.169,0,0,1,407.268,321.812Zm-4.01-12.58a134.339,134.339,0,0,1-20.5,4.76,22.284,22.284,0,0,1-3.38-6.58,22.183,22.183,0,0,1,14.4-27.89,22.173,22.173,0,0,1,23.45,6.5,2.336,2.336,0,0,1,.24.29l.039.04a22.31,22.31,0,0,1,5.2,14.91A136.28,136.28,0,0,1,403.258,309.232Zm24.85-11.07a26.83,26.83,0,0,0-1.19-5.91,27.3,27.3,0,0,0-2.439-5.51c6.449-.28,12.029.63,12.56,2.28S433.548,294.642,428.108,298.162Z"
+                  />
+                </g>
+                <g id="Group_20" data-name="Group 20">
+                  <path
+                    id="Path_19"
+                    data-name="Path 19"
+                    d="M400.4,283.954"
+                    stroke="#e54b50"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="5.5"
+                  />
+                </g>
+                <g id="Group_21" data-name="Group 21">
+                  <path
+                    id="Path_20"
+                    data-name="Path 20"
+                    d="M416.111,299.381a2.751,2.751,0,0,1-2.59-1.825,15.278,15.278,0,0,0-4.807-6.7,2.75,2.75,0,0,1,3.463-4.274A20.791,20.791,0,0,1,418.7,295.7a2.752,2.752,0,0,1-2.59,3.677Z"
+                  />
+                </g>
+                <g id="Group_22" data-name="Group 22">
+                  <path
+                    id="Path_21"
+                    data-name="Path 21"
+                    d="M402.912,287.813a2.765,2.765,0,0,1-.6-.066,15.41,15.41,0,0,0-1.972-.307,2.75,2.75,0,1,1,.494-5.478,20.862,20.862,0,0,1,2.676.417,2.75,2.75,0,0,1-.6,5.434Z"
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
+
+          {/* big dipper */}
+          <div style={{ width: "15vw", height: "auto" }}>
+            <svg
+              fill="#000000"
+              width="100%"
+              height="100%"
+              viewBox="0 -18.73 94.292 94.292"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                id="Constellation"
+                d="M645.573,315.458a8.034,8.034,0,0,0-6.57-6.39l-3-15.44a7.374,7.374,0,1,0-10.23-10.24,7.239,7.239,0,0,0-1.13,2.76l-15.34,2.97a7.618,7.618,0,0,0-6.41-3.52,7.913,7.913,0,0,0-1.45.14,7.55,7.55,0,0,0-2.95,1.26l-7.44-5.03a7.373,7.373,0,0,0-13.28-5.86,7.173,7.173,0,0,0-1.26,3.9l-13.17,4.11a6.914,6.914,0,0,0-4.94-2.08,6.592,6.592,0,0,0-1.33.13,6.964,6.964,0,0,0,1.32,13.8,6.663,6.663,0,0,0,1.33-.13,6.969,6.969,0,0,0,5.63-6.58l13.07-4.08a7.334,7.334,0,0,0,5.46,2.43,7.475,7.475,0,0,0,1.41-.13,7.22,7.22,0,0,0,2.56-1.03l7.6,5.12a7.525,7.525,0,0,0-.04,3.1,7.616,7.616,0,0,0,6.14,6.05l3,15.45a7.382,7.382,0,0,0,4.11,13.51,7.406,7.406,0,0,0,7.25-6.01l14.69-2.85a8.007,8.007,0,0,0,7.06,4.23,7.886,7.886,0,0,0,1.54-.15A8.054,8.054,0,0,0,645.573,315.458Zm-86.9-25.02a1.453,1.453,0,0,1-1.71-1.15,1.472,1.472,0,0,1,1.44-1.75,1.463,1.463,0,0,1,.27,2.9Zm26.66-9.01a1.875,1.875,0,0,1-3.29-.84,1.855,1.855,0,0,1,.28-1.41,1.934,1.934,0,0,1,1.2-.79,2.327,2.327,0,0,1,.37-.04,1.88,1.88,0,0,1,1.44,3.08Zm17.96,13.87a2.137,2.137,0,0,1-2.48-1.68,2.043,2.043,0,0,1,.3-1.54.076.076,0,0,1,.02-.04,2.134,2.134,0,0,1,1.35-.9,2.992,2.992,0,0,1,.41-.04,2.12,2.12,0,0,1,.4,4.2Zm5.73,28.85a1.879,1.879,0,0,1-1.91-2.9,1.833,1.833,0,0,1,1.2-.79,1.472,1.472,0,0,1,.36-.04,1.882,1.882,0,0,1,.35,3.73ZM631,312.488a7.91,7.91,0,0,0-1.21,2.88l-14.95,2.91a7.3,7.3,0,0,0-4.9-3.24l-2.99-15.39a7.6,7.6,0,0,0,3.43-5.13l15.33-2.98a7.267,7.267,0,0,0,4.91,3.24l2.97,15.28A7.805,7.805,0,0,0,631,312.488Zm1.24-23.13a1.9,1.9,0,0,1-2.2-1.48,1.895,1.895,0,0,1,1.49-2.21,2.187,2.187,0,0,1,.36-.03,1.877,1.877,0,0,1,.35,3.72Zm7.65,28.9a1.219,1.219,0,0,1-.1.14,2.521,2.521,0,0,1-2.48,1.12,2.6,2.6,0,0,1-2.15-2.03,2.558,2.558,0,0,1,2.02-3,2.775,2.775,0,0,1,.49-.04,2.556,2.556,0,0,1,2.22,3.81Z"
+                transform="translate(-551.43 -272.848)"
+              />
+            </svg>
+          </div>
         </div>
 
-        <div style={{ width: "25vw", marginLeft: "15vw", height: "90vh" }}>
+        <Box
+          style={{
+            backgroundColor: "transparent",
+            overflowY: "hidden",
+            display: "flex",
+            width: "100%",
+            height: "100%",
+            alignItems: "flex-start",
+            boxSizing: "border-box",
+            position: "absolute",
+            inset: "0",
+            zIndex: "2"
+          }}
+        >
+          <div
+            style={{
+              paddingTop: "12.5vh",
+              marginLeft: "12.5vw",
+              width: "30vw"
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "calc(4.5vw + 2.5vh)",
+                width: "auto",
+                color: "white",
+                paddingBottom: "5px"
+              }}
+            >
+              Welcome
+            </h2>
+            <p style={{ fontSize: "30px", color: "white" }}>
+              to the Hyland Tech Outreach Portal (HyTOP), A one stop shop for
+              all your web and Python development needs.
+            </p>
+          </div>
+
+          <div style={{ width: "25vw", marginLeft: "15vw", height: "90vh" }}>
+            {displayedPanel === "Login" ? (
+              <Login setDisplayedPanel={setDisplayedPanel} />
+            ) : (
+              <Register setDisplayedPanel={setDisplayedPanel} />
+            )}
+          </div>
           {displayedPanel === "Login" ? (
-            <Login setDisplayedPanel={setDisplayedPanel} />
+            <Button
+              component="a"
+              href="/create-project"
+              variant="transparent"
+              style={{
+                position: "relative",
+                right: "16vw",
+                top: "46.5vh"
+              }}
+            >
+              Continue as guest
+            </Button>
           ) : (
-            <Register setDisplayedPanel={setDisplayedPanel} />
+            <Button
+              component="a"
+              href="/create-project"
+              variant="transparent"
+              style={{
+                position: "relative",
+                right: "16vw",
+                top: "72.5vh"
+              }}
+            >
+              Continue as guest
+            </Button>
           )}
-        </div>
-        {displayedPanel === "Login" ? (
-          <Button
-            component="a"
-            href="/create-project"
-            variant="transparent"
-            style={{
-              position: "relative",
-              right: "16vw",
-              top: "46.5vh"
-            }}
-          >
-            Continue as guest
-          </Button>
-        ) : (
-          <Button
-            component="a"
-            href="/create-project"
-            variant="transparent"
-            style={{
-              position: "relative",
-              right: "16vw",
-              top: "72.5vh"
-            }}
-          >
-            Continue as guest
-          </Button>
-        )}
-      </Box>
-      <svg
-        id="visual"
-        viewBox="0 500 900 100"
-        width="100vw"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        version="1.1"
-        style={{ backgroundColor: "#5e50b4" }}
+        </Box>
+      </div>
+
+      {/* transition svg */}
+      <Box
+        style={{ width: "100vw", height: "20%", backgroundColor: "#5e50b4" }}
       >
-        <path
-          fill="#BF527B"
-          d="M0 533L129 511L257 539L386 532L514 540L643 538L771 558L900 511L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-        />
-      </svg>
-    </>
+        <svg
+          id="visual"
+          viewBox="0 410 900 600"
+          width="100%"
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g>
+            <path
+              d="M0 439L64 439L64 415L129 415L129 437L193 437L193 428L257 428L257 392L321 392L321 426L386 426L386 405L450 405L450 421L514 421L514 390L579 390L579 420L643 420L643 431L707 431L707 388L771 388L771 374L836 374L836 436L900 436L900 445L900 601L900 601L836 601L836 601L771 601L771 601L707 601L707 601L643 601L643 601L579 601L579 601L514 601L514 601L450 601L450 601L386 601L386 601L321 601L321 601L257 601L257 601L193 601L193 601L129 601L129 601L64 601L64 601L0 601Z"
+              fill="#5e50b4"
+            ></path>
+            <path
+              d="M0 462L64 462L64 395L129 395L129 409L193 409L193 406L257 406L257 468L321 468L321 414L386 414L386 426L450 426L450 468L514 468L514 479L579 479L579 461L643 461L643 415L707 415L707 440L771 440L771 394L836 394L836 466L900 466L900 408L900 601L900 601L836 601L836 601L771 601L771 601L707 601L707 601L643 601L643 601L579 601L579 601L514 601L514 601L450 601L450 601L386 601L386 601L321 601L321 601L257 601L257 601L193 601L193 601L129 601L129 601L64 601L64 601L0 601Z"
+              fill="#554dae"
+            ></path>
+            <path
+              d="M0 489L64 489L64 468L129 468L129 493L193 493L193 495L257 495L257 443L321 443L321 503L386 503L386 486L450 486L450 489L514 489L514 482L579 482L579 462L643 462L643 471L707 471L707 473L771 473L771 463L836 463L836 497L900 497L900 496L900 601L900 601L836 601L836 601L771 601L771 601L707 601L707 601L643 601L643 601L579 601L579 601L514 601L514 601L450 601L450 601L386 601L386 601L321 601L321 601L257 601L257 601L193 601L193 601L129 601L129 601L64 601L64 601L0 601Z"
+              fill="#4c4aa7"
+            ></path>
+            <path
+              d="M0 505L64 505L64 512L129 512L129 509L193 509L193 483L257 483L257 533L321 533L321 506L386 506L386 510L450 510L450 539L514 539L514 521L579 521L579 500L643 500L643 532L707 532L707 525L771 525L771 511L836 511L836 532L900 532L900 530L900 601L900 601L836 601L836 601L771 601L771 601L707 601L707 601L643 601L643 601L579 601L579 601L514 601L514 601L450 601L450 601L386 601L386 601L321 601L321 601L257 601L257 601L193 601L193 601L129 601L129 601L64 601L64 601L0 601Z"
+              fill="#4347a0"
+            ></path>
+            <path
+              d="M0 531L64 531L64 527L129 527L129 530L193 530L193 539L257 539L257 533L321 533L321 547L386 547L386 569L450 569L450 551L514 551L514 557L579 557L579 563L643 563L643 564L707 564L707 570L771 570L771 564L836 564L836 539L900 539L900 556L900 601L900 601L836 601L836 601L771 601L771 601L707 601L707 601L643 601L643 601L579 601L579 601L514 601L514 601L450 601L450 601L386 601L386 601L321 601L321 601L257 601L257 601L193 601L193 601L129 601L129 601L64 601L64 601L0 601Z"
+              fill="#3a4499"
+            ></path>
+          </g>
+        </svg>
+      </Box>
+    </div>
   );
 };
 
