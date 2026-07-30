@@ -40,11 +40,10 @@ const CreateProjectScreen = () => {
   const htmlProjectNames = [
     "www",
     "aframe",
-    "three-js-blank-game-1",
+    "three-js-blank-game",
     "p5-cube-image",
     "tv-characters",
     "funk-playlist",
-    "zine-machine-rowan-fyi",
     "quiz-about-me",
   ];
 

@@ -6,6 +6,9 @@ import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
 // DC for demo cover
 import DC_3ddemo from "../../assets/3d_demo.png";
+import threejs from "../../assets/ThreeJs.png";
+import p5cube from "../../assets/P5Cube.png";
+import tvchars from "../../assets/TvCharacters.png"
 
 interface ProjectProps {
   name: string;
@@ -18,28 +21,28 @@ interface ProjectProps {
 // Define projects here!
 const projects: ProjectProps[] = [
   {
-    name: "3D Environment Demo",
-    description: "A scene and moveable camera set in 3D environment.",
+    name: "Three.js Blank Game",
+    description: "A very basic 3D game.",
     authors: ["Joseph"],
-    link: "https://hytop.onrender.com/e/aframe/",
-    demoCover: DC_3ddemo
+    link: "https://hytop.onrender.com/pf/three-js-blank-game-1/",
+    demoCover: threejs
   },
   {
-    name: "3D Environment Demo",
-    description: "A scene and moveable camera set in 3D environment.",
+    name: "P5.js Cube Image",
+    description: "A rotating cube with an image and background.",
     authors: ["Joseph"],
-    link: "https://hytop.onrender.com/e/aframe/",
-    demoCover: DC_3ddemo
+    link: "https://hytop.onrender.com/e/p5-cube-image/",
+    demoCover: p5cube
   },
   {
-    name: "3D Environment Demo",
-    description: "A scene and moveable camera set in 3D environment.",
+    name: "TV Characters",
+    description: "Pictures of TV Characters from an API.",
     authors: ["Joseph"],
-    link: "https://hytop.onrender.com/e/aframe/",
-    demoCover: DC_3ddemo
+    link: "https://hytop.onrender.com/e/tv-characters/",
+    demoCover: tvchars
   },
   {
-    name: "3D Environment Demo",
+    name: "A-Frame 3D Environment",
     description: "A scene and moveable camera set in 3D environment.",
     authors: ["Joseph"],
     link: "https://hytop.onrender.com/e/aframe/",
@@ -82,8 +85,7 @@ export default function FeaturedProjects() {
             Featured Projects
           </h2>
           <p style={{ color: "white", fontSize: "30px" }}>
-            something something exceptional projects created by students on our
-            platform
+            explore the possibilities of HyTOP with these projects created by our students and instructors
           </p>
         </div>
         <Carousel
@@ -230,7 +232,8 @@ function Project({
           <img
             style={{
               width: "50%",
-              borderRadius: "10px"
+              borderRadius: "10px",
+              objectFit: "cover"
             }}
             src={demoCover}
           />
