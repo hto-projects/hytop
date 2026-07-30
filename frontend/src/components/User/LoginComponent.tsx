@@ -7,7 +7,7 @@ import {
   TextInput,
   PasswordInput,
   Center,
-  Title,
+  Title
 } from "@mantine/core";
 import Button from "../Interface/Button";
 import { Form, TextInputForm, PasswordInputForm } from "../Interface/Form";
@@ -31,9 +31,7 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
   const [password, setPassword] = useState("");
   const [login, { isLoading }] = useLoginMutation();
 
-  const submitHandler = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const res = await login({ username, password }).unwrap();
@@ -72,8 +70,8 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
       <Title order={2} ta="center" mb="md">
         Sign In
       </Title>
-      <form 
-        // colorScheme={"dark"} 
+      <form
+        // colorScheme={"dark"}
         //@ts-ignore
         onSubmit={submitHandler}
       >
@@ -101,21 +99,19 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
         )}
       </form>
       <Text ta="center" mt="md">
-        Don't have an account?{" "}
+        Don't have an account?
       </Text>
+      <div style={{ textAlign: "center" }}></div>
       <Button
         onClick={() => setDisplayedPanel("Register")}
         variant="hi"
         size="sm"
-        style={{ padding: 1, marginLeft: 4 }}
       >
         Register here
       </Button>
+      or
       <Link to="/create-project">
-        <Button
-          variant="hi"
-          size="sm"
-        >
+        <Button variant="hi" size="sm">
           Continue as guest
         </Button>
       </Link>

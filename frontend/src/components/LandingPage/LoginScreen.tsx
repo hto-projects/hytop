@@ -13,10 +13,10 @@ const LoginScreen = () => {
       <Box
         style={{
           backgroundColor: "#5e50b4",
+          paddingTop: "7vh",
           position: "relative",
           width: "100vw",
-          height: "100vh",
-          alignItems: "center"
+          height: "110vh"
         }}
         id="login"
       >
@@ -108,10 +108,8 @@ const LoginScreen = () => {
           style={{
             position: "relative",
             width: "100%",
-            height: "100%",
             display: "flex",
             justifyContent: "space-evenly",
-            alignItems: "center",
             zIndex: "2"
           }}
         >
@@ -125,7 +123,8 @@ const LoginScreen = () => {
                 fontSize: "calc(4.5vw + 2.5vh)",
                 width: "auto",
                 color: "white",
-                paddingBottom: "5px"
+                marginTop: "7vh",
+                marginBottom: "5px"
               }}
             >
               Welcome

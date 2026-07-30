@@ -28,9 +28,7 @@ export default function Splash() {
 
       <Box
         style={{
-          // @DOC:CSS{calculated css value} NOTE THAT the header is 25px tall, for this to fit the remaining portion
-          // we need it to be 100vh minus 25px.
-          height: "calc(80vh)",
+          height: "80vh",
           justifyContent: "center",
           alignItems: "center"
         }}
