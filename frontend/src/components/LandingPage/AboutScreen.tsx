@@ -6,12 +6,9 @@ const AboutScreen = () => {
   return (
     <Box
       style={{
-        // height: "150vh",
+        height: "150vh",
         width: "100%",
         background: "#8a417a",
-        // select the line below starting at the @ then press control shift f
-        // @DOC:CSS{calculated css value}
-        height: "calc(100vh - 25px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -164,9 +161,9 @@ const AboutScreen = () => {
                     lineHeight: 1.6
                   }}
                 >
-                  Our work is built on the foundation created by the 2025
-                  Summer Interns, and we are extremely grateful for them. Seen
-                  below (from left to right) is Layla, Fernando, and Morgan!
+                  Our work is built on the foundation created by the 2025 Summer
+                  Interns, and we are extremely grateful for them. Seen below
+                  (from left to right) is Layla, Fernando, and Morgan!
                 </Text>
               </Box>
 
@@ -182,7 +179,6 @@ const AboutScreen = () => {
             </Box>
           </Paper>
         </Box>
-
       </Box>
     </Box>
   );
