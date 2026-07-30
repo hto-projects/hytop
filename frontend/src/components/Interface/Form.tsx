@@ -8,7 +8,12 @@ import {
   TextInput,
   PasswordInput,
   Text,
-  MantineColorScheme
+  MantineColorScheme,
+  useCombobox,
+  Combobox,
+  Group,
+  Input,
+  InputBase
 } from "@mantine/core";
 import React, { useState, useEffect, useCallback } from "react";
 const ColorSchemeContext = React.createContext("auto");
@@ -28,10 +33,13 @@ interface FormProps {
   children: React.ReactNode;
   colorScheme: MantineColorScheme;
   customConditions?: customConditionsType;
-  onSubmit: (
-    fulfilled: boolean,
-    event: React.FormEvent<HTMLFormElement>
-  ) => void; // handles your logic after form submit
+  onSubmit: ({
+    fulfilled,
+    event
+  }: {
+    fulfilled: boolean;
+    event: React.FormEvent<HTMLFormElement>;
+  }) => void; // handles your logic after form submit
 }
 
 interface MantineFormProps {
@@ -51,7 +59,7 @@ interface BaseFormInputProps extends MantineFormProps {
 }
 
 // internal for displaying conditions
-interface Condition {
+export interface Condition {
   description: string;
   fulfilled: boolean;
 }
@@ -94,7 +102,8 @@ export function usernameValidation(input: string): Array<Condition> {
 
   if (/^[a-z]/i.test(input)) conditions[0]["fulfilled"] = true;
   if (/^[a-z0-9]+$/i.test(input)) conditions[1]["fulfilled"] = true;
-  if (input.length >= 3 && input.length <= 20) conditions[2]["fulfilled"] = true;
+  if (input.length >= 3 && input.length <= 20)
+    conditions[2]["fulfilled"] = true;
   return conditions;
 }
 
@@ -232,6 +241,80 @@ export function TextInputForm(props: MantineFormProps) {
   );
 }
 
+interface DropdownProps {
+  options: Array<string>;
+  label: string;
+  placeholder?: string;
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>; // input field hook
+}
+
+export function DropdownForm({
+  options,
+  label,
+  placeholder = "",
+  value,
+  setValue
+}: DropdownProps) {
+  const colorScheme = React.useContext(ColorSchemeContext);
+
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+    onDropdownOpen: (eventSource) => {
+      if (eventSource === "keyboard") {
+        combobox.selectActiveOption();
+      } else {
+        combobox.updateSelectedOptionIndex("active");
+      }
+    }
+  });
+
+  const dropdownOptions = options.map((item) => (
+    <Combobox.Option value={item} key={item} active={item === value}>
+      <Group gap="xs">
+        <Text c={colorScheme === "dark" ? "white" : "black"}>{item}</Text>
+      </Group>
+    </Combobox.Option>
+  ));
+
+  return (
+    <Combobox
+      store={combobox}
+      resetSelectionOnOptionHover
+      onOptionSubmit={(val) => {
+        setValue(val);
+        combobox.closeDropdown();
+      }}
+    >
+      <Combobox.Target targetType="button">
+        <InputBase
+          mb="md"
+          size="md"
+          style={{ width: "100%" }}
+          label={label}
+          color={colorScheme}
+          component="button"
+          type="button"
+          pointer
+          rightSection={<Combobox.Chevron />}
+          rightSectionPointerEvents="none"
+          onClick={() => combobox.toggleDropdown()}
+          onChange={(event) => combobox.updateSelectedOptionIndex()}
+        >
+          {(placeholder && !value && (
+            <Input.Placeholder>{placeholder}</Input.Placeholder>
+          )) ||
+            value}
+        </InputBase>
+      </Combobox.Target>
+
+      <Combobox.Dropdown>
+        <Combobox.Options>{dropdownOptions}</Combobox.Options>
+      </Combobox.Dropdown>
+    </Combobox>
+  );
+}
+
 // form wrapper, handles form validation
 export function Form({
   children,
@@ -247,7 +330,6 @@ export function Form({
   );
 
   function submitHandler(event: React.FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
     let fulfilled = true;
 
     if (errorCount > 0) {
@@ -258,7 +340,7 @@ export function Form({
       fulfilled = false;
     }
 
-    onSubmit(fulfilled, event);
+    onSubmit({ fulfilled, event });
   }
 
   return (

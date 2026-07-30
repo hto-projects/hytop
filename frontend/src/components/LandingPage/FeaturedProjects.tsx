@@ -49,14 +49,22 @@ const projects: ProjectProps[] = [
 
 export default function FeaturedProjects() {
   return (
-    <div style={{ height: "125vh" }}>
+    <Box 
+      style={{ 
+        backgroundColor: "#3a4499",
+        // select the line below starting at the @ then press control shift f
+        // @DOC:CSS{calculated css value}
+        minHeight: "calc(100vh - 25px)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        paddingTop: "10rem"
+      }}
+    >
       <Box
         style={{
-          backgroundColor: "#3a4499",
           width: "100vw",
-          height: "80%",
-          paddingTop: "20vh",
-          boxSizing: "border-box"
         }}
         id="featuredprojects"
       >
@@ -91,44 +99,30 @@ export default function FeaturedProjects() {
         </Carousel>
       </Box>
 
-      <div style={{ height: "20%", backgroundColor: "#3a4499" }}>
-        <svg
-          id="visual"
-          viewBox="0 400 900 600"
-          width="100vw"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M0 408L129 438L257 470L386 450L514 439L643 491L771 443L900 408L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-            fill="#3a4499"
-          ></path>
-          <path
-            d="M0 435L129 440L257 490L386 424L514 442L643 409L771 454L900 476L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-            fill="#504295"
-          ></path>
-          <path
-            d="M0 455L129 482L257 431L386 516L514 442L643 468L771 467L900 511L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-            fill="#614190"
-          ></path>
-          <path
-            d="M0 512L129 530L257 484L386 537L514 540L643 510L771 521L900 524L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-            fill="#6e408b"
-          ></path>
-          <path
-            d="M0 552L129 560L257 522L386 541L514 509L643 539L771 539L900 495L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-            fill="#794085"
-          ></path>
-          <path
-            d="M0 564L129 569L257 540L386 566L514 545L643 568L771 548L900 521L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-            fill="#824080"
-          ></path>
-          <path
-            d="M0 581L129 552L257 559L386 578L514 551L643 546L771 557L900 589L900 601L771 601L643 601L514 601L386 601L257 601L129 601L0 601Z"
-            fill="#8a417a"
-          ></path>
-        </svg>
-      </div>
-    </div>
+      <svg 
+        id="visual" 
+        viewBox="0 0 960 300" 
+        width="960" 
+        height="300" 
+        xmlns="http://www.w3.org/2000/svg" 
+        //@ts-ignore
+        xmlns:xlink="http://www.w3.org/1999/xlink" 
+        version="1.1"
+        style={{
+          width: "100%",
+          height: "auto"
+        }}
+      >
+        {/* <rect x="0" y="0" width="960" height="300" fill="#3a4499"></rect> */}
+        <path d="M0 62L137 51L274 115L411 118L549 50L686 63L823 81L960 67L960 301L823 301L686 301L549 301L411 301L274 301L137 301L0 301Z" fill="#3a4499"></path>
+        <path d="M0 135L137 127L274 145L411 104L549 142L686 104L823 84L960 143L960 301L823 301L686 301L549 301L411 301L274 301L137 301L0 301Z" fill="#504295"></path>
+        <path d="M0 182L137 117L274 135L411 176L549 163L686 152L823 184L960 124L960 301L823 301L686 301L549 301L411 301L274 301L137 301L0 301Z" fill="#614190"></path>
+        <path d="M0 201L137 150L274 207L411 152L549 206L686 166L823 166L960 209L960 301L823 301L686 301L549 301L411 301L274 301L137 301L0 301Z" fill="#6e408b"></path>
+        <path d="M0 215L137 205L274 205L411 210L549 198L686 194L823 210L960 191L960 301L823 301L686 301L549 301L411 301L274 301L137 301L0 301Z" fill="#794085"></path>
+        <path d="M0 240L137 257L274 234L411 227L549 235L686 244L823 235L960 244L960 301L823 301L686 301L549 301L411 301L274 301L137 301L0 301Z" fill="#824080"></path>
+        <path d="M0 277L137 251L274 246L411 268L549 245L686 280L823 266L960 264L960 301L823 301L686 301L549 301L411 301L274 301L137 301L0 301Z" fill="#8a417a"></path>
+      </svg>
+    </Box>
   );
 }
 

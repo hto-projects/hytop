@@ -7,12 +7,32 @@
   align-items: center;
 }
 
+.svg {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+
 .paper {
-  background: #23272A;
+  background: transparent;
   color: white;
   width: 500px;
   height: 600px;
   overflow: hidden;
+  z-index: 1;
+  position: relative;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+.paper::before {
+  content: "";
+  inset: 0;
+  position: absolute;
+  width: 500px;
+  height: 600px;
+  backdrop-filter: blur(0.5rem);
+  background-color: #00000098;
+  z-index: -1;
 }
 
 .title {
@@ -41,6 +61,12 @@
   padding: 0.5rem;
 }
 
+.inputTextBox {
+  /* background: #06315675; */
+  background: #33323242;
+  outline: none;
+}
+
 
 .projectType {
   display: flex;
@@ -51,12 +77,31 @@
   padding: 0.5rem;
 }
 
-.projectType > div {
-  
+.starterProjects {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.starterProject {
+  cursor: pointer;
+}
+
+.submit {
+  margin-bottom: 1rem;
+}
+
+.autocomplete {
+  width: 100%;
+}
+
+.autocompleteDropdown {
+  color: white;
+  /* background: #1b1b1b; */
 }
 
 @media (max-height: 800px) {
-  .paper {
+  .paper,
+  .paper::before {
     width: 700px;
     height: 400px;
   }
@@ -76,25 +121,12 @@
     height: 100%;
     float: left;
   }
-
-  /* .header {
-    background: palevioletred;
-  } */
 }
 
 @media (max-height: 550px) {
-  .paper {
+  .paper,
+  .paper::before {
     width: 100vw;
     height: 100%;
-    /* display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    max-height: 400px;
-    overflow: auto; */
   }
-
-  /* .header {
-    background: palevioletred;
-  } */
 }

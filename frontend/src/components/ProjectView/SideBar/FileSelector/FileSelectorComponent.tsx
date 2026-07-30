@@ -16,7 +16,7 @@ import {
 import FileName from "./FileName";
 import FilesHeader from "./FilesHeader";
 
-const FileSelectorComponent = ({ closePane, userIsOwner }) => {
+const FileSelectorComponent = ({ closePane, userIsOwner, hidden }) => {
   const dispatch = useDispatch();
   const { projectName } = useParams();
 
@@ -113,6 +113,7 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
 
   return (
     <Box
+      hidden={hidden}
       p={0}
       style={{
         height: "100%",
@@ -121,7 +122,7 @@ const FileSelectorComponent = ({ closePane, userIsOwner }) => {
         flexDirection: "column",
         transition: "width 0.1s",
         color: theColorScheme === "dark" ? "white" : undefined,
-        backgroundColor: theColorScheme === "dark" ? "#181A1B" : "white"
+        backgroundColor: theColorScheme === "dark" ? "#181A1B" : "white",
       }}
     >
       <FilesHeader

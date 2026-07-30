@@ -30,7 +30,7 @@ import DarkModeToggle from "./DarkModeToggle";
 import { useComputedColorScheme } from "@mantine/core";
 import { SIDEBAR_ICON_MAP, SIDEBAR_WIDTH } from "../../ProjectView/constants";
 
-const PreferencesPane = ({ closePane }) => {
+const PreferencesPane = ({ closePane, hidden }) => {
   const theColorScheme = useComputedColorScheme("light");
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const monacoTheme = useSelector((state: any) => state.editor.monacoTheme);
@@ -79,6 +79,7 @@ const PreferencesPane = ({ closePane }) => {
 
   return (
     <Paper
+      hidden={hidden}
       shadow="xs"
       p={0}
       style={{

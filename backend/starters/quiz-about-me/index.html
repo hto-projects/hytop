@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <div id="container">
+      <button
+        style="margin-top: 200px;"
+        onclick="this.style.display='none';showNextQuestion();"
+      >
+        <b>How well do you know <span id="name"></span>?</b>
+        <p>Click here to start the quiz.</p>
+      </button>
+      <div id="question-text"></div>
+      <div id="answers-container"></div>
+      <p><button id="next" style="opacity: 0">Next</button></p>
+    </div>
+    <script src="lib.js"></script>
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

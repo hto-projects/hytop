@@ -4,5 +4,8 @@
   "editor.tabSize": 2,
   "prettier.configPath": ".prettierrc",
   "prettier.ignorePath": ".prettierignore",
-  "editor.detectIndentation": false
+  "editor.detectIndentation": false,
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }

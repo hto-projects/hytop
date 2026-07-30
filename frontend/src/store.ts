@@ -3,13 +3,15 @@ import authReducer from "./slices/authSlice";
 import { apiSlice } from "./slices/apiSlice";
 import editorReducer from "./slices/editorSlice";
 import themeReducer from "./slices/themeSlice";
+import roomReducer from "./slices/roomSlice";
 
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authReducer,
     editor: editorReducer,
-    theme: themeReducer
+    theme: themeReducer,
+    room: roomReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),

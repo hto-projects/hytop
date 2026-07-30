@@ -7,13 +7,14 @@ import {
   TextInput,
   PasswordInput,
   Center,
-  Title
+  Title,
 } from "@mantine/core";
 import Button from "../Interface/Button";
 import { Form, TextInputForm, PasswordInputForm } from "../Interface/Form";
 import { toast } from "react-toastify";
 import Logo from "../Interface/Logo";
 import Loader from "../Interface/Loader";
+import { Link } from "react-router-dom";
 
 import { useLoginMutation } from "../../slices/usersApiSlice";
 import { setCredentials } from "../../slices/authSlice";
@@ -73,7 +74,11 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
       <Title order={2} ta="center" mb="md">
         Sign In
       </Title>
-      <Form colorScheme={"dark"} onSubmit={submitHandler}>
+      <Form 
+        colorScheme={"dark"} 
+        //@ts-ignore
+        onSubmit={submitHandler}
+      >
         <TextInputForm
           label="Username"
           value={username}
@@ -99,15 +104,23 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
       </Form>
       <Text ta="center" mt="md">
         Don't have an account?{" "}
+      </Text>
+      <Button
+        onClick={() => setDisplayedPanel("Register")}
+        variant="hi"
+        size="sm"
+        style={{ padding: 1, marginLeft: 4 }}
+      >
+        Register here
+      </Button>
+      <Link to="/create-project">
         <Button
-          onClick={() => setDisplayedPanel("Register")}
           variant="hi"
           size="sm"
-          style={{ padding: 1, marginLeft: 4 }}
         >
-          Register here
+          Continue as guest
         </Button>
-      </Text>
+      </Link>
     </Paper>
   );
 }

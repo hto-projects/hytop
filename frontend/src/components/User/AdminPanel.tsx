@@ -15,12 +15,16 @@ const AdminPanel = () => {
   const [resetUsername, setResetUsername] = useState("");
   const [resetPassword, setResetPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+  const passwordsMatch =
+    resetPassword !== resetConfirmPassword ||
+    resetPassword !== "" ||
+    resetConfirmPassword !== "";
 
   const [resetPasswordMutation, { isLoading }] = useResetPasswordMutation();
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (resetPassword !== resetConfirmPassword) {
+    if (passwordsMatch) {
       toast.error("Passwords do not match");
     } else {
       try {
@@ -77,7 +81,12 @@ const AdminPanel = () => {
           style={{ width: "100%" }}
         />
         <Group mt="md" justify="space-between">
-          <Button type="submit" size="md" loading={isLoading}>
+          <Button
+            type="submit"
+            size="md"
+            loading={isLoading}
+            disabled={!passwordsMatch}
+          >
             Send Reset Request
           </Button>
         </Group>

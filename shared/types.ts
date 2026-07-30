@@ -1,9 +1,9 @@
-export interface IProjectFile {
+interface IProjectFile {
   fileName: string;
   fileContent: string;
 }
 
-export interface IProject {
+interface IProject {
   projectName: string;
   projectDescription: string;
   projectOwnerId: string;
@@ -14,3 +14,14 @@ export interface IProject {
   copiedFromId?: string;
   projectType?: "python" | "html";
 }
+
+type Classroom = {
+  name: string;
+  id: string;
+};
+
+export {
+  IProjectFile,
+  IProject,
+  Classroom
+};

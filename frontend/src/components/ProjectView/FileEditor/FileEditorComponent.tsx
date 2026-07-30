@@ -13,7 +13,8 @@ import {
   PiArrowClockwiseBold
 } from "react-icons/pi";
 import MonacoEditor, { useMonaco } from "@monaco-editor/react";
-import { useEffect, useState } from "react";
+import type { editor } from "monaco-editor";
+import { MutableRefObject, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_PANE_WIDTHS, MIN_PANE_WIDTH } from "../constants";
 import { getMonacoLang } from "../util";
@@ -21,13 +22,25 @@ import TabBar from "./TabBar";
 import { setProjectFiles, setUnsavedFiles } from "../../../slices/editorSlice";
 import { IProjectFile } from "../../../../../shared/types";
 
+type FileEditorComponentProps = {
+  showing: boolean;
+  userIsOwner: boolean;
+  editorRef: MutableRefObject<editor.IStandaloneCodeEditor>;
+  modelsRef: MutableRefObject<{
+    [filename: string]: editor.ITextModel;
+  }>;
+  unsavedFiles: {
+    [filename: string]: boolean;
+  };
+};
+
 const FileEditorComponent = ({
   unsavedFiles,
   editorRef,
   userIsOwner,
   showing,
   modelsRef
-}) => {
+}: FileEditorComponentProps) => {
   // Using Things
   const monaco = useMonaco();
   const theColorScheme: string = useComputedColorScheme("light");
@@ -60,7 +73,7 @@ const FileEditorComponent = ({
   /* Handlers */
 
   // Called when Editor is loaded
-  const handleEditorMount = (editor) => {
+  const handleEditorMount = (editor: editor.IStandaloneCodeEditor) => {
     if (editorRef.current && typeof editorRef.current.dispose === "function") {
       try {
         editorRef.current.dispose();
@@ -118,6 +131,9 @@ const FileEditorComponent = ({
       const model = activeModel;
       editorRef.current.setModel(model);
       editorRef.current.focus();
+      // I tried to find a place where this property gets used but couldn't. 
+      // This should be ok for the time being in case I missed it.
+      // @ts-ignore
       editorRef.current.__lastFile = activeTab;
 
       const language = getMonacoLang(activeTab);
@@ -149,10 +165,19 @@ const FileEditorComponent = ({
         );
 
         modelsRef.current[file.fileName] = model;
-        editorRef.current.setModel(model);
+        editorRef.current.setModel(model); 
+        editorRef.current.onDidScrollChange((e) => localStorage.setItem("scrollTop", e.scrollTop.toString()));
       }
     }
   }, [activeTab, editorMounted, projectFiles]);
+
+  // changes to project files have to be tracked separately from tab switches otherwise 
+  // it'll keep the same scroll position across all the tabs when switching
+  useEffect(() => {
+    if (!editorRef.current || editorRef.current.getScrollTop() === parseInt(localStorage.getItem("scrollTop"))) return;
+    
+    editorRef.current.setScrollPosition({ scrollTop: parseInt(localStorage.getItem("scrollTop")) });
+  }, [projectFiles]);
 
   return (
     <Paper
