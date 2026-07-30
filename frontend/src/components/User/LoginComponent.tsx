@@ -101,20 +101,21 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
       <Text ta="center" mt="md">
         Don't have an account?
       </Text>
-      <div style={{ textAlign: "center" }}></div>
-      <Button
-        onClick={() => setDisplayedPanel("Register")}
-        variant="hi"
-        size="sm"
-      >
-        Register here
-      </Button>
-      or
-      <Link to="/create-project">
-        <Button variant="hi" size="sm">
-          Continue as guest
+      <div style={{ textAlign: "center" }}>
+        <Button
+          onClick={() => setDisplayedPanel("Register")}
+          variant="hi"
+          size="sm"
+        >
+          Register here
         </Button>
-      </Link>
+        or
+        <Link to="/create-project">
+          <Button variant="hi" size="sm">
+            Continue as guest
+          </Button>
+        </Link>
+      </div>
     </Paper>
   );
 }
