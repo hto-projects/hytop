@@ -24,7 +24,7 @@ export default function AdminPage() {
 			.glass-effect {
 				background: rgba(255, 255, 255, 0.13);
 				border-radius: 20px;
-				box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+				box-shadow: 0 5px 30px 20px rgba(0, 0, 0, 0.25);
 				backdrop-filter: blur(5px);
 				-webkit-backdrop-filter: blur(5px);
 				border: 1px solid rgba(255, 255, 255, 0.25);
