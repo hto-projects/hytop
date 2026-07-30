@@ -11,11 +11,7 @@ import { MantineColorScheme, Button, Title, Group, Box } from "@mantine/core";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-interface AdminPromotionProps {
-  colorScheme: MantineColorScheme;
-}
-
-export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
+export default function AdminPromotion() {
   const [username, setUsername] = useState<string>("");
   const [confirmation, setConfirmation] = useState<string>("");
   const [role, setRole] = useState<string>("");
@@ -54,11 +50,11 @@ export default function AdminPromotion({ colorScheme }: AdminPromotionProps) {
   }
 
   return (
-    <div>
+    <div style={{ width: "20vw" }}>
       <Title order={2} ta="center" mb="md">
-        Change role of user
+        Change Role of User
       </Title>
-      <Form colorScheme={colorScheme} onSubmit={onSubmit}>
+      <Form colorScheme={"dark"} onSubmit={onSubmit}>
         <TextInputForm
           label="Username"
           value={username}

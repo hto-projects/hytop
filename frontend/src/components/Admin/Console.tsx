@@ -17,54 +17,65 @@ export default function AdminPage() {
     }
   }, []);
 
-  const theColorScheme = useComputedColorScheme("dark");
-
   return (
     <Box
       style={{
-        minHeight: "100vh",
+        height: "100vh",
         width: "100vw",
-        background: theColorScheme === "dark" ? "#181A1B" : undefined,
-        color: theColorScheme === "dark" ? "#fff" : undefined,
-        display: "flex",
-        justifyContent: "center",
-        overflow: "auto"
+        background: "#181A1B",
+        color: "#fff",
+        overflow: "hidden"
       }}
     >
-      <Container size={800} my={40}>
+      <h2
+        style={{
+          textAlign: "center",
+          fontSize: "50px",
+          marginBottom: "2vh",
+          marginTop: "10vh"
+        }}
+      >
+        Admin Panel
+      </h2>
+      <div
+        className="admin-panels"
+        style={{
+          width: "55%",
+          display: "flex",
+          gap: "25px",
+          margin: "auto",
+          padding: "25px"
+        }}
+      >
         <Paper
           shadow="md"
-          p={48}
+          p={50}
           radius="md"
           withBorder
           style={{
-            width: "100%",
-            display: "flex",
-            gap: 48,
-            background: theColorScheme === "dark" ? "#23272A" : undefined,
-            color: theColorScheme === "dark" ? "#fff" : undefined
+            flex: "1",
+            background: "#23272A",
+            minWidth: "0",
+            color: "#fff"
           }}
         >
-          <AdminPanel colorScheme={theColorScheme} />
+          <AdminPanel />
         </Paper>
-      </Container>
-      <Container size={800} my={40}>
         <Paper
           shadow="md"
-          p={48}
+          p={50}
           radius="md"
           withBorder
           style={{
-            width: "100%",
-            display: "flex",
-            gap: 48,
-            background: theColorScheme === "dark" ? "#23272A" : undefined,
-            color: theColorScheme === "dark" ? "#fff" : undefined
+            flex: "1",
+            minWidth: "0",
+            background: "#23272A",
+            color: "#fff"
           }}
         >
-          <AdminPromotion colorScheme={theColorScheme} />
+          <AdminPromotion />
         </Paper>
-      </Container>
+      </div>
     </Box>
   );
 }
