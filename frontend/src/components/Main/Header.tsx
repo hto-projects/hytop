@@ -215,11 +215,11 @@ const Header = () => {
         ) : (
           <Button
             component={Link}
-            to="/login"
+            to="/#login"
             size="xs"
             variant="subtle"
             style={{
-              color: theColorScheme === "dark" ? "#ce1a1a" : undefined
+              color: theColorScheme === "dark" ? "#fff" : undefined
             }}
           >
             Sign In

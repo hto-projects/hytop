@@ -71,7 +71,7 @@ const RegisterScreen = ({ setDisplayedPanel }: LoginProps) => {
         password
       }).unwrap();
       dispatch(setCredentials({ ...res }));
-      navigate("/");
+      navigate("/profile");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }

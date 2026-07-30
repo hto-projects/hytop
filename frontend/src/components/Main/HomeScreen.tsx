@@ -18,7 +18,7 @@ const HomeScreen = () => {
   useEffect(() => {
     if (location.hash) {
       const el = document.getElementById(location.hash.replace("#", ""));
-      if (el) el.scrollIntoView();
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     }
   }, [location]);
   return (
