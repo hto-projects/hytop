@@ -147,6 +147,20 @@ const Header = () => {
           </Button>
         </Link>
 
+        <Link to="/create-project">
+          <Button
+            component="a"
+            href="/#about"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined,
+            }}
+          >
+            Create Project
+          </Button>
+        </Link>
+
       </Group>
 
       {isEditor && (

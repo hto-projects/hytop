@@ -17,7 +17,7 @@
   background: transparent;
   color: white;
   width: 500px;
-  height: 600px;
+  height: 700px;
   overflow: hidden;
   z-index: 1;
   position: relative;
@@ -29,7 +29,7 @@
   inset: 0;
   position: absolute;
   width: 500px;
-  height: 600px;
+  height: 700px;
   backdrop-filter: blur(0.5rem);
   background-color: #00000098;
   z-index: -1;
