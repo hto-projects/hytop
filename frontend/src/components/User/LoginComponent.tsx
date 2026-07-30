@@ -32,16 +32,14 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
   const [login, { isLoading }] = useLoginMutation();
 
   const submitHandler = async (
-    fulfilled: boolean,
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-
     try {
       const res = await login({ username, password }).unwrap();
       dispatch(setCredentials({ ...res }));
       // TODO: navigate somewhere else once someone signs in
-      navigate("/");
+      navigate("/profile");
     } catch (err: any) {
       toast.error(err?.data?.message || err?.error || "Login failed");
     }
@@ -74,8 +72,8 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
       <Title order={2} ta="center" mb="md">
         Sign In
       </Title>
-      <Form 
-        colorScheme={"dark"} 
+      <form 
+        // colorScheme={"dark"} 
         //@ts-ignore
         onSubmit={submitHandler}
       >
@@ -101,7 +99,7 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
             <Loader />
           </Center>
         )}
-      </Form>
+      </form>
       <Text ta="center" mt="md">
         Don't have an account?{" "}
       </Text>

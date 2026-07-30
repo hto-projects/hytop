@@ -147,6 +147,20 @@ const Header = () => {
           </Button>
         </Link>
 
+        <Link to="/create-project">
+          <Button
+            component="a"
+            href="/#about"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined,
+            }}
+          >
+            Create Project
+          </Button>
+        </Link>
+
       </Group>
 
       {isEditor && (
@@ -215,11 +229,11 @@ const Header = () => {
         ) : (
           <Button
             component={Link}
-            to="/login"
+            to="/#login"
             size="xs"
             variant="subtle"
             style={{
-              color: theColorScheme === "dark" ? "#ce1a1a" : undefined
+              color: theColorScheme === "dark" ? "#fff" : undefined
             }}
           >
             Sign In
