@@ -85,6 +85,7 @@ const AdminPanel = () => {
             size="md"
             loading={isLoading}
             disabled={!passwordsMatch}
+            fullWidth
           >
             Send Reset Request
           </Button>
