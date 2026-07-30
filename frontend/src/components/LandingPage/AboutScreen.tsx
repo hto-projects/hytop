@@ -1,6 +1,7 @@
 import { Paper, Title, Text, Box, Image, ScrollArea } from "@mantine/core";
 import teamimage from "../../assets/teamimage.jpg";
 import oldteamimage from "../../assets/oldteamimage.jpg";
+import styles from "./AboutScreen.module.css";
 
 const AboutScreen = () => {
   return (
@@ -52,6 +53,7 @@ const AboutScreen = () => {
 
         {/* Right Content */}
         <Box
+          className={styles.invisibleScrollbar}
           style={{
             display: "flex",
             flexDirection: "column",
