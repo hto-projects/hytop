@@ -22,7 +22,6 @@ export default function AdminPage() {
       style={{
         height: "100vh",
         width: "100vw",
-        background: "#181A1B",
         color: "#fff",
         overflow: "hidden"
       }}
@@ -70,10 +69,18 @@ export default function AdminPage() {
         </svg>
       </div>
 
-      {/* Admin panel */}
       <div
         style={{
+          background: "rgba(15, 23, 42, 0.8)",
+          borderRadius: "20px",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.45)",
+          width: "57%",
+          margin: "auto",
+          padding: "25px",
           position: "relative",
+          marginTop: "11.5vh",
           zIndex: "1"
         }}
       >
@@ -81,8 +88,7 @@ export default function AdminPage() {
           style={{
             textAlign: "center",
             fontSize: "50px",
-            marginBottom: "2vh",
-            marginTop: "10vh"
+            marginBottom: "2vh"
           }}
         >
           Admin Panel
@@ -90,7 +96,7 @@ export default function AdminPage() {
         <div
           className="admin-panels"
           style={{
-            width: "55%",
+            width: "100%",
             display: "flex",
             gap: "25px",
             margin: "auto",
