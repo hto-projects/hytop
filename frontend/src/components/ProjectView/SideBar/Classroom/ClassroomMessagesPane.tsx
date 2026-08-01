@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { handleEnterShortCut } from "../../util";
 import { useEffect, useState } from "react";
 import { PiCopyBold } from "react-icons/pi";
+// import { modals } from "@mantine/modals",
 
 type ClassroomMessagesPaneProps = {
   messagesSent: string[];
@@ -12,6 +13,7 @@ type ClassroomMessagesPaneProps = {
   participants: string[];
   sendMessage: () => void;
   leaveRoom: () => void;
+  closeRoom: () => void;
 };
 
 const ClassroomMessagesPane = ({
@@ -20,6 +22,7 @@ const ClassroomMessagesPane = ({
   setMessageInput,
   sendMessage,
   leaveRoom,
+  closeRoom,
   participants
 }: ClassroomMessagesPaneProps) => {
   const [messageLogs, setMessageLogs] = useState<React.JSX.Element[]>([]);
@@ -166,21 +169,32 @@ const ClassroomMessagesPane = ({
             }
           }}
         />
+        <Group>
+          <Button
+            size="xs"
+            color={primaryColor}
+            onClick={sendMessage}
+            style={{ fontWeight: 600, marginTop: "-0.77rem" }}
+          >
+            Send
+          </Button>
+          <Button
+            size="xs"
+            color={primaryColor}
+            onClick={leaveRoom}
+            style={{ fontWeight: 600, marginTop: "-0.77rem" }}
+          >
+            Leave Room
+          </Button>
+        </Group>
         <Button
+          mt={0}
           size="xs"
           color={primaryColor}
-          onClick={sendMessage}
+          onClick={closeRoom}
           style={{ fontWeight: 600, marginTop: "-0.77rem" }}
         >
-          Send
-        </Button>
-        <Button
-          size="xs"
-          color={primaryColor}
-          onClick={leaveRoom}
-          style={{ fontWeight: 600, marginTop: "-0.77rem" }}
-        >
-          Leave Room
+          Close Room
         </Button>
       </Group>
       <Group hidden={isRoomCreator}>

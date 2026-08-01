@@ -10,7 +10,8 @@ const {
   RESET_ROOM_INFO,
   ROOM_DOESNT_EXISTS,
   ALL_ROOMS_UPDATED,
-  RECIEVE_PARTICIPANTS
+  RECIEVE_PARTICIPANTS,
+  CLOSED_ROOM
 } = IoEventChannels;
 
 /** basically we need a straight forward way to filter out the classrooms from the socket id private rooms */
@@ -89,6 +90,16 @@ const sendMessageInChat = (io: Server, message: string, roomId: number) => {
   io.to(getClassroomId(roomId.toString())).emit(RECIEVE_MESSAGE, message);
 };
 
+/** 
+ * Reason why we're not using something like io.in("room1").socketsLeave("room1");
+ * is because there's other logic that has to happen besides just making a socket
+ * leave the room. Hence I'm just reusing the leaveRoom function for this task.
+ * (This function makes all sockets in that room emit the leaveRoom event)
+ */
+const closeRoom = (io: Server, roomId: string) => {
+	io.to(getClassroomId(roomId)).emit(CLOSED_ROOM);
+};
+
 export {
   updateAllClassrooms,
   joinRoomByID,
@@ -96,4 +107,5 @@ export {
   createRoom,
   sendInfo,
   sendMessageInChat,
+  closeRoom
 };

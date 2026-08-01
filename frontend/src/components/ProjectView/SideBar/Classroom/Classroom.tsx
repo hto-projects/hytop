@@ -28,10 +28,11 @@ const Classroom = ({ closePane, hidden }) => {
   
   const [teacherJustJoined, setTeacherJustJoined] = useState(false);
   const [teacherJustLeft, setTeacherJustLeft] = useState(false);
+  const [roomJustClosed, setRoomJustClosed] = useState(false)
 
   const [allClassrooms, setAllClassrooms] = useState<TClassroom[]>([]);
   const [roomDoesntExists, setRoomDoesntExists] = useState(false);
-  let notificationSlideOutTimeout: ReturnType<typeof setTimeout> | null = null;
+  let roomDoesntExistTimeout: ReturnType<typeof setTimeout> | null = null;
 
   const dispatch = useDispatch();
 
@@ -72,7 +73,9 @@ const Classroom = ({ closePane, hidden }) => {
     GET_LEAVING_USER,
     ROOM_DOESNT_EXISTS,
     ALL_ROOMS_UPDATED,
-    RECIEVE_PARTICIPANTS
+    RECIEVE_PARTICIPANTS,
+    CLOSED_ROOM,
+    TEACHER_CLOSED_ROOM
   } = IoEventChannels;
 
   const roomsCreated: string[] = (() => {
@@ -92,6 +95,7 @@ const Classroom = ({ closePane, hidden }) => {
   const createRoom = () => {
     if (roomNameInput.trim() === "") return;
     socket.emit(CREATE_ROOM, roomNameInput);
+    setParticipants([]);
   };
 
   const sendMessage = () => {
@@ -102,6 +106,12 @@ const Classroom = ({ closePane, hidden }) => {
 
   const leaveRoom = () => {
     socket.emit(LEAVE_ROOM, roomId, name, isRoomCreator);
+    setParticipants([]);
+  };
+
+  // no need to use setParticipants in closeRoom since it eventually calls the leaveRoom function
+  const closeRoom = () => {
+    socket.emit(TEACHER_CLOSED_ROOM, roomId);
   };
 
   useEffect(() => {
@@ -162,8 +172,8 @@ const Classroom = ({ closePane, hidden }) => {
 
     socket.on(ROOM_DOESNT_EXISTS, () => {
       setRoomDoesntExists(true);
-      clearTimeout(notificationSlideOutTimeout);
-      notificationSlideOutTimeout = setTimeout(() => {
+      clearTimeout(roomDoesntExistTimeout);
+      roomDoesntExistTimeout = setTimeout(() => {
         setRoomDoesntExists(false)
         setRoomIdErrorMsgWasSet(false);
       }, notificationTimeoutDuration);
@@ -177,6 +187,14 @@ const Classroom = ({ closePane, hidden }) => {
       setParticipants(participants);
     });
 
+    socket.on(CLOSED_ROOM, () => {
+      leaveRoom();
+      if (!isRoomCreator) {
+        setRoomJustClosed(true);
+        setTimeout(() => setRoomJustClosed(false), notificationTimeoutDuration);
+      }
+    });
+
     return () => {
       socket.off(CREATED_ROOM);
       socket.off(USER_JOINED);
@@ -187,6 +205,7 @@ const Classroom = ({ closePane, hidden }) => {
       socket.off(ROOM_DOESNT_EXISTS);
       socket.off(ALL_ROOMS_UPDATED);
       socket.off(RECIEVE_PARTICIPANTS);
+      socket.off(CLOSED_ROOM);
     };
   }, [isInRoom, isRoomCreator, roomId, roomName, messagesSent]);
 
@@ -245,6 +264,12 @@ const Classroom = ({ closePane, hidden }) => {
         message="The teacher has just rejoined the chat room!"
       />
       <ClassroomNotification 
+        mounted={roomJustClosed}
+        onClose={() => setRoomJustClosed(false)}
+        title="Class has ended!"
+        message={"The instructor just closed the room!"}
+      />
+      <ClassroomNotification 
         mounted={roomDoesntExists}
         onClose={() => {
           setRoomDoesntExists(false);
@@ -294,6 +319,7 @@ const Classroom = ({ closePane, hidden }) => {
               setMessageInput={setMessageInput}
               sendMessage={sendMessage}
               leaveRoom={leaveRoom}
+              closeRoom={closeRoom}
               participants={participants}
             />
             : 
