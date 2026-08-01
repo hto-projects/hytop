@@ -24,6 +24,7 @@ const Classroom = ({ closePane, hidden }) => {
   const [mostRecentJoinedUser, setMostRecentJoinedUser] = useState("");
   const [userJustLeft, setUserJustLeft] = useState(false);
   const [mostRecentLeavingUser, setMostRecentLeavingUser] = useState("");
+  const [participants, setParticipants] = useState([]);
   
   const [teacherJustJoined, setTeacherJustJoined] = useState(false);
   const [teacherJustLeft, setTeacherJustLeft] = useState(false);
@@ -70,7 +71,8 @@ const Classroom = ({ closePane, hidden }) => {
     RESET_ROOM_INFO,
     GET_LEAVING_USER,
     ROOM_DOESNT_EXISTS,
-    ALL_ROOMS_UPDATED
+    ALL_ROOMS_UPDATED,
+    RECIEVE_PARTICIPANTS
   } = IoEventChannels;
 
   const roomsCreated: string[] = (() => {
@@ -171,6 +173,10 @@ const Classroom = ({ closePane, hidden }) => {
       setAllClassrooms([...allClassrooms]);
     });
 
+    socket.on(RECIEVE_PARTICIPANTS, (participants) => {
+      setParticipants(participants);
+    });
+
     return () => {
       socket.off(CREATED_ROOM);
       socket.off(USER_JOINED);
@@ -180,6 +186,7 @@ const Classroom = ({ closePane, hidden }) => {
       socket.off(GET_LEAVING_USER);
       socket.off(ROOM_DOESNT_EXISTS);
       socket.off(ALL_ROOMS_UPDATED);
+      socket.off(RECIEVE_PARTICIPANTS);
     };
   }, [isInRoom, isRoomCreator, roomId, roomName, messagesSent]);
 
@@ -274,6 +281,7 @@ const Classroom = ({ closePane, hidden }) => {
           padding: 16,
           background: theColorScheme === "dark" ? "#181A1B" : undefined,
           overflowY: "auto",
+          overflowX: "hidden",
           height: "100%"
         }}
       >
@@ -286,6 +294,7 @@ const Classroom = ({ closePane, hidden }) => {
               setMessageInput={setMessageInput}
               sendMessage={sendMessage}
               leaveRoom={leaveRoom}
+              participants={participants}
             />
             : 
             <ClassroomJoinPane 
@@ -294,7 +303,7 @@ const Classroom = ({ closePane, hidden }) => {
               joinRoomById={joinRoomById}
               createRoom={createRoom}
               rooms={allClassrooms}
-              isAdmin={isAdmin}
+              isAdmin={true}
             />
         }
       </Box>

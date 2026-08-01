@@ -9,7 +9,8 @@ const {
   RECIEVE_MESSAGE,
   RESET_ROOM_INFO,
   ROOM_DOESNT_EXISTS,
-  ALL_ROOMS_UPDATED
+  ALL_ROOMS_UPDATED,
+  RECIEVE_PARTICIPANTS
 } = IoEventChannels;
 
 /** basically we need a straight forward way to filter out the classrooms from the socket id private rooms */
@@ -34,6 +35,13 @@ const updateAllClassrooms = (io: Server) => {
   io.emit(ALL_ROOMS_UPDATED, io.data.classRooms);
 };
 
+const sendParticipants = (io: Server, roomId: string) => {
+  const joinedClassroom = io.data.classRooms.find((classroom) => classroom.id === roomId);
+  io
+  	.to(getClassroomId(roomId))
+	.emit(RECIEVE_PARTICIPANTS, joinedClassroom ? joinedClassroom.participants : []);
+};
+
 const joinRoomByID = (io: Server, socket: Socket, roomId: string, name: string, isRoomCreator: boolean) => {
   if (!io.sockets.adapter.rooms.get(getClassroomId(roomId))) {
     io.to(socket.id).emit(ROOM_DOESNT_EXISTS);
@@ -42,6 +50,13 @@ const joinRoomByID = (io: Server, socket: Socket, roomId: string, name: string, 
 
   socket.join(getClassroomId(roomId));
   socket.to(getClassroomId(roomId)).emit(USER_JOINED, name, socket.id, roomId, isRoomCreator);
+
+  if (!isRoomCreator) {
+    const joinedClassroom = io.data.classRooms.find((classroom) => classroom.id === roomId);
+    joinedClassroom.participants.push(name);
+  }
+  
+  sendParticipants(io, roomId);
 };
 
 const leaveRoom = (io: Server, socket: Socket, id: string, name: string, isRoomCreator: boolean) => {
@@ -49,13 +64,20 @@ const leaveRoom = (io: Server, socket: Socket, id: string, name: string, isRoomC
   socket.leave(getClassroomId(id));
   socket.to(getClassroomId(id)).emit(GET_LEAVING_USER, name, isRoomCreator);
   updateAllClassrooms(io);
+
+  if (!isRoomCreator) {
+    const joinedClassroom = io.data.classRooms.find((classroom) => classroom.id === id);
+    joinedClassroom.participants.splice(joinedClassroom.participants.indexOf(name), 1);
+  }
+  
+  sendParticipants(io, id);
 };
 
 const createRoom = (io: Server, socket: Socket, roomName: string) => {
   const roomId = Math.floor(Math.random() * 900000) + 100000;
   socket.join(getClassroomId(roomId.toString()));
   io.to(getClassroomId(roomId.toString())).emit(CREATED_ROOM, roomId.toString(), roomName);
-  io.data.classRooms.push({ id: roomId.toString(), name: roomName });
+  io.data.classRooms.push({ id: roomId.toString(), name: roomName, participants: [] });
   updateAllClassrooms(io);
 };
 
