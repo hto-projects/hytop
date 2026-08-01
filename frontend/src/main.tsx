@@ -30,6 +30,7 @@ import { setColorScheme } from "./slices/themeSlice";
 import { getCustomTheme, defaultTheme } from "./theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import "./assets/fonts/comic-mono.css";
+import { ModalsProvider } from "@mantine/modals";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -70,11 +71,13 @@ const Root = () => {
     <>
       <ColorSchemeScript defaultColorScheme="auto" />
       <MantineProvider theme={theme} defaultColorScheme="auto">
-        <ContextMenuProvider>
-          <React.StrictMode>
-            <RouterProvider router={router} />
-          </React.StrictMode>
-        </ContextMenuProvider>
+        <ModalsProvider >
+          <ContextMenuProvider>
+            <React.StrictMode>
+              <RouterProvider router={router} />
+            </React.StrictMode>
+          </ContextMenuProvider>
+        </ModalsProvider>
       </MantineProvider>
     </>
   );

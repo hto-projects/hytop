@@ -90,6 +90,7 @@ const Classroom = ({ closePane, hidden }) => {
 
   const joinRoomById = () => {
     socket.emit(JOIN_ROOM_BY_ID, roomIdFromInput.current, name, roomsCreated.includes(roomIdFromInput.current));
+    setParticipants([]);
   };
   
   const createRoom = () => {

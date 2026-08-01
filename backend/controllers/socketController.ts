@@ -68,7 +68,9 @@ const leaveRoom = (io: Server, socket: Socket, id: string, name: string, isRoomC
 
   if (!isRoomCreator) {
     const joinedClassroom = io.data.classRooms.find((classroom) => classroom.id === id);
-    joinedClassroom.participants.splice(joinedClassroom.participants.indexOf(name), 1);
+	if (joinedClassroom) {
+		joinedClassroom.participants.splice(joinedClassroom.participants.indexOf(name), 1);
+	}
   }
   
   sendParticipants(io, id);

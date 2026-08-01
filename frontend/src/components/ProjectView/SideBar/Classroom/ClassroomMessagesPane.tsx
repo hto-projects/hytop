@@ -1,10 +1,10 @@
-import { Box, Text, Space, Group, TextInput, Button, HoverCard } from "@mantine/core";
+import { Box, Text, Space, Group, TextInput, Button, HoverCard, Tooltip } from "@mantine/core";
 import { useComputedColorScheme } from "@mantine/core";
 import { useSelector } from "react-redux";
 import { handleEnterShortCut } from "../../util";
 import { useEffect, useState } from "react";
-import { PiCopyBold } from "react-icons/pi";
-// import { modals } from "@mantine/modals",
+import { PiCopyBold, PiDoorOpenBold, PiXBold } from "react-icons/pi";
+import { modals } from "@mantine/modals";
 
 type ClassroomMessagesPaneProps = {
   messagesSent: string[];
@@ -38,6 +38,21 @@ const ClassroomMessagesPane = ({
   const [showParticipants, setShowParticipants] = useState(false);
   const participantsElements = participants.map((name) => {
     return (<Text size="xs">{ name }</Text>);
+  });
+
+  const openModal = () => modals.openConfirmModal({
+    title: "Hey hey hey!",
+    cancelProps: { color: "red", variant: "light" },
+    confirmProps: { color: "green" },
+    children: (
+      <Text size="sm">Are you sure that you want to delete this room? This action cannot be undone!</Text> 
+    ),
+    labels: { confirm: 'Confirm', cancel: 'Cancel' },
+    onCancel: () => console.log('Cancel'),
+    onConfirm: () => closeRoom(),
+    style: {
+      color: theColorScheme === "light" ? "black" : "white"
+    }
   });
 
   useEffect(() => {
@@ -100,8 +115,50 @@ const ClassroomMessagesPane = ({
   
   return (
     <Box p={8} style={{ minWidth: 240 }}>
-      <Text size="xs" fw="bold">Welcome to "{roomName}"</Text>
-      <Text size="xs">Room Id: {roomId}</Text>
+      <Group
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start"
+        }}
+      >
+        <Group
+          style={{
+            display: "block",
+            maxWidth: "40%", 
+            wordBreak: "break-word",
+          }}
+        >
+          <Text size="xs" fw="bold">Welcome to "{roomName}"</Text>
+          <Text size="xs">Room Id: {roomId}</Text>
+        </Group>
+        <Group>
+          <Tooltip openDelay={500} label="Leave Room">
+            <Button
+              size="xs"
+              color={primaryColor}
+              onClick={leaveRoom}
+              style={{ fontWeight: 600 }}
+              variant="light"
+            >
+              <PiDoorOpenBold />
+            </Button>
+          </Tooltip>
+          <Tooltip openDelay={500} label="Close Room">
+            <Button
+              hidden={!isRoomCreator}
+              size="xs"
+              color={primaryColor}
+              onClick={openModal}
+              style={{ fontWeight: 600 }}
+              variant="light"
+            >
+              <PiXBold />
+            </Button>
+          </Tooltip>
+        </Group>
+      </Group>
       <Box hidden={!isRoomCreator}>
         <Space h="md"></Space>
         <Group>
@@ -169,42 +226,13 @@ const ClassroomMessagesPane = ({
             }
           }}
         />
-        <Group>
-          <Button
-            size="xs"
-            color={primaryColor}
-            onClick={sendMessage}
-            style={{ fontWeight: 600, marginTop: "-0.77rem" }}
-          >
-            Send
-          </Button>
-          <Button
-            size="xs"
-            color={primaryColor}
-            onClick={leaveRoom}
-            style={{ fontWeight: 600, marginTop: "-0.77rem" }}
-          >
-            Leave Room
-          </Button>
-        </Group>
-        <Button
-          mt={0}
-          size="xs"
-          color={primaryColor}
-          onClick={closeRoom}
-          style={{ fontWeight: 600, marginTop: "-0.77rem" }}
-        >
-          Close Room
-        </Button>
-      </Group>
-      <Group hidden={isRoomCreator}>
         <Button
           size="xs"
           color={primaryColor}
-          onClick={leaveRoom}
+          onClick={sendMessage}
           style={{ fontWeight: 600, marginTop: "-0.77rem" }}
         >
-          Leave Room
+          Send
         </Button>
       </Group>
     </Box>
