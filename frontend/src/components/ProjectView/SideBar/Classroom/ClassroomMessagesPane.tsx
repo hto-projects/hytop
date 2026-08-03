@@ -164,7 +164,10 @@ const ClassroomMessagesPane = ({
         <Group>
           <Button 
             size="xs" 
-            onClick={() => setShowParticipants(!showParticipants)}
+            onClick={() => {
+              if (participants.length === 0) return;
+              setShowParticipants(!showParticipants)
+            }}
           >
             All Participants
           </Button>
