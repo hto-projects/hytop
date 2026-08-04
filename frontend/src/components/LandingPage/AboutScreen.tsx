@@ -103,8 +103,11 @@ const AboutScreen = () => {
                     lineHeight: 1.6
                   }}
                 >
-                  Seen below (from left to right) is Sathvik, Vinny, Brian,
-                  Sophie, and Rebecca!
+                  In 2026 Sathvik, Vinny, Brian, Sophie, and Rebecca enhanced HyTOP by adding key features such as Python and the classroom chat. They created the HyTOP that users see today. 
+                  <br />
+                  <br />
+                  Seen below:
+                  (from left to right) is Sathvik, Vinny, Brian, Sophie, and Rebecca!
                 </Text>
               </Box>
 
@@ -163,8 +166,10 @@ const AboutScreen = () => {
                     lineHeight: 1.6
                   }}
                 >
-                  Our work is built on the foundation created by the 2025 Summer
-                  Interns, and we are extremely grateful for them. Seen below
+                  In 2025 Layla, Fernando, and Morgan built the initial foundation for HyTOP during their internship at Hyland, and the HyTOP community is extremely grateful for them. 
+                  <br />
+                  <br />
+                  Seen below
                   (from left to right) is Layla, Fernando, and Morgan!
                 </Text>
               </Box>
