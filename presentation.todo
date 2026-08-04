@@ -1,0 +1,11 @@
+☐ Fix "HyTOP" capitalization (should be consistent everywhere)
+  ☐ Logo
+  ☐ Presentation
+  ☐ Anywhere else
+☐ Nav should say "Register" instead of "Login"
+  ☐ Should ensure the Register pane is open when tapped
+  ☐ Tapping "Sign In" at top right should ensure the Sign In pane is open when tapped
+☐ Sign In / Register should match Create Project styling (black bg)
+☐ Create Project pane should have padding around fields
+☐ Create Project pane should not have a scrollbar appear
+☐ The "simple-turtle" starter should not have the hideturtle line
