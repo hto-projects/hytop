@@ -122,8 +122,7 @@ const LoginScreen = () => {
               Welcome
             </h2>
             <p style={{ fontSize: "30px", color: "white" }}>
-              to the Hyland Tech Outreach Portal (HyTOP), A one stop shop for
-              all your web and Python development needs.
+              to the Hyland Tech Outreach Portal (HyTOP), a place where you can write and host websites and Python projects
             </p>
           </div>
 
