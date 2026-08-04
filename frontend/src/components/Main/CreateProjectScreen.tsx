@@ -39,11 +39,10 @@ const CreateProjectScreen = () => {
   const htmlProjectNames = [
     "www",
     "aframe",
-    "three-js-blank-game-1",
+    "three-js-blank-game",
     "p5-cube-image",
     "tv-characters",
     "funk-playlist",
-    "zine-machine-rowan-fyi",
     "quiz-about-me",
   ];
 
@@ -167,7 +166,154 @@ const CreateProjectScreen = () => {
         </form>
       </Paper>
     </Box>
+    // <Box
+    //   style={{
+    //     minHeight: "100vh",
+    //     width: "100vw",
+    //     background: theColorSchemeish === "dark" ? "#181A1B" : undefined,
+    //     color: theColorSchemeish === "dark" ? "#fff" : undefined,
+    //   }}
+    // >
+    //   <Container
+    //     // w={500}
+    //     style={{
+    //       // width: "100vw",
+    //       background: "transparent",
+    //       color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //     }}
+    //   >
+    //     <Paper
+    //       className={styles.paper}
+    //       shadow="md"
+    //       p={30}
+    //       radius="md"
+    //       withBorder
+    //       style={{
+    //         background: theColorSchemeish === "dark" ? "#23272A" : undefined,
+    //         color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //       }}
+    //     >
+    //       <Group className={styles.group}>
+    //         <Logo svgPath="/favicon.svg" height="10em" />
+    //         <Title
+    //           order={2}
+    //           mb="md"
+    //           style={{ color: theColorSchemeish === "dark" ? "#fff" : undefined }}
+    //         >
+    //           Create a New Project
+    //         </Title>
+    //       </Group>
+    //       <form 
+    //         onSubmit={submitHandler}
+    //         style={{
+    //           margin: "1rem"
+    //         }}
+    //       >
+    //         <TextInput
+    //           label="Project Name"
+    //           description="Will be converted to URL-friendly format (lowercase, hyphens)"
+    //           value={projectName}
+    //           onChange={(e) => setProjectName(e.target.value)}
+    //           required
+    //           mb="md"
+    //           size="md"
+    //           autoFocus
+    //           styles={{
+
+    //             input: {
+    //               color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //             },
+    //             label: {
+    //               color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //             }
+    //           }}
+    //         />
+
+    //         <p>
+    //           {" "}
+    //           <b>Project Type</b>{" "}
+    //         </p>
+
+    //         <Radio
+    //           name="language"
+    //           value="python"
+    //           label="Python"
+    //           onClick={(e) => setProjectType(e.currentTarget.value)}
+    //         />
+    //         <Radio
+    //           name="language"
+    //           value="html"
+    //           label="Web (HTML)"
+    //           defaultChecked
+    //           onClick={(e) => setProjectType(e.currentTarget.value)}
+    //         />
+    //         <TextInput
+    //           label="Copying Project"
+    //           description="Enter the name of an existing project to copy"
+    //           value={copyingProjectName}
+    //           onChange={(e) => setCopyingProjectName(e.target.value)}
+    //           mb="md"
+    //           size="md"
+    //           autoFocus
+    //           styles={{
+    //             input: {
+    //               color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //             },
+    //             label: {
+    //               color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //             }
+    //           }}
+    //         />
+
+    //         <Textarea
+    //           label="Project Description"
+    //           value={projectDescription}
+    //           onChange={(e) => setProjectDescription(e.target.value)}
+    //           autosize
+    //           minRows={2}
+    //           mb="md"
+    //           size="md"
+    //           styles={{
+    //             input: {
+    //               color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //             },
+    //             label: {
+    //               color: theColorSchemeish === "dark" ? "#fff" : undefined
+    //             }
+    //           }}
+    //         />
+    //         <Center mt="md">
+    //           <Button type="submit" size="md" disabled={isLoading}>
+    //             {isLoading ? "Creating..." : "Create Project"}
+    //           </Button>
+    //         </Center>
+    //       </form>
+    //       {isLoading && (
+    //         <Center mt="md">
+    //           <Loader />
+    //         </Center>
+    //       )}
+    //     </Paper>
+    //   </Container>
+    // </Box>
   );
 };
+
+/*
+WEB
+www
+aframe
+three-js-blank-game-1
+p5-cube-image
+tv-characters
+funk-playlist
+zine-machine-rowan-fyi
+quiz-about-me
+ 
+PYTHON
+simple-turtle
+py-print
+py-cli 
+*/
 
 export default CreateProjectScreen;
