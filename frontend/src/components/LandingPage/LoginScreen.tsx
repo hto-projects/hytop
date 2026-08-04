@@ -18,7 +18,7 @@ const LoginScreen = () => {
           paddingTop: "3vh",
           position: "relative",
           width: "100vw",
-          height: "120vh"
+          height: "100vh"
         }}
         id="login"
       >
@@ -122,7 +122,8 @@ const LoginScreen = () => {
               Welcome
             </h2>
             <p style={{ fontSize: "30px", color: "white" }}>
-              to the Hyland Tech Outreach Portal (HyTOP), a place where you can write and host websites and Python projects
+              to the Hyland Tech Outreach Portal (HyTOP), a place where you can
+              write and host websites and Python projects
             </p>
           </div>
 
