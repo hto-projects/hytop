@@ -20,5 +20,3 @@ shelly.color("purple")
 for x in range(60):
   shelly.forward(200)
   shelly.right(186)
-
-shelly.hideturtle()
