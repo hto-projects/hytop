@@ -10,7 +10,7 @@ const {
   RESET_ROOM_INFO,
   ROOM_DOESNT_EXISTS,
   ALL_ROOMS_UPDATED,
-  RECIEVE_PARTICIPANTS,
+  RECEIVE_PARTICIPANTS,
   CLOSED_ROOM
 } = IoEventChannels;
 
@@ -40,7 +40,7 @@ const sendParticipants = (io: Server, roomId: string) => {
   const joinedClassroom = io.data.classRooms.find((classroom) => classroom.id === roomId);
   io
   	.to(getClassroomId(roomId))
-	.emit(RECIEVE_PARTICIPANTS, joinedClassroom ? joinedClassroom.participants : []);
+	.emit(RECEIVE_PARTICIPANTS, joinedClassroom ? joinedClassroom.participants : []);
 };
 
 const joinRoomByID = (io: Server, socket: Socket, roomId: string, name: string, isRoomCreator: boolean) => {

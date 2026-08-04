@@ -73,7 +73,7 @@ const Classroom = ({ closePane, hidden }) => {
     GET_LEAVING_USER,
     ROOM_DOESNT_EXISTS,
     ALL_ROOMS_UPDATED,
-    RECIEVE_PARTICIPANTS,
+    RECEIVE_PARTICIPANTS,
     CLOSED_ROOM,
     TEACHER_CLOSED_ROOM
   } = IoEventChannels;
@@ -184,7 +184,7 @@ const Classroom = ({ closePane, hidden }) => {
       setAllClassrooms([...allClassrooms]);
     });
 
-    socket.on(RECIEVE_PARTICIPANTS, (participants) => {
+    socket.on(RECEIVE_PARTICIPANTS, (participants) => {
       setParticipants(participants);
     });
 
@@ -205,7 +205,7 @@ const Classroom = ({ closePane, hidden }) => {
       socket.off(GET_LEAVING_USER);
       socket.off(ROOM_DOESNT_EXISTS);
       socket.off(ALL_ROOMS_UPDATED);
-      socket.off(RECIEVE_PARTICIPANTS);
+      socket.off(RECEIVE_PARTICIPANTS);
       socket.off(CLOSED_ROOM);
     };
   }, [isInRoom, isRoomCreator, roomId, roomName, messagesSent]);

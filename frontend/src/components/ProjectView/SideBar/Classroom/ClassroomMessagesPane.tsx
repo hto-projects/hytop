@@ -60,7 +60,7 @@ const ClassroomMessagesPane = ({
       .map((message, index) => {
         return (
           <Group ml="xs" mb="xs">
-            <HoverCard position="right" openDelay={500}>
+            <HoverCard position="right">
               <HoverCard.Target>
                 <Text 
                   key={index}
