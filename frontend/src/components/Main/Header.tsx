@@ -15,13 +15,16 @@ import {
   PiMagicWandBold
 } from "react-icons/pi";
 import { useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
   const { userInfo } = useSelector((state: any) => state.auth);
+  const userIsAdmin = userInfo?.admin || false;
 
   const isEditor = location.pathname.startsWith("/e/");
   let routeProjectName = isEditor ? location.pathname.substring(3) : "";
@@ -33,7 +36,6 @@ const Header = () => {
   const isLoading = useSelector((state: any) =>
     isEditor ? state.editor.isLoading : false
   );
-
   const projectName = useSelector((state: any) =>
     isEditor ? state.editor.projectName : ""
   );
@@ -41,12 +43,15 @@ const Header = () => {
   const saveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("saveAllFiles"));
   };
+
   const formatAndSaveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("formatAndSaveAllFiles"));
   };
+
   const forkProject = () => {
     window.location.href = `/c/${routeProjectName}`;
   };
+
   return (
     <Group
       gap="xs"
@@ -57,20 +62,20 @@ const Header = () => {
           theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
         background: theColorScheme === "dark" ? "#181A1B" : "#fafafa",
         color: theColorScheme === "dark" ? "#fff" : undefined,
-        minHeight: 48,
+        // minHeight: "0px",
         zIndex: 100,
         position: "relative"
       }}
     >
       <ActionIcon
         component={Link}
-        to="/"
+        to="/#splash"
         size="xs"
         variant="subtle"
         style={{
           color: theColorScheme === "dark" ? "#fff" : undefined,
-          width: 25,
-          height: 25,
+          width: "25px",
+          height: "25px",
           margin: "0 0 0 0"
         }}
       >
@@ -100,6 +105,87 @@ const Header = () => {
           HyTOP
         </Text>
       )}
+
+      <Group
+        gap="xs"
+        style={{
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)"
+        }}
+      >
+        <Link to="/#login">
+          <Button
+            component="a"
+            href="/#login"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            Login
+          </Button>
+        </Link>
+
+        <Link to="/#featuredprojects">
+          <Button
+            // component="a"
+            // href="/#featuredprojects"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            Featured Projects
+          </Button>
+        </Link>
+
+        <Link to="/#about">
+          <Button
+            component="a"
+            href="/#about"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            About
+          </Button>
+        </Link>
+
+        <Link to="/create-project">
+          <Button
+            component="a"
+            href="/#about"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            Create Project
+          </Button>
+        </Link>
+
+        {userIsAdmin && (
+          <Button
+            size="xs"
+            variant="subtle"
+            onClick={() => {
+              navigate("/admin");
+            }}
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            Admin Panel
+          </Button>
+        )}
+      </Group>
+
       {isEditor && (
         <>
           <Group gap={0}>
@@ -149,6 +235,7 @@ const Header = () => {
           </Tooltip>
         </>
       )}
+
       <Group gap={0} ml="auto">
         {userInfo ? (
           <Button
@@ -165,7 +252,7 @@ const Header = () => {
         ) : (
           <Button
             component={Link}
-            to="/login"
+            to="/#login"
             size="xs"
             variant="subtle"
             style={{

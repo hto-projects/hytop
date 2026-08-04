@@ -16,12 +16,9 @@ import App from "./App";
 import HomeScreen from "./components/Main/HomeScreen";
 import PrivateRoute from "./components/Main/PrivateRoute";
 import ProfileScreen from "./components/User/ProfileScreen";
-import LoginScreen from "./components/User/LoginScreen";
-import RegisterScreen from "./components/User/RegisterScreen";
 import CreateProjectScreen from "./components/Main/CreateProjectScreen";
 import ProjectViewScreen from "./components/ProjectView/ProjectViewScreen";
 import CopyProjectScreen from "./components/Main/CopyProjectScreen";
-import AboutScreen from "./components/Main/AboutScreen";
 import LatestUpdatesScreen from "./components/Main/LatestUpdatesScreen";
 import ForksOfProject from "./components/Main/ForksOfProject";
 import AdminPage from "./components/Admin/Console";
@@ -39,10 +36,7 @@ const router = createBrowserRouter(
       <Route path="/e/:projectName" element={<ProjectViewScreen />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
       <Route path="/forks-of/:projectName" element={<ForksOfProject />} />
-      <Route path="/about" element={<AboutScreen />} />
       <Route path="/latest-updates" element={<LatestUpdatesScreen />} />
-      <Route path="/login" element={<LoginScreen />} />
-      <Route path="/register" element={<RegisterScreen />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
