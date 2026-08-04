@@ -36,7 +36,6 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
     try {
       const res = await login({ username, password }).unwrap();
       dispatch(setCredentials({ ...res }));
-      // TODO: navigate somewhere else once someone signs in
       navigate("/profile");
     } catch (err: any) {
       toast.error(err?.data?.message || err?.error || "Login failed");
