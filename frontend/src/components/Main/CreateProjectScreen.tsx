@@ -22,10 +22,9 @@ import styles from "./CreateProjectScreen.module.css";
 
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
-  const [projectDescription, setProjectDescription] = useState("");
   const [copyingProjectName, setCopyingProjectName] = useState("");
   const [projectType, setProjectType] = useState("html");
-  const [displayStarterProjects, setDisplayStarterProjects] = useState(false);
+  const [disableStarterProjects, setDisableStarterProjects] = useState(false);
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
 
@@ -64,7 +63,7 @@ const CreateProjectScreen = () => {
     try {
       const res = await createProject({
         projectName,
-        projectDescription,
+        projectDescription: "",
         copyingProjectName,
         projectType
       }).unwrap();
@@ -135,14 +134,14 @@ const CreateProjectScreen = () => {
             </Group>
             <Checkbox
               label="Start From Starter Project"
-              onChange={(e) => {setDisplayStarterProjects(e.target.checked)}}
+              onChange={(e) => {setDisableStarterProjects(e.target.checked)}}
             />
           </Group>
           <Group 
             className={styles.starterProjects}
-            hidden={!displayStarterProjects}
           >
             <Autocomplete
+              disabled={!disableStarterProjects}
               label="Select your Starter Project"
               placeholder="Starter Project"
               name="starter projects"
@@ -162,26 +161,6 @@ const CreateProjectScreen = () => {
               onChange={(e) => setCopyingProjectName(e)}
             />
           </Group>
-          <Textarea
-            label="Project Description"
-            value={projectDescription}
-            onChange={(e) => setProjectDescription(e.target.value)}
-            autosize
-            minRows={2}
-            mb="md"
-            size="md"
-            placeholder="Project Description"
-            className={styles.input}
-            classNames={{ input: styles.inputTextBox }}
-            styles={{
-              input: {
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
-              },
-              label: {
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
-              }
-            }}
-          />
           <Button className={styles.submit} type="submit" size="md" disabled={isLoading}>
             {isLoading ? "Creating..." : "Create Project"}
           </Button>
