@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Box } from "@mantine/core";
-import Logo from "../Interface/Logo";
-
+import LogoAnimation from "../LogoAnimation";
 import "../LandingPage/background.css";
 import { generateStars } from "../LandingPage/background";
 
@@ -33,7 +32,9 @@ export default function Splash() {
           alignItems: "center"
         }}
       >
-        <Logo style={{ marginTop: "10vh" }} svgPath="/logo.svg" height={700} />
+        <div style={{ marginTop: "20vh", transform: "scale(1.25)" }}>
+          <LogoAnimation />
+        </div>
       </Box>
 
       <svg
