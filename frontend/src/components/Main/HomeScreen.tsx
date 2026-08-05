@@ -1,6 +1,7 @@
 import { Container, Paper, Text, Button, Group, Box } from "@mantine/core";
 import Logo from "../Interface/Logo";
 import { useSelector } from "react-redux";
+import LogoAnimation from "../LogoAnimation";
 
 const HomeScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
@@ -40,11 +41,7 @@ const HomeScreen = () => {
           }}
         >
           <div style={{ marginBottom: "1rem" }}>
-            <Logo
-              svgPath="/logo.svg"
-              height="20em"
-              style={{ marginBottom: "0.5rem" }}
-            />
+            <LogoAnimation />
           </div>
           <Text
             size="lg"
