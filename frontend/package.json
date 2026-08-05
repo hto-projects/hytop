@@ -36,7 +36,8 @@
     "react-simple-code-editor": "^0.14.1",
     "react-toastify": "10.0.5",
     "socket.io-client": "^4.8.3",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.3",
+    "vite-plugin-svgr": "^4.3.0"
   },
   "optionalDependencies": {
     "@esbuild/linux-x64": "0.24.0"
