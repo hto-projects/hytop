@@ -1,3 +1,5 @@
+const tvShow = "Stranger Things";
+
 // Take a cast object from the API, and turn it into an HTML element
 function objectToHtml(object) {
   let characterElement = document.createElement("div");
@@ -16,7 +18,7 @@ function objectToHtml(object) {
 // Make the request to the API
 async function getCharactersForShow() {
   let characters = [];
-  let url = `https://api.tvmaze.com/singlesearch/shows?q=Stranger Things&embed=cast`;
+  let url = `https://api.tvmaze.com/singlesearch/shows?q=${tvShow}&embed=cast`;
   
   try {
     let response = await fetch(url);
