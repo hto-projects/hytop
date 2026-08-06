@@ -169,6 +169,21 @@ const Header = () => {
           >
             Create Project
           </Button>
+
+        </Link>
+
+                <Link to="/latest-updates">
+          <Button
+            component="a"
+            href="/#latest-updates"
+            size="xs"
+            variant="subtle"
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            Latest Updates
+          </Button>
         </Link>
 
         {userIsAdmin && (
