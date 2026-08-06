@@ -105,17 +105,17 @@ const Header = () => {
         }}
       >
 
-        <Link to="/#register">
+        <Link to="/#signin">
           <Button
             component="a"
-            href="/#register"
+            href="/#signin"
             size="xs"
             variant="subtle"
             style={{
               color: theColorScheme === "dark" ? "#fff" : undefined,
             }}
           >
-            Register
+            Sign In
           </Button>
         </Link>
 
@@ -227,17 +227,7 @@ const Header = () => {
             {userInfo.name}
           </Button>
         ) : (
-          <Button
-            component={Link}
-            to="/#register"
-            size="xs"
-            variant="subtle"
-            style={{
-              color: theColorScheme === "dark" ? "#fff" : undefined
-            }}
-          >
-            Sign In
-          </Button>
+          <></>
         )}
       </Group>
       {isEditor && isLoading && <Loader size="sm" />}

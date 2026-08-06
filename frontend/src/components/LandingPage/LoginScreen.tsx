@@ -7,7 +7,7 @@ const LoginScreen = () => {
   const svgYellow = "#d1c347";
   const background = "#5e50b4";
   const [displayedPanel, setDisplayedPanel] = useState<"Login" | "Register">(
-    "Register"
+    "Login"
   );
 
   return (
@@ -20,7 +20,7 @@ const LoginScreen = () => {
           width: "100vw",
           height: "120vh"
         }}
-        id="register"
+        id="signin"
       >
         <div
           className="background-svgs"
