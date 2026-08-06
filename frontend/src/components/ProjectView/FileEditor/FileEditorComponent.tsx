@@ -157,6 +157,7 @@ const FileEditorComponent = ({
           loadedModel.dispose();
         }
 
+        // needs a new way to create the monaco models before hand
         const uri = monaco.Uri.parse(`file:///${file.fileName}`);
         const model = monaco.editor.createModel(
           file.fileContent,
