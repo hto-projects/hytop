@@ -11,11 +11,7 @@ import { toast } from "react-toastify";
 import Loader from "../Interface/Loader";
 import { useResetPasswordMutation } from "../../slices/usersApiSlice";
 
-interface AdminPanelProps {
-  colorScheme: MantineColorScheme;
-}
-
-const AdminPanel = ({ colorScheme }: AdminPanelProps) => {
+const AdminPanel = () => {
   const [resetUsername, setResetUsername] = useState("");
   const [resetPassword, setResetPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
@@ -48,18 +44,12 @@ const AdminPanel = ({ colorScheme }: AdminPanelProps) => {
   }
 
   return (
-    <div
-      style={{
-        flex: 1,
-        minWidth: 340,
-        paddingLeft: 24
-      }}
-    >
+    <div style={{ width: "20vw" }}>
       <Title order={2} ta="center" mb="md">
         Reset Password for User
       </Title>
       <Form
-        colorScheme={colorScheme}
+        colorScheme={"dark"}
         customConditions={() => {
           if (resetPassword === resetConfirmPassword) return true;
           return false;
@@ -95,6 +85,7 @@ const AdminPanel = ({ colorScheme }: AdminPanelProps) => {
             size="md"
             loading={isLoading}
             disabled={!passwordsMatch}
+            fullWidth
           >
             Send Reset Request
           </Button>

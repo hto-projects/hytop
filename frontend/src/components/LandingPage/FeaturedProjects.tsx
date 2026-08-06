@@ -162,7 +162,7 @@ function Project({
   demoCover
 }: ProjectProps) {
   return (
-    <Link to={link} style={{ textDecoration: "none", color: "white" }}>
+    <Link to={link} style={{ textDecoration: "none", color: "white" }} target="_blank" rel="noopener noreferrer">
       <Box
         style={{
           padding: "20px",

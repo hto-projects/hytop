@@ -18,6 +18,7 @@ interface IProject {
 type Classroom = {
   name: string;
   id: string;
+  participants: string[];
 };
 
 export {
