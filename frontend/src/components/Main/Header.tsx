@@ -105,17 +105,17 @@ const Header = () => {
         }}
       >
 
-        <Link to="/#login">
+        <Link to="/#register">
           <Button
             component="a"
-            href="/#login"
+            href="/#register"
             size="xs"
             variant="subtle"
             style={{
               color: theColorScheme === "dark" ? "#fff" : undefined,
             }}
           >
-            Login
+            Register
           </Button>
         </Link>
 
@@ -229,7 +229,7 @@ const Header = () => {
         ) : (
           <Button
             component={Link}
-            to="/#login"
+            to="/#register"
             size="xs"
             variant="subtle"
             style={{

@@ -1,13 +1,13 @@
 import Login from "../User/LoginComponent";
 import Register from "../User/RegisterScreen";
 import { Box } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const LoginScreen = () => {
   const svgYellow = "#d1c347";
   const background = "#5e50b4";
   const [displayedPanel, setDisplayedPanel] = useState<"Login" | "Register">(
-    "Login"
+    "Register"
   );
 
   return (
@@ -20,7 +20,7 @@ const LoginScreen = () => {
           width: "100vw",
           height: "120vh"
         }}
-        id="login"
+        id="register"
       >
         <div
           className="background-svgs"
