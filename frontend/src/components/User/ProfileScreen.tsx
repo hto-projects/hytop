@@ -49,7 +49,7 @@ const ProfileScreen = () => {
     } catch (err) {}
 
     dispatch(logout(null));
-    navigate("/#login");
+    navigate("/#signin");
   };
 
   useEffect(() => {
