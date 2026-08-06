@@ -15,21 +15,30 @@ import {
   PiMagicWandBold
 } from "react-icons/pi";
 import { useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = useComputedColorScheme("light");
   const { userInfo } = useSelector((state: any) => state.auth);
+  const userIsAdmin = userInfo?.admin || false;
 
   const isEditor = location.pathname.startsWith("/e/");
   let routeProjectName = isEditor ? location.pathname.substring(3) : "";
   routeProjectName = decodeURIComponent(routeProjectName);
 
-  const userIsOwner = useSelector((state: any) => isEditor ? state.editor.userIsOwner : false);
-  const isLoading = useSelector((state: any) => isEditor ? state.editor.isLoading : false);
-  const projectName = useSelector((state: any) => isEditor ? state.editor.projectName : "");
+  const userIsOwner = useSelector((state: any) =>
+    isEditor ? state.editor.userIsOwner : false
+  );
+  const isLoading = useSelector((state: any) =>
+    isEditor ? state.editor.isLoading : false
+  );
+  const projectName = useSelector((state: any) =>
+    isEditor ? state.editor.projectName : ""
+  );
 
   const saveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("saveAllFiles"));
@@ -42,14 +51,15 @@ const Header = () => {
   const forkProject = () => {
     window.location.href = `/c/${routeProjectName}`;
   };
-  
+
   return (
     <Group
       gap="xs"
       px="md"
       py="xs"
       style={{
-        borderBottom: theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
+        borderBottom:
+          theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
         background: theColorScheme === "dark" ? "#181A1B" : "#fafafa",
         color: theColorScheme === "dark" ? "#fff" : undefined,
         // minHeight: "0px",
@@ -101,7 +111,7 @@ const Header = () => {
         style={{
           position: "absolute",
           left: "50%",
-          transform: "translateX(-50%)",
+          transform: "translateX(-50%)"
         }}
       >
 
@@ -112,7 +122,7 @@ const Header = () => {
             size="xs"
             variant="subtle"
             style={{
-              color: theColorScheme === "dark" ? "#fff" : undefined,
+              color: theColorScheme === "dark" ? "#fff" : undefined
             }}
           >
             Register
@@ -126,7 +136,7 @@ const Header = () => {
             size="xs"
             variant="subtle"
             style={{
-              color: theColorScheme === "dark" ? "#fff" : undefined,
+              color: theColorScheme === "dark" ? "#fff" : undefined
             }}
           >
             Featured Projects
@@ -140,7 +150,7 @@ const Header = () => {
             size="xs"
             variant="subtle"
             style={{
-              color: theColorScheme === "dark" ? "#fff" : undefined,
+              color: theColorScheme === "dark" ? "#fff" : undefined
             }}
           >
             About
@@ -154,13 +164,27 @@ const Header = () => {
             size="xs"
             variant="subtle"
             style={{
-              color: theColorScheme === "dark" ? "#fff" : undefined,
+              color: theColorScheme === "dark" ? "#fff" : undefined
             }}
           >
             Create Project
           </Button>
         </Link>
 
+        {userIsAdmin && (
+          <Button
+            size="xs"
+            variant="subtle"
+            onClick={() => {
+              navigate("/admin");
+            }}
+            style={{
+              color: theColorScheme === "dark" ? "#fff" : undefined
+            }}
+          >
+            Admin Panel
+          </Button>
+        )}
       </Group>
 
       {isEditor && (

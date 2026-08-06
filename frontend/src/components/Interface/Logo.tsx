@@ -126,7 +126,6 @@ const Logo: React.FC<LogoProps> = ({
         newLightness = Math.min(70, Math.max(45, hsl.l + 10));
       }
     }
-
     return `hsl(${newHue}, ${newSaturation}%, ${newLightness}%)`;
   };
 

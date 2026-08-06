@@ -16,6 +16,10 @@ const IoEventChannels = {
   GET_LEAVING_USER: "user:get_leaving_user",
   ROOM_DOESNT_EXISTS: "user:room_doesnt_exists",
   ALL_ROOMS_UPDATED: "user:all_rooms_updated",
+  RECEIVE_PARTICIPANTS: "user:receive_participants",
+  CLOSED_ROOM: "user:close_room",
+
+  TEACHER_CLOSED_ROOM: "server:teacher_closed_room",
   JOIN_ROOM_BY_ID: "server:join_room",
   LEAVE_ROOM: "server:leave_room",
   CREATE_ROOM: "server:create_room",
