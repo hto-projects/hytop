@@ -33,7 +33,7 @@ const CreateProjectScreen = () => {
   const pythonProjectNames = [
     "simple-turtle",
     "py-print",
-    "py-cli ",
+    "py-cya ",
   ];
 
   const htmlProjectNames = [
