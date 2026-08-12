@@ -43,6 +43,12 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data
       })
     }),
+    getUserView: builder.query({
+      query: (username) => ({
+        url: `${USERS_URL}/view/${username}`,
+        method: "GET"
+      })
+    }),
     promoteAdmin: builder.mutation({
       query: (data: { username: string; isAdmin: boolean }) => ({
         url: `${USERS_URL}/change-admin-status`,
@@ -60,5 +66,6 @@ export const {
   useUpdateUserMutation,
   useGetUserProjectsQuery,
   useResetPasswordMutation,
+  useGetUserViewQuery,
   usePromoteAdminMutation
 } = userApiSlice;

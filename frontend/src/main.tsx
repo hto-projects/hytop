@@ -28,6 +28,7 @@ import { getCustomTheme, defaultTheme } from "./theme";
 import { ContextMenuProvider } from "mantine-contextmenu";
 import "./assets/fonts/comic-mono.css";
 import { ModalsProvider } from "@mantine/modals";
+import UserView from "./components/User/ViewUser";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
       <Route path="/create-project" element={<CreateProjectScreen />} />
       <Route path="/e/:projectName" element={<ProjectViewScreen />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
+      <Route path="/vp/:username" element={<UserView />} />
       <Route path="/forks-of/:projectName" element={<ForksOfProject />} />
       <Route path="/latest-updates" element={<LatestUpdatesScreen />} />
       <Route path="/admin" element={<AdminPage />} />

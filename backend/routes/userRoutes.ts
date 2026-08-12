@@ -8,6 +8,7 @@ import {
   allUsersAndTheirProjects,
   resetPassword,
   changeAdminStatus,
+  getUserView,
   getProjectsForUser as getProjectsForUserName
 } from "../controllers/userController";
 import { getUserProjects } from "../controllers/userController";
@@ -29,5 +30,6 @@ router
 router.get("/:userId/projects", protect, getUserProjects);
 router.get("/all-users-projects", protect, allUsersAndTheirProjects);
 router.get("/projects-by-name/:userName", protect, getProjectsForUserName);
+router.get("/view/:username", getUserView);
 
 export default router;

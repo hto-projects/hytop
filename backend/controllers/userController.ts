@@ -3,6 +3,7 @@ import User from "../models/userModel";
 import generateToken from "../utils/generateToken";
 import { v4 as uuidv4 } from "uuid";
 import Project from "../models/projectModel";
+import { IProjectSimple, IUserView } from "../../shared/types";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/auth
@@ -188,7 +189,6 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 const changeAdminStatus = asyncHandler(async (req, res) => {
-  console.log(req.body);
   const { username, isAdmin }: { username: string; isAdmin: boolean } =
     req.body;
   const user = await User.findOne({ username });
@@ -206,6 +206,33 @@ const changeAdminStatus = asyncHandler(async (req, res) => {
   });
 });
 
+const getUserView = asyncHandler(async (req, res) => {
+  console.log("routing");
+  const username = req.params.username;
+  if (!username) {
+    res.status(400);
+    throw new Error("Username is required");
+  }
+
+  const user = await User.findOne({ username });
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  
+  const userProjects: IProjectSimple[] = await Project.find({ projectOwnerId: user._id }, ['projectName', 'projectDescription', 'projectId', 'updatedAt']);
+  const userView: IUserView = {
+    username: user.username,
+    name: user.name,
+    email: user.email,
+    admin: user.admin,
+    projects: userProjects
+  }
+
+  res.json(userView);
+});
+
 export {
   authUser,
   registerUser,
@@ -216,5 +243,6 @@ export {
   allUsersAndTheirProjects,
   getProjectsForUser,
   resetPassword,
-  changeAdminStatus
+  changeAdminStatus,
+  getUserView
 };

@@ -1,9 +1,9 @@
 import { Paper, Text } from "@mantine/core";
-import { IProject } from "../../../../shared/types";
+import { IProjectSimple } from "../../../../shared/types";
 import { Link } from "react-router-dom";
 
 interface ProjectListProps {
-  projects: IProject[];
+  projects: IProjectSimple[];
   loading?: boolean;
   error?: any;
   edit?: boolean;

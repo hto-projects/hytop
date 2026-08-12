@@ -15,6 +15,21 @@ interface IProject {
   projectType?: "python" | "html";
 }
 
+interface IProjectSimple {
+  projectName: string;
+  projectDescription: string;
+  projectId: string;
+  updatedAt?: number;
+}
+
+interface IUserView {
+  username: string,
+  name: string,
+  email: string,
+  admin: boolean;
+  projects: IProjectSimple[];
+}
+
 type Classroom = {
   name: string;
   id: string;
@@ -24,5 +39,7 @@ type Classroom = {
 export {
   IProjectFile,
   IProject,
+  IProjectSimple,
+  IUserView,
   Classroom
 };
