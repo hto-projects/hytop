@@ -16,6 +16,7 @@ import {
 } from "react-icons/pi";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ANON_USERNAME } from "../../../../shared/constants";
 
 const Header = () => {
   const location = useLocation();
@@ -39,6 +40,9 @@ const Header = () => {
   const projectName = useSelector((state: any) =>
     isEditor ? state.editor.projectName : ""
   );
+  const projectOwnerUsername = useSelector((state: any) =>
+    isEditor ? state.editor.projectOwnerUsername : ""
+  );
 
   const saveAllFiles = () => {
     window.dispatchEvent(new CustomEvent("saveAllFiles"));
@@ -52,6 +56,21 @@ const Header = () => {
     window.location.href = `/c/${routeProjectName}`;
   };
 
+  let userLink;
+  let headingComponent;
+  
+  if (projectOwnerUsername && projectOwnerUsername !== ANON_USERNAME) {
+    userLink = <Link style={{color: "unset", fontWeight: "thin"}} to={`/vp/${projectOwnerUsername}`}>{projectOwnerUsername}</Link>;
+  } else {
+    userLink = <span>Guest</span>;
+  }
+
+  if (projectName) {
+    headingComponent = <span>{projectName} <span style={{fontSize: ".8em", fontWeight: "normal"}}>by {userLink}</span></span>;
+  } else {
+    headingComponent = <span>HyTOP</span>;
+  }
+  
   return (
     <Group
       gap="xs"
@@ -95,7 +114,7 @@ const Header = () => {
                 alignItems: "center"
               }}
             >
-              {projectName || "HyTOP"}
+              {headingComponent}
             </Text>
           </Menu.Target>
         </Menu>

@@ -22,7 +22,7 @@ interface EditorState {
   isLoading?: boolean;
   lastClosedTab?: string | null;
   projectName?: string;
-  projectOwnerUserName?: string;
+  projectOwnerUsername?: string;
   projectDescription?: string;
   unsavedFiles: { [filename: string]: boolean };
 }
@@ -61,7 +61,7 @@ const initialState: EditorState = {
   isLoading: false,
   lastClosedTab: null,
   projectName: "",
-  projectOwnerUserName: "",
+  projectOwnerUsername: "",
   projectDescription: "",
   unsavedFiles: {}
 };
@@ -194,7 +194,7 @@ const editorSlice = createSlice({
       state.projectDescription = action.payload;
     },
     setProjectOwnerUserName(state, action: PayloadAction<string>) {
-      state.projectOwnerUserName = action.payload;
+      state.projectOwnerUsername = action.payload;
     }
   }
 });

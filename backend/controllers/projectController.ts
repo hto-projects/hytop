@@ -8,6 +8,7 @@ import slugify from "slugify";
 import User from "../models/userModel";
 import { readdirSync } from "node:fs";
 import { runPyThroughHTML } from "./runPy";
+import { ANON_USERNAME } from "../../shared/constants";
 
 /**
  * If you're handling any request that involve getting the project name MAKE SURE you slugify it.
@@ -516,9 +517,9 @@ const getProject = asyncHandler(async (req: any, res) => {
 
   try {
     const owner = await User.findById(project.projectOwnerId);
-    ownerUsername = owner ? owner.username : "Anonymous User";
+    ownerUsername = owner ? owner.username : ANON_USERNAME;
   } catch (e) {
-    ownerUsername = "Anonymous User";
+    ownerUsername = ANON_USERNAME;
   }
 
   res.send({

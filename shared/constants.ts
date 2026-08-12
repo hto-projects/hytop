@@ -29,7 +29,10 @@ const IoEventChannels = {
 
 type IoEventChannelNames = typeof IoEventChannels[keyof typeof IoEventChannels];
 
+const ANON_USERNAME = "Anonymous User";
+
 export {
   IoEventChannels,
   IoEventChannelNames,
+  ANON_USERNAME
 };
