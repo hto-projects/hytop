@@ -23,7 +23,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
-  const theColorScheme = useComputedColorScheme("light");
+  const theColorScheme = "dark";
   const { userInfo } = useSelector((state: any) => state.auth);
   const userIsAdmin = userInfo?.admin || false;
 

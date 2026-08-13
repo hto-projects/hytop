@@ -7,9 +7,7 @@ const getInitialTheme = () => {
   const color = localStorage.getItem(COLOR_KEY);
   let colorScheme = localStorage.getItem(COLOR_SCHEME_KEY);
   if (!colorScheme) {
-    const prefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark = true;
     colorScheme = prefersDark ? "dark" : "light";
   }
   return {

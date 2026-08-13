@@ -65,6 +65,7 @@
 
 .inputTextBox {
   background: #33323242;
+  color: white;
   outline: none;
   padding: 1.5rem;
 }
@@ -94,9 +95,17 @@
 
 .autocomplete {
   width: 100%;
+  color: white;
+  background: black;
 }
 
 .autocompleteDropdown {
+  color: white;
+  background: black;
+}
+
+.mantine-Autocomplete-option:hover {
+  background: #233;
   color: white;
 }
 

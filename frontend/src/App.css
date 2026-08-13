@@ -5,3 +5,12 @@
 .forks-project-list a.mantine-Paper-root:visited {
   background: #777;
 }
+
+button {
+  margin: 2px;
+}
+
+.mantine-Autocomplete-option:hover {
+  background: white;
+  color: blue;
+}

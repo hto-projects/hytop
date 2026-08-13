@@ -213,10 +213,12 @@ function BaseFormInput({
         styles={{
           input: {
             color: colorScheme === "dark" ? "#fff" : undefined,
+            background: colorScheme === "dark" ? "000" : undefined,
             width: "100%"
           },
           label: {
-            color: colorScheme === "dark" ? "#fff" : undefined
+            color: colorScheme === "dark" ? "#fff" : undefined,
+            background: colorScheme === "dark" ? "000" : undefined,
           }
         }}
       />

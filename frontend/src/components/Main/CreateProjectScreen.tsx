@@ -107,10 +107,12 @@ const CreateProjectScreen = () => {
             size="md"
             styles={{
               input: {
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
+                color: "white",
+                background: "black"
               },
               label: {
-                color: theColorSchemeish === "dark" ? "#fff" : undefined
+                color: theColorSchemeish === "dark" ? "#fff" : undefined,
+                background: theColorSchemeish === "dark" ? "#000" : undefined,
               }
             }}
           />
@@ -148,14 +150,14 @@ const CreateProjectScreen = () => {
                 ...starterProjects.filter((group) => group.group === projectType)
               ]}
               withScrollArea={false}
-              styles={{ dropdown: { maxHeight: 200, overflowY: 'auto' } }}
+              styles={{ dropdown: { maxHeight: 200, overflowY: 'auto' }}}
               clearable
               mb="md"
               size="md"
               className={styles.autocomplete}
               classNames={{
                 dropdown: styles.autocompleteDropdown,
-                input: styles.inputTextBox
+                input: styles.inputTextBox,
               }}
               onChange={(e) => setCopyingProjectName(e)}
             />
