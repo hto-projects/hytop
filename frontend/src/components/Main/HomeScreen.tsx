@@ -1,17 +1,33 @@
 import { useLocation } from "react-router-dom";
-import LoginScreen from "../LandingPage/LoginScreen";
+import AuthPanel, { AuthView } from "../LandingPage/AuthPanel";
 import FeaturedProjects from "../LandingPage/FeaturedProjects";
 import AboutScreen from "../LandingPage/AboutScreen";
 import Splash from "../LandingPage/Splash";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const HomeScreen = () => {
   const location = useLocation();
+  const [elId, setElId] = useState<AuthView | "">("");
 
   useEffect(() => {
     if (location.hash) {
-      const el = document.getElementById(location.hash.replace("#", ""));
-      if (el) el.scrollIntoView({ behavior: "smooth" });
+      const idFromUrl = location.hash.replace("#", "");
+      if (idFromUrl) {
+        if (idFromUrl === AuthView.Register || idFromUrl === AuthView.SignIn) {
+          setElId(idFromUrl);
+          const el = document.getElementById("auth");
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth" });
+          }
+
+          return;
+        }
+        
+        const el = document.getElementById(idFromUrl);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }
     }
   }, [location]);
   return (
@@ -27,7 +43,7 @@ const HomeScreen = () => {
       }}
     >
       <Splash />
-      <LoginScreen />
+      <AuthPanel viewing={elId} />
       <FeaturedProjects />
       <AboutScreen />
     </div>

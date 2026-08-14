@@ -17,6 +17,7 @@ import {
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ANON_USERNAME } from "../../../../shared/constants";
+import { AuthView } from "../LandingPage/AuthPanel";
 
 const Header = () => {
   const location = useLocation();
@@ -58,19 +59,19 @@ const Header = () => {
 
   let userLink;
   let headingComponent;
-  
+
   if (projectOwnerUsername && projectOwnerUsername !== ANON_USERNAME) {
-    userLink = <Link style={{color: "unset", fontWeight: "thin"}} to={`/vp/${projectOwnerUsername}`}>{projectOwnerUsername}</Link>;
+    userLink = <Link style={{ color: "unset", fontWeight: "thin" }} to={`/vp/${projectOwnerUsername}`}>{projectOwnerUsername}</Link>;
   } else {
     userLink = <span>Guest</span>;
   }
 
   if (projectName) {
-    headingComponent = <span>{projectName} <span style={{fontSize: ".8em", fontWeight: "normal"}}>by {userLink}</span></span>;
+    headingComponent = <span>{projectName} <span style={{ fontSize: ".8em", fontWeight: "normal" }}>by {userLink}</span></span>;
   } else {
     headingComponent = <span>HyTOP</span>;
   }
-  
+
   return (
     <Group
       gap="xs"
@@ -134,24 +135,20 @@ const Header = () => {
         }}
       >
 
-        <Link to="/#signin">
+        {!userInfo && <Link to={`/#${AuthView.Register}`}>
           <Button
-            component="a"
-            href="/#signin"
             size="xs"
             variant="subtle"
             style={{
               color: theColorScheme === "dark" ? "#fff" : undefined
             }}
           >
-            Sign In
+            Register
           </Button>
-        </Link>
+        </Link>}
 
         <Link to="/#featuredprojects">
           <Button
-            // component="a"
-            // href="/#featuredprojects"
             size="xs"
             variant="subtle"
             style={{
@@ -164,8 +161,6 @@ const Header = () => {
 
         <Link to="/#about">
           <Button
-            component="a"
-            href="/#about"
             size="xs"
             variant="subtle"
             style={{
@@ -178,8 +173,6 @@ const Header = () => {
 
         <Link to="/create-project">
           <Button
-            component="a"
-            href="/#about"
             size="xs"
             variant="subtle"
             style={{
@@ -191,10 +184,8 @@ const Header = () => {
 
         </Link>
 
-                <Link to="/latest-updates">
+        <Link to="/latest-updates">
           <Button
-            component="a"
-            href="/#latest-updates"
             size="xs"
             variant="subtle"
             style={{
@@ -285,7 +276,16 @@ const Header = () => {
             {userInfo.name}
           </Button>
         ) : (
-          <></>
+          <Link to={`/#${AuthView.SignIn}`}>
+            <Button
+              size="xs"
+              variant="subtle"
+              style={{
+                color: theColorScheme === "dark" ? "#fff" : undefined
+              }}
+            >
+              Sign In
+            </Button></Link>
         )}
       </Group>
       {isEditor && isLoading && <Loader size="sm" />}
