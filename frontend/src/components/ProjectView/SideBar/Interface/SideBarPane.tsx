@@ -6,7 +6,7 @@ import { SIDEBAR_WIDTH } from "../../constants";
 import { useEffect, useState } from "react";
 import Classroom from "../Classroom/Classroom";
 
-const SideBarPane = ({ selectedPane, setSelectedPane, userIsOwner }) => {
+const SideBarPane = ({ selectedPane, setSelectedPane, userIsOwner, handleDroppedFiles }) => {
   const theColorScheme = useComputedColorScheme("light");
   const [sideBarWidth, setSidebarWidth] = useState(SIDEBAR_WIDTH);
 
@@ -30,7 +30,7 @@ const SideBarPane = ({ selectedPane, setSelectedPane, userIsOwner }) => {
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : "white"
       }}
     >
-      <FileSelectorComponent hidden={selectedPane !== "Files"} closePane={closePane} userIsOwner={userIsOwner} />
+      <FileSelectorComponent hidden={selectedPane !== "Files"} closePane={closePane} userIsOwner={userIsOwner} onDropFiles={handleDroppedFiles} />
       <ProjectSettingsComponent hidden={selectedPane !== "Settings"} closePane={closePane} />
       <PreferencesPane hidden={selectedPane !== "Preferences"} closePane={closePane} />
       <Classroom hidden={selectedPane !== "Classroom"} closePane={closePane} />
