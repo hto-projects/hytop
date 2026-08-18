@@ -21,6 +21,7 @@ import { getMonacoLang } from "../util";
 import TabBar from "./TabBar";
 import { setProjectFiles, setUnsavedFiles } from "../../../slices/editorSlice";
 import { IProjectFile } from "../../../../../shared/types";
+import { isImageFile } from "../../../utils/imageUtils";
 
 type FileEditorComponentProps = {
   showing: boolean;
@@ -69,6 +70,7 @@ const FileEditorComponent = ({
 
   // Component State
   const [editorMounted, setEditorMounted] = useState<Boolean>(false);
+  const [imgUrl, setImgUrl] = useState("");
 
   /* Handlers */
 
@@ -129,7 +131,12 @@ const FileEditorComponent = ({
     const activeModel = modelsRef.current[activeTab];
     if (activeTab && activeModel) {
       const model = activeModel;
-      editorRef.current.setModel(model);
+      try {
+        editorRef.current.setModel(model);
+      } catch (e) {
+
+      }
+
       editorRef.current.focus();
       // I tried to find a place where this property gets used but couldn't. 
       // This should be ok for the time being in case I missed it.
@@ -179,6 +186,17 @@ const FileEditorComponent = ({
     editorRef.current.setScrollPosition({ scrollTop: parseInt(localStorage.getItem("scrollTop")) });
   }, [projectFiles]);
 
+  useEffect(() => {
+    if (activeTab && isImageFile(activeTab)) {
+      const proj = projectFiles.find(p => p.fileName === activeTab);
+      if (proj) {
+        setImgUrl(proj.fileContent);
+      }
+    } else {
+      setImgUrl("");
+    }
+  }, [activeTab])
+
   return (
     <Paper
       shadow="xs"
@@ -204,7 +222,8 @@ const FileEditorComponent = ({
         style={{
           borderBottom:
             theColorScheme === "dark" ? "1px solid #333" : "1px solid #eee",
-          background: theColorScheme === "dark" ? "#181A1B" : undefined
+          background: theColorScheme === "dark" ? "#181A1B" : undefined,
+          display: imgUrl ? "none" : "flex"
         }}
       >
         <Group gap={4}>
@@ -242,10 +261,24 @@ const FileEditorComponent = ({
         </Tooltip>
       </Group>
       <Box
+            style={{
+              width: "100%",
+              height: "100%",
+              display: imgUrl ? "flex" : "none",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            >
+               <img
+                src={imgUrl}
+                alt={activeTab || "project image"}
+              />
+            </Box>
+      <Box
         style={{
           flex: 1,
           minHeight: 0,
-          display: "flex",
+          display: imgUrl ? "none" : "flex",
           flexDirection: "column",
           overflow: "hidden"
         }}

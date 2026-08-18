@@ -15,10 +15,61 @@ import {
 } from "../../../../slices/editorSlice";
 import FileName from "./FileName";
 import FilesHeader from "./FilesHeader";
+import React from "react";
+import { PiUploadSimpleBold } from "react-icons/pi";
 
-const FileSelectorComponent = ({ closePane, userIsOwner, hidden }) => {
+const FileSelectorComponent = ({ closePane, userIsOwner, hidden, onDropFiles }) => {
   const dispatch = useDispatch();
   const { projectName } = useParams();
+
+  const [isDraggingFiles, setIsDraggingFiles] = React.useState(false);
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userIsOwner) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFiles(true);
+  };
+
+  const handleDragOverFiles = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userIsOwner) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "copy";
+    if (!isDraggingFiles) {
+      setIsDraggingFiles(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userIsOwner) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDraggingFiles(false);
+    }
+  };
+
+  const handleDropFiles = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!userIsOwner) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingFiles(false);
+
+    const droppedFiles = Array.from(e.dataTransfer?.files || []);
+    if (droppedFiles.length === 0 || typeof onDropFiles !== "function") {
+      return;
+    }
+    onDropFiles(droppedFiles);
+  };
 
   // Load from Store
   const {
@@ -124,6 +175,10 @@ const FileSelectorComponent = ({ closePane, userIsOwner, hidden }) => {
         color: theColorScheme === "dark" ? "white" : undefined,
         backgroundColor: theColorScheme === "dark" ? "#181A1B" : "white",
       }}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOverFiles}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDropFiles}
     >
       <FilesHeader
         enableAddFile={userIsOwner}
@@ -144,6 +199,36 @@ const FileSelectorComponent = ({ closePane, userIsOwner, hidden }) => {
             handleDeleteFile={handleDeleteFile}
           ></FileName>
         ))}
+      </Box>
+      <Box
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          border:
+            isDraggingFiles && userIsOwner
+              ? "1px dashed #4C6EF5"
+              : "1px solid transparent",
+          borderRadius: 6,
+          margin: 4,
+          transition: "border-color 120ms ease"
+        }}
+      >
+        {isDraggingFiles && userIsOwner && (
+          <Box
+            px="sm"
+            py={8}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              color: theColorScheme === "dark" ? "#A5D8FF" : "#364FC7",
+              fontSize: 12
+            }}
+          >
+            <PiUploadSimpleBold size={14} />
+            Drop HTML, CSS, JavaScript, or image files to add them
+          </Box>
+        )}
       </Box>
     </Box>
   );
