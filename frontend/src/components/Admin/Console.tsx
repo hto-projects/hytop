@@ -1,6 +1,6 @@
 import { Box, Paper } from "@mantine/core";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import AdminPanel from "./AdminPanel";
 import AdminPromotion from "./AdminPromotion";
@@ -142,6 +142,11 @@ export default function AdminPage() {
               <AdminPromotion />
             </Paper>
           </div>
+          
+
+        <div style={{display: "flex", flexDirection: "column", alignItems: "flex-end"}}>
+          <Link style={{color: "white", background: "black", padding: "10px", fontWeight: "bold"}} to="/cco">Create Course Offering</Link>
+        </div>
         </div>
       </Box>
     </>

@@ -48,15 +48,13 @@ const UserView = () => {
             display: "flex",
             flexDirection: "column",
             gap: 48,
+            color: "white",
+            background: "black"
           }}
         >
-          <div style={{display: "flex", justifyContent: "center", minWidth: "1200px"}}>
+          <div style={{display: "flex", justifyContent: "center", minWidth: "800px"}}>
         <Title>{userViewInfo.username}</Title></div>
         <div style={{display: "flex", flexDirection: "row"}}>
-          <div style={{ width: "400px" }}>
-            <p>Name: <b>{userViewInfo.name}</b></p>
-            <p>Email: <b>{userViewInfo.email}</b></p>
-          </div>
 
           <div
             style={{

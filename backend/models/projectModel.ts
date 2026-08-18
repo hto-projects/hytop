@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IProject } from "../../shared/types";
 
-const projectSchema = new mongoose.Schema(
+const projectSchema = new mongoose.Schema<IProject>(
   {
     projectName: {
       type: String,

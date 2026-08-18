@@ -30,9 +30,7 @@ interface EditorState {
 const getInitialMonacoSettings = () => {
   let monacoTheme = localStorage.getItem("monacoTheme");
   if (!monacoTheme) {
-    const prefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark = true;
     monacoTheme = prefersDark ? "vs-dark" : "vs-light";
   }
   return {

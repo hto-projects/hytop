@@ -29,6 +29,9 @@ import { ContextMenuProvider } from "mantine-contextmenu";
 import "./assets/fonts/comic-mono.css";
 import { ModalsProvider } from "@mantine/modals";
 import UserView from "./components/User/ViewUser";
+import ViewCourseOfferingPage from "./components/Enrollments/ViewCourseOfferingPage";
+import ViewCoursesPage from "./components/Enrollments/ViewCoursesPage";
+import CreateCourseOfferingPage from "./components/Enrollments/CreateCourseOfferingPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,12 +40,15 @@ const router = createBrowserRouter(
       <Route path="/e/:projectName" element={<ProjectViewScreen />} />
       <Route path="/c/:projectName" element={<CopyProjectScreen />} />
       <Route path="/vp/:username" element={<UserView />} />
+      <Route path="/vc/:offeringId" element={<ViewCourseOfferingPage />} />
+      <Route path="/vcs" element={<ViewCoursesPage />} />
       <Route path="/forks-of/:projectName" element={<ForksOfProject />} />
       <Route path="/latest-updates" element={<LatestUpdatesScreen />} />
       <Route path="/admin" element={<AdminPage />} />
       <Route index={true} path="/" element={<HomeScreen />} />
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />
+        <Route path="/cco" element={<CreateCourseOfferingPage />} />
       </Route>
     </Route>
   )
@@ -51,11 +57,9 @@ const router = createBrowserRouter(
 const Root = () => {
   const dispatch = useDispatch();
   React.useEffect(() => {
-    const systemPrefersDark =
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const systemPrefersDark = true;
     if (!localStorage.getItem("color scheme")) {
-      dispatch(setColorScheme(systemPrefersDark ? "dark" : "light"));
+      dispatch(setColorScheme("dark"));
     }
     if (!localStorage.getItem("monacoTheme")) {
       dispatch(setMonacoTheme(systemPrefersDark ? "vs-dark" : "vs-light"));
