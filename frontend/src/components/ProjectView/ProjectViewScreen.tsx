@@ -33,6 +33,14 @@ import ProjectViewContainer from "./Interface/ProjectViewContainer";
 import PreviewComponent from "./Preview/PreviewComponent";
 import FileEditorComponent from "./FileEditor/FileEditorComponent";
 import { IProjectFile } from "../../../../shared/types";
+import {
+  SUPPORTED_IMAGE_EXTENSIONS,
+  readImageFileAsDataUrl,
+  getFileExtension,
+} from "../../utils/imageUtils";
+import { toast } from "react-toastify";
+
+const SUPPORTED_TEXT_EXTENSIONS = new Set(["html", "css", "js"]);
 
 const ProjectViewScreen: React.FC = () => {
   const monaco = useMonaco();
@@ -111,6 +119,127 @@ const ProjectViewScreen: React.FC = () => {
       dispatch(setProjectVersion(projectVersion + 1));
       dispatch(setUnsavedFiles({}));
     } catch (err) {}
+  };
+
+    const generateUniqueFileName = (
+    fileName: string,
+    existingFileNames: Set<string>
+  ): string => {
+    const lowerFileName = fileName.toLowerCase();
+    if (!existingFileNames.has(lowerFileName)) {
+      return fileName;
+    }
+
+    const extension = getFileExtension(fileName);
+    const nameWithoutExtension = fileName.slice(0, -(extension.length + 1));
+
+    let counter = 1;
+    let uniqueName: string;
+    do {
+      uniqueName =
+        extension.length > 0
+          ? `${nameWithoutExtension} (${counter}).${extension}`
+          : `${nameWithoutExtension} (${counter})`;
+      counter++;
+    } while (existingFileNames.has(uniqueName.toLowerCase()));
+
+    return uniqueName;
+  };
+
+  const handleDroppedFiles = async (droppedFiles: File[]) => {
+    if (!userIsOwner) {
+      return;
+    }
+
+    const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
+    const currentFileNames = new Set(
+      projectFiles.map((existingFile) => existingFile.fileName.toLowerCase())
+    );
+    const renameFiles: { original: string; renamed: string }[] = [];
+    const unsupportedFiles: string[] = [];
+    const oversizedFiles: { name: string; size: string }[] = [];
+    const filesToAdd: { fileName: string; fileContent: string }[] = [];
+
+    for (const droppedFile of droppedFiles) {
+      let fileName = droppedFile.name;
+
+      // Check file size first (before any other processing)
+      if (droppedFile.size > MAX_FILE_SIZE) {
+        const sizeMB = (droppedFile.size / (1024 * 1024)).toFixed(2);
+        oversizedFiles.push({ name: fileName, size: sizeMB });
+        continue;
+      }
+
+      // Check if file already exists and generate unique name if needed
+      if (currentFileNames.has(fileName.toLowerCase())) {
+        const uniqueName = generateUniqueFileName(fileName, currentFileNames);
+        renameFiles.push({ original: fileName, renamed: uniqueName });
+        fileName = uniqueName;
+      }
+
+      const extension = getFileExtension(fileName);
+
+      if (
+        !SUPPORTED_TEXT_EXTENSIONS.has(extension) &&
+        !SUPPORTED_IMAGE_EXTENSIONS.has(extension)
+      ) {
+        unsupportedFiles.push(fileName);
+        continue;
+      }
+
+      try {
+        const fileContent = SUPPORTED_TEXT_EXTENSIONS.has(extension)
+          ? await droppedFile.text()
+          : await readImageFileAsDataUrl(droppedFile);
+
+        filesToAdd.push({
+          fileName,
+          fileContent
+        });
+        currentFileNames.add(fileName.toLowerCase());
+      } catch {
+        unsupportedFiles.push(fileName);
+      }
+    }
+
+    if (filesToAdd.length === 0) {
+      if (oversizedFiles.length > 0 && unsupportedFiles.length === 0) {
+        toast.error(
+          `File${oversizedFiles.length > 1 ? "s" : ""} exceeds 3MB limit: ${oversizedFiles.map((f) => `${f.name} (${f.size}MB)`).join(", ")}`
+        );
+      } else if (unsupportedFiles.length > 0) {
+        toast.error("No supported files were dropped.");
+      }
+      return;
+    }
+
+    const updatedFiles = [...projectFiles, ...filesToAdd];
+    dispatch(setProjectFiles(updatedFiles));
+
+    try {
+      await updateProject({ projectFiles: updatedFiles, projectName }).unwrap();
+      dispatch(setProjectVersion(projectVersion + 1));
+    } catch {
+      toast.error("Failed to save dropped files.");
+    }
+
+    if (oversizedFiles.length > 0) {
+      toast.warn(
+        `File${oversizedFiles.length > 1 ? "s" : ""} skipped (exceeds 3MB): ${oversizedFiles.map((f) => `${f.name} (${f.size}MB)`).join(", ")}`
+      );
+    }
+
+    if (unsupportedFiles.length > 0) {
+      toast.warn(
+        `Unsupported file${unsupportedFiles.length > 1 ? "s" : ""} skipped: ${unsupportedFiles.join(", ")}`
+      );
+    }
+
+    if (renameFiles.length > 0) {
+      toast.info(
+        `File${renameFiles.length > 1 ? "s" : ""} renamed to avoid duplicates: ${renameFiles.map((f) => `${f.original} → ${f.renamed}`).join(", ")}`
+      );
+    }
   };
 
   // Formats and then saves all files
@@ -306,7 +435,7 @@ const ProjectViewScreen: React.FC = () => {
   // Component
   return (
     <ProjectViewContainer>
-      <SideBarComponent userIsOwner={userIsOwner} />
+      <SideBarComponent userIsOwner={userIsOwner} handleDroppedFiles={handleDroppedFiles} />
       <FileEditorComponent
         showing={paneState.open.editor}
         unsavedFiles={unsavedFiles}
