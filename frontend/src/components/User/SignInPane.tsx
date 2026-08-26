@@ -4,13 +4,11 @@ import { useState, useEffect } from "react";
 import {
   Paper,
   Text,
-  TextInput,
-  PasswordInput,
   Center,
   Title
 } from "@mantine/core";
 import Button from "../Interface/Button";
-import { Form, TextInputForm, PasswordInputForm } from "../Interface/Form";
+import { TextInputForm, PasswordInputForm } from "../Interface/Form";
 import { toast } from "react-toastify";
 import Logo from "../Interface/Logo";
 import Loader from "../Interface/Loader";
@@ -18,12 +16,9 @@ import { Link } from "react-router-dom";
 
 import { useLoginMutation } from "../../slices/usersApiSlice";
 import { setCredentials } from "../../slices/authSlice";
+import { AuthView } from "../LandingPage/AuthPanel";
 
-interface LoginProps {
-  setDisplayedPanel: React.Dispatch<React.SetStateAction<"Login" | "Register">>;
-}
-
-export default function Login({ setDisplayedPanel }: LoginProps) {
+export default function SignInPane() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -101,13 +96,14 @@ export default function Login({ setDisplayedPanel }: LoginProps) {
         Don't have an account?
       </Text>
       <div style={{ textAlign: "center" }}>
-        <Button
-          onClick={() => setDisplayedPanel("Register")}
-          variant="hi"
-          size="sm"
-        >
-          Register here
-        </Button>
+        <Link to={`/#${AuthView.Register}`}>
+          <Button
+            variant="hi"
+            size="sm"
+          >
+            Register here
+          </Button>
+        </Link>
         or
         <Link to="/create-project">
           <Button variant="hi" size="sm">

@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { IUser } from "../../shared/types";
 
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema<IUser>(
   {
     name: {
       type: String,
@@ -15,6 +16,11 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true
+    },
+    hasTemporaryPassword: {
+      type: Boolean,
+      required: false,
+      default: false
     },
     username: {
       type: String,

@@ -26,7 +26,7 @@ const ProjectList = ({ projects, loading, error, edit = true }: ProjectListProps
   }
 
   if (!projects || projects.length === 0) {
-    return <div>No projects found</div>;
+    return <div>No projects found. <Link to="/create-project" style={{ color: "white", background: "black", fontWeight: "bold", padding: "5px"}}>Create one?</Link></div>;
   }
 
   return (

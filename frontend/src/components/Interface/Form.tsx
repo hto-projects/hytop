@@ -122,20 +122,6 @@ export function emailValidation(input: string): Array<Condition> {
   return conditions;
 }
 
-export function nameValidation(input: string): Array<Condition> {
-  const conditions: Array<Condition> = ["Name may only contain letters"].map(
-    (description) => {
-      return {
-        description: description,
-        fulfilled: false
-      };
-    }
-  );
-
-  if (/^[a-z ]+$/i.test(input)) conditions[0]["fulfilled"] = true;
-  return conditions;
-}
-
 function showConditionals(
   conditions: Array<Condition>,
   hideFulfilled: boolean
@@ -213,10 +199,12 @@ function BaseFormInput({
         styles={{
           input: {
             color: colorScheme === "dark" ? "#fff" : undefined,
+            background: colorScheme === "dark" ? "000" : undefined,
             width: "100%"
           },
           label: {
-            color: colorScheme === "dark" ? "#fff" : undefined
+            color: colorScheme === "dark" ? "#fff" : undefined,
+            background: colorScheme === "dark" ? "000" : undefined,
           }
         }}
       />

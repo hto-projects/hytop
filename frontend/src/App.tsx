@@ -8,7 +8,7 @@ import { socket } from "./socket";
 import { useEffect } from "react";
 
 const App = () => {
-  const theColorScheme = useComputedColorScheme("light");
+  const theColorScheme = useComputedColorScheme("dark");
 
   useEffect(() => {
     socket.connect();

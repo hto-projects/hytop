@@ -13,20 +13,20 @@ import {
   PasswordInputForm,
   TextInputForm,
   passwordValidation,
-  emailValidation,
-  nameValidation
+  emailValidation
 } from "../Interface/Form";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Loader from "../Interface/Loader";
 import {
   useUpdateUserMutation,
-  useGetUserProjectsQuery,
+  useGetUserProfileInfoQuery,
   useLogoutMutation
 } from "../../slices/usersApiSlice";
 import { setCredentials, logout } from "../../slices/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProjectList from "./ProjectList";
+import { ICourseOffering, UserTypeForCourse } from "../../../../shared/types";
 
 const ProfileScreen = () => {
   const { userInfo } = useSelector((state: any) => state.auth);
@@ -38,10 +38,11 @@ const ProfileScreen = () => {
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
   const {
-    data: userProjects = [],
+    data: userProfileInfo,
     isLoading: projectsLoading,
     error: projectsError
-  } = useGetUserProjectsQuery(userId, { skip: !userId });
+  } = useGetUserProfileInfoQuery(null);
+  console.log(userProfileInfo);
 
   const handleLogout = async () => {
     try {
@@ -93,6 +94,16 @@ const ProfileScreen = () => {
     }
   }
 
+  const courseToEl: (c: ICourseOffering & { userType: UserTypeForCourse }) => JSX.Element = (c) => {
+    if (c.userType === UserTypeForCourse.Instructor) {
+      return <Link style={{background: "black", color: "white", fontWeight: "bold", padding: "5px"}} to={`/vc/${c.offeringId}`}>{c.courseName}</Link>
+    } else if (c.userType === UserTypeForCourse.Student) {
+      return <span>{c.courseName}</span>
+    } else {
+      return <span></span>
+    }
+  }
+
   return (
     <Box
       style={{
@@ -121,7 +132,7 @@ const ProfileScreen = () => {
         >
           <div style={{ flex: 1, minWidth: 340 }}>
             <Title order={2} ta="center" mb="md">
-              Account
+              {userProfileInfo && userProfileInfo.hasTemporaryPassword ? <span style={{color: "red"}}>RESET YOUR PASSWORD!</span> : `Account`}
             </Title>
 
             <Form
@@ -135,7 +146,6 @@ const ProfileScreen = () => {
                 label="Name"
                 value={name}
                 setValue={setName}
-                validation={nameValidation}
                 required
                 hideFulfilled
               ></TextInputForm>
@@ -197,11 +207,17 @@ const ProfileScreen = () => {
               Your Projects
             </Title>
             <ProjectList
-              projects={userProjects}
+              projects={userProfileInfo ? userProfileInfo.projects : []}
               loading={projectsLoading}
               error={projectsError}
             />
           </div>
+        </Paper>
+        <Paper>
+          <Title>Your Courses</Title>
+          <div style={{display: "flex", gap: "5px"}}>{userProfileInfo && userProfileInfo.courses.map(courseToEl)}</div>
+          <br />
+          <p><Link to="/vcs" style={{color: "white", background: "black"}}>View All Courses</Link></p>
         </Paper>
       </Container>
     </Box>

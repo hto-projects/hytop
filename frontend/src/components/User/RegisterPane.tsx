@@ -12,8 +12,7 @@ import {
   TextInputForm,
   passwordValidation,
   usernameValidation,
-  emailValidation,
-  nameValidation
+  emailValidation
 } from "../Interface/Form";
 import Button from "../Interface/Button";
 import Loader from "../Interface/Loader";
@@ -23,12 +22,9 @@ import { useRegisterMutation } from "../../slices/usersApiSlice";
 import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
 import Logo from "../Interface/Logo";
+import { AuthView } from "../LandingPage/AuthPanel";
 
-interface LoginProps {
-  setDisplayedPanel: React.Dispatch<React.SetStateAction<"Login" | "Register">>;
-}
-
-const RegisterScreen = ({ setDisplayedPanel }: LoginProps) => {
+const RegisterPane = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -108,7 +104,6 @@ const RegisterScreen = ({ setDisplayedPanel }: LoginProps) => {
           label="Name"
           value={name}
           setValue={setName}
-          validation={nameValidation}
           required
           hideFulfilled
         ></TextInputForm>
@@ -157,17 +152,18 @@ const RegisterScreen = ({ setDisplayedPanel }: LoginProps) => {
       </Form>
       <Text ta="center" mt="md">
         Already have an account?{" "}
+        <Link to={`/#${AuthView.SignIn}`}>
         <Button
-          onClick={() => setDisplayedPanel("Login")}
           variant="hi"
           size="sm"
           style={{ padding: 1, marginLeft: 4 }}
         >
           Sign In
         </Button>
+        </Link>
       </Text>
     </Paper>
   );
 };
 
-export default RegisterScreen;
+export default RegisterPane;
