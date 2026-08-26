@@ -132,6 +132,7 @@ export const runPyThroughHTML = (pythonToRun: string) => {
         Sk.TurtleGraphics = { target: "python-turtle-canvas"};
         try {
           await Sk.misceval.asyncToPromise(asyncReturn);
+          setTimeout(() => document.querySelector("#python-turtle-canvas").focus());
         } catch (e) {
           alert(e);
         }
