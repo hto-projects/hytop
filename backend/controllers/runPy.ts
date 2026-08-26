@@ -23,12 +23,19 @@ export const runPyThroughHTML = (pythonToRun: string) => {
         width: 100%;
         resize: none;
         display: none;
-        height: 100px;
-        position: fixed;
-        bottom: 0;
-        z-index: 20;
+        height: 100%;
         font-size: 1.5em;
         outline: none;
+      }
+
+      #canvas-and-console {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      #python-console {
+        flex-grow: 1;
       }
     </style>
   </head>
@@ -41,12 +48,6 @@ export const runPyThroughHTML = (pythonToRun: string) => {
       const openConsole = () => {
         const pyConsole = document.querySelector("#output");
         pyConsole.style.display = "block";
-        const canv = document.querySelector("canvas");
-        if (!canv) {
-          pyConsole.style.height = "100%";
-        } else {
-          pyConsole.style.height = "100px";
-        }
       }
 
       const outf = (text) => { 
@@ -139,10 +140,10 @@ export const runPyThroughHTML = (pythonToRun: string) => {
       });
     </script>
     <div id="canvas-and-console">
-    <div id="python-turtle-canvas"></div>
-    <div id="python-console">
-      <textarea id="output" disabled></textarea>
-    </div>
+      <div id="python-turtle-canvas"></div>
+      <div id="python-console">
+        <textarea id="output" disabled></textarea>
+      </div>
     </div>
   </body>
   </html>
