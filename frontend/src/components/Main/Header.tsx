@@ -184,18 +184,6 @@ const Header = () => {
 
         </Link>
 
-        <Link to="/latest-updates">
-          <Button
-            size="xs"
-            variant="subtle"
-            style={{
-              color: theColorScheme === "dark" ? "#fff" : undefined
-            }}
-          >
-            Latest Updates
-          </Button>
-        </Link>
-
         {userIsAdmin && (
           <Button
             size="xs"
