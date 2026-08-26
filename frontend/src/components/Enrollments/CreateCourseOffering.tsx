@@ -6,8 +6,7 @@ import {
 } from "@mantine/core";
 import {
   Form,
-  TextInputForm,
-  nameValidation
+  TextInputForm
 } from "../Interface/Form";
 import Button from "../Interface/Button";
 import Loader from "../Interface/Loader";

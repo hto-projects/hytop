@@ -12,8 +12,7 @@ import {
   TextInputForm,
   passwordValidation,
   usernameValidation,
-  emailValidation,
-  nameValidation
+  emailValidation
 } from "../Interface/Form";
 import Button from "../Interface/Button";
 import Loader from "../Interface/Loader";
@@ -105,7 +104,6 @@ const RegisterPane = () => {
           label="Name"
           value={name}
           setValue={setName}
-          validation={nameValidation}
           required
           hideFulfilled
         ></TextInputForm>

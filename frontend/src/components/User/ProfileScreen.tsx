@@ -13,8 +13,7 @@ import {
   PasswordInputForm,
   TextInputForm,
   passwordValidation,
-  emailValidation,
-  nameValidation
+  emailValidation
 } from "../Interface/Form";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -147,7 +146,6 @@ const ProfileScreen = () => {
                 label="Name"
                 value={name}
                 setValue={setName}
-                validation={nameValidation}
                 required
                 hideFulfilled
               ></TextInputForm>
