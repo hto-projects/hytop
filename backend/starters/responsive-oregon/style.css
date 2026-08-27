@@ -1,0 +1,34 @@
+h1 {
+  font-size: 4vw;
+}
+
+img {
+  width: 50%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.col {
+  height: 50px;
+  text-align: center;
+  font-size: 40px;
+}
+
+#col1 {
+  color: white;
+  background-color: navy;
+}
+
+#col2 {
+  color: black;
+  background-color: gold;
+}
+
+@media screen and (max-width: 600px) {
+  .grid {
+    display: block;
+  }
+}
