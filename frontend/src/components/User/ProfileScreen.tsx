@@ -52,12 +52,6 @@ const ProfileScreen = () => {
     navigate("/#signin");
   };
 
-  useEffect(() => {
-    if (projectsError && 'status' in projectsError && projectsError?.status === 401) {
-      handleLogout();
-    }
-  }, [projectsError]);
-
   const [email, setEmail] = useState(userInfo ? userInfo.email : "");
   const [name, setName] = useState(userInfo ? userInfo.name : "");
   const [password, setPassword] = useState("");

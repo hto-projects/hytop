@@ -25,7 +25,7 @@ const Header = () => {
 
   const primaryColor = useSelector((state: any) => state.theme.primaryColor);
   const theColorScheme = "dark";
-  const { userInfo } = useSelector((state: any) => state.auth);
+  const { userInfo, userInfoIsLoading } = useSelector((state: any) => state.auth);
   const userIsAdmin = userInfo?.admin || false;
 
   const isEditor = location.pathname.startsWith("/e/");
@@ -250,7 +250,7 @@ const Header = () => {
         </>
       )}
 
-      <Group gap={0} ml="auto">
+      {!userInfoIsLoading && <Group gap={0} ml="auto">
         {userInfo ? (
           <Button
             component={Link}
@@ -275,7 +275,7 @@ const Header = () => {
               Sign In
             </Button></Link>
         )}
-      </Group>
+      </Group>}
       {isEditor && isLoading && <Loader size="sm" />}
     </Group>
   );

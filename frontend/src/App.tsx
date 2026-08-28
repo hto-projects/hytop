@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { setCredentials, logout } from "./slices/authSlice";
+import { setCredentials, logout, setUserInfoLoading } from "./slices/authSlice";
 import { useGetUserInfoQuery } from "./slices/usersApiSlice";
 import Header from "./components/Main/Header";
 import { useComputedColorScheme } from "@mantine/core";
@@ -16,6 +16,7 @@ const App = () => {
 
   const {
     data: userInfo,
+    isLoading: userInfoLoading,
     error: userInfoError
   } = useGetUserInfoQuery(null);
 
@@ -25,7 +26,11 @@ const App = () => {
     } else if (userInfo) {
       dispatch(setCredentials(userInfo));
     }
-  }, [userInfo, userInfoError])
+  }, [userInfo, userInfoError]);
+
+  useEffect(() => {
+    dispatch(setUserInfoLoading(userInfoLoading));
+  }, [userInfoLoading])
 
   useEffect(() => {
     socket.connect();
