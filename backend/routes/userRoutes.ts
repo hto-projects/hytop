@@ -12,7 +12,8 @@ import {
   getUserView,
   getProjectsForUser as getProjectsForUserName,
   getUserProfileInfo,
-  randPass
+  randPass,
+  meInfo
 } from "../controllers/userController";
 import { protect, adminProtect } from "../middleware/authMiddleware";
 
@@ -35,5 +36,6 @@ router.get("/all-users-projects", protect, allUsersAndTheirProjects);
 router.get("/projects-by-name/:userName", protect, getProjectsForUserName);
 router.get("/view/:username", getUserView);
 router.get("/rand-pass", randPass);
+router.get("/me-info", meInfo);
 
 export default router;

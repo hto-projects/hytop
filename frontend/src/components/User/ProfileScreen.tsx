@@ -42,7 +42,6 @@ const ProfileScreen = () => {
     isLoading: projectsLoading,
     error: projectsError
   } = useGetUserProfileInfoQuery(null);
-  console.log(userProfileInfo);
 
   const handleLogout = async () => {
     try {

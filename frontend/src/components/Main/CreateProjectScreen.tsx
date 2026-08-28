@@ -19,6 +19,7 @@ import Button from "../Interface/Button";
 import Logo from "../Interface/Logo";
 
 import styles from "./CreateProjectScreen.module.css";
+import { useSelector } from "react-redux";
 
 const CreateProjectScreen = () => {
   const [projectName, setProjectName] = useState("");
@@ -27,6 +28,8 @@ const CreateProjectScreen = () => {
   const [disableStarterProjects, setDisableStarterProjects] = useState(false);
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
+
+  const { userInfo } = useSelector((state: any) => state.auth);
 
   const theColorSchemeish = useComputedColorScheme("light");
 
@@ -165,6 +168,7 @@ const CreateProjectScreen = () => {
           <Button className={styles.submit} type="submit" size="md" disabled={isLoading}>
             {isLoading ? "Creating..." : "Create Project"}
           </Button>
+          <p><i>{userInfo ? `Creating as ${userInfo.username}` : `Creating Anonymously`}</i></p>
         </form>
       </Paper>
     </Box>

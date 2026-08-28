@@ -11,6 +11,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"]
     }),
+    getUserInfo: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/me-info`,
+        method: "GET"
+      }),
+      providesTags: ["User"]
+    }),
     logout: builder.mutation({
       query: () => ({
         url: `${USERS_URL}/logout`,
@@ -84,5 +91,6 @@ export const {
   useResetPasswordMutation,
   useInstructorResetPasswordMutation,
   useGetUserViewQuery,
+  useGetUserInfoQuery,
   usePromoteAdminMutation
 } = userApiSlice;

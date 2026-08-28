@@ -234,7 +234,7 @@ const Header = () => {
               </Tooltip>
             ) : null}
           </Group>
-          <Tooltip label="Fork Project">
+          <Tooltip label={userInfo ? `Fork Project` : `Fork Project Anonymously`}>
             <ActionIcon
               onClick={forkProject}
               color="green"

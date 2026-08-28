@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel";
 import generateToken from "../utils/generateToken";
+import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import friendlyWords from "friendly-words";
 import Project from "../models/projectModel";
@@ -43,6 +44,27 @@ const authUser = asyncHandler(async (req, res) => {
   } else {
     res.status(401);
     throw new Error("Invalid email or password");
+  }
+});
+
+const meInfo = asyncHandler(async (req, res) => {
+  const token = req.cookies.jwt;
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const userInfo = await User.findById(decoded.userId).select("-password");
+
+      res.json(userInfo);
+    } catch (error) {
+      console.error(error);
+      res.status(401);
+      throw new Error("Not authorized, token failed");
+    }
+  } else {
+    res.status(401);
+    throw new Error("Not authorized, no token");
   }
 });
 
@@ -363,5 +385,6 @@ export {
   instructorResetPassword,
   changeAdminStatus,
   getUserView,
-  randPass
+  randPass,
+  meInfo
 };
