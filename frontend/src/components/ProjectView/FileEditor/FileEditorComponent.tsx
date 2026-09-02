@@ -262,8 +262,8 @@ const FileEditorComponent = ({
       </Group>
       <Box
             style={{
-              width: "100%",
-              height: "100%",
+              width: "90%",
+              height: "90%",
               display: imgUrl ? "flex" : "none",
               alignItems: "center",
               justifyContent: "center",
@@ -272,6 +272,7 @@ const FileEditorComponent = ({
                <img
                 src={imgUrl}
                 alt={activeTab || "project image"}
+                style={{maxHeight: "100%", maxWidth: "100%"}}
               />
             </Box>
       <Box
