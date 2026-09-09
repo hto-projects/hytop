@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Megrim&family=Pixelify+Sans:wght@400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+body {
+  background: url(https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/1920x1200-space-free-kd3592201.jpg/960px-1920x1200-space-free-kd3592201.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail);
+  background-size: cover;
+  color: white;
+  font-family: "Inter";
+}
+
+h1 {
+  font-family: "Megrim";
+  text-align: center;
+  font-size: 50px;
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+p.sub {
+  text-align: center;
+  margin-top: 0;
+  font-style: italic;
+  font-size: 1.1em;
+  letter-spacing: 5px;
+}
+
+#story-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+div.btn-contain {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  background: #444;
+  color: white;
+  font-family: "Space Mono";
+  font-size: 20px;
+  transition: 290ms;
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+button:hover {
+  cursor: pointer;
+  background: rgba(141, 3, 141, 1);
+}
