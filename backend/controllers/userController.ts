@@ -9,6 +9,7 @@ import {
   ICourseOffering,
   IEnrollment,
   IProjectSimple,
+  ISubmission,
   IUser,
   IUserView,
   UserTypeForCourse
@@ -16,6 +17,7 @@ import {
 import { Document } from "mongoose";
 import Enrollment from "../models/enrollmentModel";
 import CourseOffering from "../models/courseOfferingModel";
+import Submission from "../models/submissionModel";
 
 const checkInstructorInstructsStudent = async (instructorUserId, studentUserId) => {
   const instructorCourses: IEnrollment[] = await Enrollment.find({ userId: instructorUserId, participantRole: "instructor" });
@@ -372,6 +374,35 @@ const getUserView = asyncHandler(async (req, res) => {
   res.json(userView);
 });
 
+const newSubmission = asyncHandler(async (req: any, res) => {
+  const { submissionText } = req.body;
+  const userId = req.user.userId;
+
+  const foundSubmission = await Submission.findOne({ submissionText, userId });
+  if (foundSubmission) {
+    res.status(400);
+    throw new Error(":( you already submit that :(")
+  }
+
+  const submissionId: string = uuidv4();
+  const submission: ISubmission = {
+    submissionText,
+    userId,
+    submissionId,
+  }
+
+  try {
+    await Submission.create(submission);
+    res.status(201).json({
+      message: `Successfully Submit!`,
+      submissionId
+    });
+  } catch (error) {
+    res.status(400);
+    throw new Error(`Error submitting: ${error}`);
+  }
+});
+
 export {
   authUser,
   registerUser,
@@ -386,5 +417,6 @@ export {
   changeAdminStatus,
   getUserView,
   randPass,
-  meInfo
+  meInfo,
+  newSubmission
 };

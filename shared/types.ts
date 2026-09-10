@@ -57,6 +57,7 @@ enum UserTypeForCourse {
   User = "user",
   Anonymous = "anonymous"
 }
+
 interface IEnrollment {
   enrollmentId: string; // uuid
   courseOfferingId: string; // foreign key to ICourseOffering
@@ -69,6 +70,12 @@ interface IParticipant {
   participantUsername: string;
   participantUserId: string;
   participantStatus: CourseParticipantStatus;
+}
+
+interface ISubmission {
+  userId: string;
+  submissionText: string;
+  submissionId: string;
 }
 
 type Classroom = {
@@ -84,6 +91,7 @@ export {
   IUserView,
   IUser,
   ICourseOffering,
+  ISubmission,
   CourseParticipantStatus,
   IEnrollment,
   IParticipant,
