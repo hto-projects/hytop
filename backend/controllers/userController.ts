@@ -30,7 +30,9 @@ const checkInstructorInstructsStudent = async (instructorUserId, studentUserId) 
 const authUser = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
 
-  const user: any = await User.findOne({ username });
+  const user: any = await User.findOne({
+    username: new RegExp(`^${username}$`, "i"),
+  });
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
@@ -238,7 +240,9 @@ const allUsersAndTheirProjects = asyncHandler(async (req, res) => {
 
 const getProjectsForUser = asyncHandler(async (req, res) => {
   const userName = req.params.userName;
-  const user = await User.findOne({ username: userName });
+  const user = await User.findOne({
+  username: new RegExp(`^${username}$`, "i"),
+  });
   if (!user) {
     res.status(404);
     throw new Error("User not found");
