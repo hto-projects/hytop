@@ -1,5 +1,7 @@
 import asyncHandler from "express-async-handler";
 import HfHighScore from "../models/hfHighScoreModel";
+import PasswordChaseGame from "../models/passwordChaseGameModel";
+import PasswordChaseSubmission from "../models/passwordChaseSubmissionModel";
 
 function shuffle(array) {
   let currentIndex = array.length;
@@ -123,4 +125,45 @@ export const sendHackyformerHighScore = asyncHandler(async (req: any, res) => {
   const newHighScore = new HfHighScore({ initials, score, sessionName });
   await newHighScore.save();
   res.send(newHighScore);
+});
+
+export const createPassChase = asyncHandler(async (req: any, res) => {
+  const { gc, password } = req.body;
+
+  const foundGame = await PasswordChaseGame.findOne({ gameCode: gc });
+  if (foundGame) {
+    res.send("game already exists!");
+    return;
+  }
+
+  const newPassChaseGame = new PasswordChaseGame({ gameCode: gc, gamePassword: password });
+  newPassChaseGame.save();
+  res.send("YEAY!");
+  return;
+});
+
+export const submitPassChase = asyncHandler(async (req: any, res) => {
+  const { gc, team, password } = req.body;
+
+  const foundGame = await PasswordChaseGame.findOne({ gameCode: gc });
+  if (!foundGame) {
+    res.send("game not found!");
+    return;
+  }
+
+  const existingWinner = await PasswordChaseSubmission.findOne({ gameCode: gc, gamePassword: foundGame.gamePassword });
+  if (existingWinner) {
+    res.send("already won by: " + existingWinner.gameTeam);
+    return;
+  }
+
+  if (password != foundGame.gamePassword) {
+    res.send("that password is not correct!");
+    return;
+  }
+
+  const newSubmission = new PasswordChaseSubmission({ gameCode: gc, gameTeam: team, gamePassword: password });
+  newSubmission.save();
+  res.send(`<style>body{background:lime}</style><h1>CORRECT!</h1>`);
+  return;
 });
