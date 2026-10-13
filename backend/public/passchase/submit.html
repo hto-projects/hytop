@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <script defer>
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const myGc = urlParams.get('gc');
+        if (myGc) {
+          const gcInput = document.querySelector("#gci");
+          gcInput.value = myGc;
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <h1>QUANTUM PASSWORD CHASE GAME CREATOR</h1>
+    <p>Make a game.</p>
+    <form action="/api/fake-api/passchase/submit" method="POST">
+      <div>
+        <p>Game Code: <input type="text" name="gc" id="gci"></p>
+
+      </div>
+      <div>
+        <p>Team: <input type="radio" name="team" value="T">Tails // <input type="radio" name="team" value="H">Heads</p>
+      </div>
+      <div>
+        <p>Password: <input type="text" name="password"></p>
+      </div>
+      <div>
+        <input type="submit">
+      </div>
+    </form>
+  </body>
+</html>
