@@ -145,6 +145,11 @@ export const createPassChase = asyncHandler(async (req: any, res) => {
 export const submitPassChase = asyncHandler(async (req: any, res) => {
   const { gc, team, password } = req.body;
 
+  if (!team) {
+    res.send("you have to select a team!");
+    return;
+  }
+
   const foundGame = await PasswordChaseGame.findOne({ gameCode: gc });
   if (!foundGame) {
     res.send("game not found!");
