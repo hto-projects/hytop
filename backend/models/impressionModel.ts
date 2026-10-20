@@ -19,6 +19,6 @@ const impressionSchema = new mongoose.Schema<IImpression>(
   }
 );
 
-const Enrollment = mongoose.model<IImpression>("Enrollment", impressionSchema);
+const Impression = mongoose.model<IImpression>("Impression", impressionSchema);
 
-export default Enrollment;
+export default Impression;
