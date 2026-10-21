@@ -4,12 +4,13 @@ import { SIDEBAR_ICON_MAP } from "../../constants";
 import { useSelector } from "react-redux";
 import { useComputedColorScheme } from "@mantine/core";
 
-const SideBarButton = ({ name, isOn, onClick }) => {
+const SideBarButton = ({ name, isOn, onClick, notify = false }) => {
   const { primaryColor } = useSelector((state: any) => state.theme);
   const theColorScheme: string = useComputedColorScheme("light");
   const darkMode: boolean = theColorScheme === "dark";
 
   return (
+    <>
     <Tooltip label={name} position="right">
       <ActionIcon
         color={isOn ? primaryColor : darkMode ? "darkgray" : "gray"}
@@ -20,6 +21,9 @@ const SideBarButton = ({ name, isOn, onClick }) => {
         {SIDEBAR_ICON_MAP[name]}
       </ActionIcon>
     </Tooltip>
+    
+      {notify && <div className="notify">!</div>}
+    </>
   );
 };
 

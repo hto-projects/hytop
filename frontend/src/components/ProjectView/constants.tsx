@@ -1,11 +1,12 @@
-import { PiFilesBold, PiGearBold, PiPencilBold, PiStudentBold } from "react-icons/pi";
+import { PiFilesBold, PiGearBold, PiPencilBold, PiShootingStar, PiStudentBold } from "react-icons/pi";
 
 const DEFAULT_PANE_WIDTHS = {
   explorer: 260,
   editor: 600,
   preview: 400,
   settings: 260,
-  preferences: 260
+  preferences: 260,
+  util: 400,
 };
 
 const MIN_PANE_WIDTH = 60;
@@ -16,7 +17,8 @@ const SIDEBAR_ICON_MAP = {
   "Files": <PiFilesBold />,
   "Settings": <PiPencilBold />,
   "Preferences": <PiGearBold />,
-  "Classroom": <PiStudentBold />
+  "Classroom": <PiStudentBold />,
+  "Util": <PiShootingStar />
 }
 
 export {

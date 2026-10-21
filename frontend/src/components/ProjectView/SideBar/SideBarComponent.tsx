@@ -5,7 +5,7 @@ import { Box } from "@mantine/core";
 
 const SideBarComponent = ({ userIsOwner, handleDroppedFiles }) => {
   const [selectedPane, setSelectedPane] = React.useState<
-    "Files" | "Preferences" | "Settings" | "Classroom" | null
+    "Files" | "Preferences" | "Settings" | "Classroom" | "Util" | null
   >("Files");
   return (
     <Box style={{ display: "flex", height: "100%" }}>

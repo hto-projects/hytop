@@ -14,7 +14,7 @@ const addImpression = asyncHandler(async (req, res) => {
     });
 
     if (impression) {
-      res.send("Impression Added!");
+      res.json({message: "Impression Added!" });
     } else {
       throw new Error("Error adding impression");
     }
