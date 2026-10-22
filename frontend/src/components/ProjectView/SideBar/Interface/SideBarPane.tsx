@@ -5,6 +5,7 @@ import PreferencesPane from "../../../User/Preferences/PreferencesPane";
 import { SIDEBAR_WIDTH } from "../../constants";
 import { useEffect, useState } from "react";
 import Classroom from "../Classroom/Classroom";
+import UtilPane from "./UtilPane";
 
 const SideBarPane = ({ selectedPane, setSelectedPane, userIsOwner, handleDroppedFiles }) => {
   const theColorScheme = useComputedColorScheme("light");
@@ -34,6 +35,7 @@ const SideBarPane = ({ selectedPane, setSelectedPane, userIsOwner, handleDropped
       <ProjectSettingsComponent hidden={selectedPane !== "Settings"} closePane={closePane} />
       <PreferencesPane hidden={selectedPane !== "Preferences"} closePane={closePane} />
       <Classroom hidden={selectedPane !== "Classroom"} closePane={closePane} />
+      <UtilPane hidden={selectedPane !== "Util"} closePane={closePane} />
     </Box>
   );
 };

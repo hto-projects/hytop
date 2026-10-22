@@ -10,12 +10,14 @@ import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import fakeApiRoutes from "./routes/fakeApiRoutes";
 import enrollmentRoutes from "./routes/enrollmentRoutes";
+import utilRoutes from "./routes/utilRoutes";
 import { renderFile } from "./controllers/projectController";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { createRoom, joinRoomByID, sendMessageInChat, sendInfo, leaveRoom, updateAllClassrooms, closeRoom } from "./controllers/socketController";
 import { IoEventChannels } from "../shared/constants";
 import { ENROLLMENTS_URL } from "../shared/enrollmentApiPaths";
+import { UTIL_URL } from "../shared/utilApiPaths";
 
 const port = process.env.PORT || 5000;
 const frontEndUrl = process.env.FRONTEND_URL;
@@ -41,7 +43,8 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/fake-api", fakeApiRoutes);
-app.use(ENROLLMENTS_URL, enrollmentRoutes)
+app.use(ENROLLMENTS_URL, enrollmentRoutes);
+app.use(UTIL_URL, utilRoutes);
 
 app.get("/up-check", (_req, res: any) => {
   res.status(200).send("<h1>BACKEND OPERATION NORMAL</h1>").end();

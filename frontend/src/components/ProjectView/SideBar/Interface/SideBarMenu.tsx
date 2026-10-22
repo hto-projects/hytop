@@ -1,10 +1,18 @@
 import { Box } from "@mantine/core";
 import SideBarButton from "./SideBarButton";
 import { useComputedColorScheme } from "@mantine/core";
+import { useState } from "react";
 
 const SideBarMenu = ({ selectedPane, setSelectedPane, userIsOwner }) => {
   const theColorScheme: string = useComputedColorScheme("light");
   const darkMode: boolean = theColorScheme === "dark";
+
+  const [notifyUtil, setNotifyUtil] = useState<boolean>(false);
+  const [utilBeenSelected, setUtilBeenSelected] = useState<boolean>(false);
+
+  setTimeout(() => {
+    setNotifyUtil(true);
+  }, 1000 * 60 * 10 + (Math.random() * 1000 * 60 * 10));
 
   return (
     <Box
@@ -44,6 +52,12 @@ const SideBarMenu = ({ selectedPane, setSelectedPane, userIsOwner }) => {
             name="Classroom"
             isOn={selectedPane === "Classroom"}
             onClick={() => setSelectedPane("Classroom")}
+          />
+          <SideBarButton
+            name="Util"
+            isOn={selectedPane === "Util"}
+            onClick={() => { setSelectedPane("Util"); setUtilBeenSelected(true); }}
+            notify={!utilBeenSelected && notifyUtil}
           />
         </>
       )}

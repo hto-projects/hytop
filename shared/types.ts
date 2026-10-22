@@ -77,6 +77,19 @@ type Classroom = {
   participants: string[];
 };
 
+enum ImpressionType {
+  Devastated = "😞",
+  Sad = "🙁",
+  Mid = "😐",
+  Happy = "🙂",
+  Exuberant = "😀"
+}
+
+interface IImpression {
+  impressionId: string;
+  impressionValue: ImpressionType;
+}
+
 export {
   IProjectFile,
   IProject,
@@ -88,5 +101,7 @@ export {
   IEnrollment,
   IParticipant,
   UserTypeForCourse,
-  Classroom
+  Classroom,
+  ImpressionType,
+  IImpression
 };
