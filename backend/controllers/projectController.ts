@@ -581,7 +581,7 @@ const renderFile = asyncHandler(async (req: any, res) => {
     res.setHeader("Content-Type", "text/html");
   }
 
-  if (fileName.endsWith(".txt")) {
+  if (fileName.endsWith(".txt") || fileName.endsWith(".gltf") || fileName.endsWith("json")) {
     res.setHeader("Content-Type", "text/plain");
   }
 

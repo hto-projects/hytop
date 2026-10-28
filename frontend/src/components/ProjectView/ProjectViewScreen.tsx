@@ -40,7 +40,7 @@ import {
 } from "../../utils/imageUtils";
 import { toast } from "react-toastify";
 
-const SUPPORTED_TEXT_EXTENSIONS = new Set(["html", "css", "js"]);
+const SUPPORTED_TEXT_EXTENSIONS = new Set(["html", "css", "js", "json", "gltf"]);
 
 const ProjectViewScreen: React.FC = () => {
   const monaco = useMonaco();
